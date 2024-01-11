@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Button, Col, Form, Input, Row, Space, message } from 'antd'
 import { UserOutlined, KeyOutlined } from '@ant-design/icons'
-import '../Login/login.css'
+import '../login/login.css'
 import API from '../../api'
 import { SignIn } from '../../api/models'
 import { useNavigate } from 'react-router-dom'
