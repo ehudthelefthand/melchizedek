@@ -3,7 +3,7 @@ import FixOfferingForm from './FixOffering'
 import OfferingList from './OfferingList'
 import ProjectOfferingForm from './ProjectOffering'
 import { PropsWithChildren, useState } from 'react'
-import '../transaction.css'
+import '../Transaction.css'
 import { TransactionForm } from '../../../model/model'
 
 function OfferingsForm(
