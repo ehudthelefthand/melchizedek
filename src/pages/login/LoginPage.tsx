@@ -37,7 +37,7 @@ const LoginPage: React.FC = () => {
     <div id="login">
       <div className="container">
         <div className="logo">
-          <img src={'src/assets/images/yfc_logo2.png'} />
+          <img src={'/assets/images/yfc_logo2.png'} />
         </div>
         <div className="login-form">
           <Form onFinish={onSubmit}>

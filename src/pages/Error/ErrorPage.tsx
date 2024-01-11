@@ -5,7 +5,7 @@ const ErrorPage: React.FC = () => {
     <>
       <div className="error">
         <div className="error-img">
-          <img src="src/assets/images/404-2.jpg" />
+          <img src="/assets/images/404-2.jpg" />
         </div>
       </div>
     </>
