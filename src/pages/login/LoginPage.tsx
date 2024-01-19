@@ -11,26 +11,24 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate()
   const { setUser } = useUser()
 
-  useEffect(()=>{
-    localStorage.removeItem("token")
-    localStorage.removeItem("fullName")
-  },[])
+  useEffect(() => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('fullName')
+  }, [])
 
-  const onSubmit = async (values: SignIn) => {
-    try {
-      console.log(values)
-      await API.userLogIn(values).then((tokenUser) => {
-        console.log("!!!!!", tokenUser)
+  const onSubmit = async (value: SignIn) => {
+    await API.userLogIn(value)
+      .then((tokenUser) => {
+        console.log('tokenUser :', tokenUser)
         setUser(tokenUser)
-        localStorage.setItem('fullName', tokenUser.user.fullname)
+        // localStorage.setItem('fullName', tokenUser.user.fullname)
         localStorage.setItem('token', tokenUser.token)
+        navigate('/transaction/')
+        console.log("Login pass")
       })
-
-      navigate('/transaction/')
-    } catch (error) {
-      console.error('error login', error)
-      message.error('Invalid Username or Password. Please try again.')
-    }
+      .catch(() => {
+        message.error('Invalid Username or Password. Please try again.')
+      })
   }
 
   return (

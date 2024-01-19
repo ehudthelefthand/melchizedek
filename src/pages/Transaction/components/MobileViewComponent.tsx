@@ -1,5 +1,4 @@
 import { Card, Col, Row, Typography, Space } from 'antd'
-import { ToStringTransaction } from '../../../api/transactionapi'
 import {
   BankTwoTone,
   DollarTwoTone,
@@ -7,11 +6,13 @@ import {
   InteractionTwoTone,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { TransactionLists } from '../../../model/model'
+import dayjs from 'dayjs'
 
 const { Text } = Typography
 
 interface Props {
-  transactions: ToStringTransaction[]
+  transactions: TransactionLists[]
 }
 
 const MobileViewComponent: React.FC<{ props: Props }> = ({ props }) => {
@@ -25,7 +26,7 @@ const MobileViewComponent: React.FC<{ props: Props }> = ({ props }) => {
             key={transaction.id}
             bordered={false}
             title={transaction.donorName}
-            extra={transaction.createAt}
+            extra={dayjs(transaction.createAt).format('DD/MM/YYYY HH:mm:ss')}
           >
             <Row gutter={[8, 8]}>
               <Col xs={24}>
@@ -59,7 +60,9 @@ const MobileViewComponent: React.FC<{ props: Props }> = ({ props }) => {
                   <Text type="secondary">
                     {t('transacListMobile.dateTransfers')}
                   </Text>
-                  <Text strong>{transaction.transferDate}</Text>
+                  <Text strong>
+                    {dayjs(transaction.transferDate).format('DD/MM/YYYY HH:mm:ss')}
+                  </Text>
                 </Space>
               </Col>
             </Row>

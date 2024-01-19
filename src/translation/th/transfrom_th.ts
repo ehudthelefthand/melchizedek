@@ -77,5 +77,6 @@ export default {
   transacMessage: {
     confirmDelete: 'ยืนยันการลบข้อมูล!',
     deleteSuccess: 'ลบข้อมูลสำเร็จ',
+    deleteFail: 'ลบข้อมูลไม่สำเร็จ',
   },
 }

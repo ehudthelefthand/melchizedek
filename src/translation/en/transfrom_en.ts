@@ -24,7 +24,7 @@ export default {
     staffName: 'StaffName',
     department: 'Department',
     slip: 'Evidence',
-    event: 'Offering for (Event)',
+    event: 'Offering (Event)',
     descriptions: 'Descriptions'
   },
   transacForm: {
@@ -80,5 +80,6 @@ export default {
   transacMessage: {
     confirmDelete: 'Confirm delete!',
     deleteSuccess: 'Delete success',
+    deleteFail: 'Delete Fail!',
   },
 }

@@ -11,56 +11,53 @@ import {
 } from 'antd'
 import { t } from 'i18next'
 import { useEffect, useState } from 'react'
-import { Banks, Department, Donor, Staff } from '../../../api/models'
+
 import API from '../../../api'
+import { BankAPI, DepartmentAPI, DonorAPI, StaffAPI } from '../../../api/models'
 
 function BasicForm() {
-  const [banks, setBanks] = useState<Banks[]>([])
-  const [departments, setDepartments] = useState<Department[]>([])
-  const [staff, setStaff] = useState<Staff[]>([])
-  const [donor, setDonor] = useState<Donor[]>([])
-
-  // form.transactionForm
-  // form.setTransactionForm({
-  //   ...form.transactionForm,
-  //   staffName: 'อะไรก็ได้'
-  // })
+  const [banks, setBanks] = useState<BankAPI[]>([])
+  const [departments, setDepartments] = useState<DepartmentAPI[]>([])
+  const [staffs, setStaffs] = useState<StaffAPI[]>([])
+  const [donors, setDonors] = useState<DonorAPI[]>([])
 
   useEffect(() => {
     API.getMetadatum()
       .then((metadatums) => {
-        setBanks(metadatums.data.Bank)
-        setDepartments(metadatums.data.Department)
-        setStaff(metadatums.data.Staff)
-        setDonor(metadatums.data.Donor)
+        setBanks(metadatums.banks)
+        setDepartments(metadatums.departments)
+        setStaffs(metadatums.staffs)
+        setDonors(metadatums.donors)
       })
-      .catch(console.error)
+      .catch((error) => console.error('metadatums', error))
   }, [])
 
-  const department: SelectProps['options'] = departments.map((department) => ({
-    label: department.name,
-    value: department.name,
+  const staffAPI: SelectProps['options'] = staffs.map((staff) => ({
+    label: staff.fullName,
+    value: staff.id,
   }))
 
-  const filterBanks = banks.filter((n) => n.id <= 3)
-  const toBank: SelectProps['options'] = filterBanks.map((bank) => ({
+  const departmentAPI: SelectProps['options'] = departments.map(
+    (department) => ({
+      label: department.name,
+      value: department.id,
+    })
+  )
+
+  const filterBanksAPI = banks.filter((n) => n.id <= 4)
+  const toBankAPI: SelectProps['options'] = filterBanksAPI.map((bank) => ({
     label: bank.code,
-    value: bank.code,
+    value: bank.id,
   }))
 
-  const fromBank: SelectProps['options'] = banks.map((bank) => ({
+  const fromBankAPI: SelectProps['options'] = banks.map((bank) => ({
     label: bank.code,
-    value: bank.code,
+    value: bank.id,
   }))
 
-  const staffs: SelectProps['options'] = staff.map((staff) => ({
-    label: staff.fullname,
-    value: staff.fullname,
-  }))
-
-  const donors: SelectProps['options'] = donor.map((donor) => ({
-    label: donor.fullname,
-    value: donor.fullname,
+  const donorAPI: SelectProps['options'] = donors.map((donor) => ({
+    label: donor.fullName,
+    value: donor.id,
   }))
 
   return (
@@ -69,22 +66,15 @@ function BasicForm() {
         <Row>
           <Col span={24}>
             <Form.Item
-              key={'staffName'}
-              name={'staffName'}
+              key={'staffId'}
+              name={'staffId'}
               rules={[{ required: true, message: 'Please fill staff name' }]}
               hasFeedback
             >
               <Select
-                options={staffs}
+                options={staffAPI}
                 size="large"
                 placeholder={t('transacForm.staffName')}
-                // TODO: แก้ form ให้เป็นของใหม่
-                // onSelect={(event) =>
-                //   transactionForm.setData({
-                //     ...transactionForm.data,
-                //     staffName: event,
-                //   })
-                // }
               />
             </Form.Item>
           </Col>
@@ -92,15 +82,15 @@ function BasicForm() {
         <Row>
           <Col span={24}>
             <Form.Item
-              key={'donorName'}
-              name={'donorName'}
+              key={'donorId'}
+              name={'donorId'}
               rules={[{ required: true, message: 'Please fill donor name' }]}
               hasFeedback
             >
               <Select
                 size="large"
                 placeholder={t('transacForm.donorName')}
-                options={donors}
+                options={donorAPI}
               />
             </Form.Item>
           </Col>
@@ -109,8 +99,8 @@ function BasicForm() {
         <Row>
           <Col span={24}>
             <Form.Item
-              key={'department'}
-              name={'department'}
+              key={'departmentId'}
+              name={'departmentId'}
               rules={[
                 { required: true, message: 'Please select a department' },
               ]}
@@ -118,14 +108,8 @@ function BasicForm() {
             >
               <Select
                 placeholder={t('transacForm.department')}
-                options={department}
+                options={departmentAPI}
                 size="large"
-                // onSelect={(event) =>
-                //   transactionForm.setData({
-                //     ...transactionForm.data,
-                //     department: event,
-                //   })
-                // }
               />
             </Form.Item>
           </Col>
@@ -142,7 +126,7 @@ function BasicForm() {
                 style={{ width: '100%' }}
                 stringMode
                 min="0"
-                max='999999999'
+                max="999999999"
                 step={0.01}
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -175,7 +159,6 @@ function BasicForm() {
               <DatePicker
                 size="large"
                 showTime
-                // TODO: เปลี่ยนเป็น transferDate !!
                 placeholder={t('transacForm.dateTransfers')}
                 onOk={(value: DatePickerProps['value']) => value}
                 style={{ width: '100%' }}
@@ -187,28 +170,28 @@ function BasicForm() {
         <Row gutter={15} style={{ rowGap: 20 }}>
           <Col xs={24} sm={24} md={12} lg={12} xl={12}>
             <Form.Item
-              key={'toBank'}
-              name={'toBank'}
+              key={'fromBankId'}
+              name={'fromBankId'}
               rules={[{ required: true, message: 'Please select the bank' }]}
               hasFeedback
             >
               <Select
                 placeholder={t('transacForm.fromBank')}
-                options={fromBank}
+                options={fromBankAPI}
                 size="large"
               />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12} lg={12} xl={12}>
             <Form.Item
-              key={'formBank'}
-              name={'fromBank'}
+              key={'toBankId'}
+              name={'toBankId'}
               rules={[{ required: true, message: 'Please select the bank' }]}
               hasFeedback
             >
               <Select
                 placeholder={t('transacForm.toBank')}
-                options={toBank}
+                options={toBankAPI}
                 size="large"
               />
             </Form.Item>

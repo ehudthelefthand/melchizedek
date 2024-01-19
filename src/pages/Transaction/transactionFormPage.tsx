@@ -1,189 +1,273 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { Form, Space, Button, message, Row, Col, Spin } from 'antd'
-import API from '../../api'
-import MzkUploadFile from './components/MzkUploadFile'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Button, Col, Form, message, Row, Select, Space, Spin } from 'antd'
 
-import { TransactionForm, TransactionOfferingForm } from '../../model/model'
+import {
+  TransactionFixOfferingForm,
+  TransactionForm,
+  TransactionGiftOfferingForm,
+  TransactionProjectOfferingForm,
+} from '../../model/model'
 import TextArea from 'antd/es/input/TextArea'
-import { CreateTransactions } from '../../api/transactionapi'
-import { CreateOffering } from '../../api/models'
+import {
+  CreateTransactionAPI,
+  CreateTransactionFixOfferingAPI,
+  CreateTransactionGiftOfferingAPI,
+  CreateTransactionProjectOfferingAPI,
+  TransactionFixOfferingAPI,
+  TransactionGiftOfferingAPI,
+  TransactionProjectOfferingAPI,
+  UpdateTransactionAPI,
+  UpdateTransactionFixOfferingAPI,
+  UpdateTransactionGiftOfferingAPI,
+  UpdateTransactionProjectOfferingAPI,
+} from '../../api/transactionapi'
 import { useMediaQuery } from 'react-responsive'
 import { useTranslation } from 'react-i18next'
 
 import BasicForm from './components/BasicForm'
-import formatDate from '../../util/formatDate'
 import OfferingsButton from './components/OfferingButton'
+import API from '../../api'
+import MzkUploadFile from './components/MzkUploadFile'
 import dayjs from 'dayjs'
+import TransactionOfferingList from './components/TransactionOfferingList'
 
-const initialForm = {
-  // id: 0,
-  // donorName: '',
-  // amount: '',
-  // transferDate: '',
-  // toBank: '',
-  // fromBank: '',
-  // staffName: '',
-  // department: '',
-  // descriptions: '',
-  // createAt: '',
-  offerings: [],
+const initialTransactionForm: TransactionForm = {
+  id: null,
+  donorId: null,
+  amount: '',
+  transferDate: null,
+  toBankId: null,
+  fromBankId: null,
+  staffId: null,
+  departmentId: null,
+  descriptions: '',
+  createAt: null,
+  fixOfferings: [],
+  giftOfferings: [],
+  projectOfferings: [],
 }
 
-const TransactionFormPage: React.FC<{
-  isEdit: boolean
-}> = ({ isEdit }) => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { id: paramsId } = useParams<string>()
+const TransactionFormPage = () => {
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
-  // const transactionForm = useTransactionForm()
+  const navigate = useNavigate()
+  const { id: paramsId } = useParams<string>()
   const [form] = Form.useForm<TransactionForm>()
-  // const offeringForm = useOfferingForm()
   const [t] = useTranslation('translation')
-  // const transactionForm = useContext(transactionFormContext)
-  const isEditing: boolean = isEdit || (location.state && location.state.isEdit)
   const [isLoading, setIsLoading] = useState(false)
 
-  // TODO: ทำ tokenAPI ส่ง response ให้เสร็จ
+  console.log('GetAllForm', form.getFieldsValue())
+  console.log(
+    'GetOfferings',
+    form.getFieldsValue(['fixOffering', 'giftOffering', 'projectOffering'])
+  )
 
   useEffect(() => {
-    console.log('params', paramsId)
-    // Edit
+    //TODO: Set value to edit form
+
     if (paramsId) {
       setIsLoading(true)
       API.getTransactionByID(paramsId)
         .then((transaction) => {
-          const response: TransactionForm = {
-            staffName: transaction.data.staffName,
-            donorName: transaction.data.donorName,
-            department: transaction.data.department,
-            amount: transaction.data.amount.toString(),
-            transferDate: formatDate.formatStringToDayJs(
-              transaction.data.transferDate
-            ),
-            toBank: transaction.data.toBank,
-            fromBank: transaction.data.fromBank,
-            descriptions: transaction.data.descriptions,
-            id: transaction.data.id,
-            createAt: dayjs(transaction.data.createAt),
-            // offerings: transaction.data.offerings,
-            offerings: transaction.data.offerings.map((offering) => {
-              return {
-                id: offering.id,
-                staffName: offering.staffName,
-                department: offering.department,
-                kind: offering.kind,
-                amount: offering.amount.toString(),
-                projectName: offering.projectName,
-                startDate: formatDate.formatStringToDayJs(offering.startDate),
-                dueDate: formatDate.formatStringToDayJs(offering.dueDate),
-                descriptions: offering.descriptions,
+          const transactionResponse: TransactionForm = {
+            id: transaction.id,
+            staffId: transaction.staffId,
+            donorId: transaction.donorId,
+            departmentId: transaction.departmentId,
+            amount: transaction.amount.toString(),
+            transferDate: dayjs(transaction.transferDate),
+            toBankId: transaction.toBankId,
+            fromBankId: transaction.fromBankId,
+            descriptions: transaction.descriptions,
+            createAt: dayjs(transaction.createAt),
+            fixOfferings: transaction.fixOfferings.map(
+              (fixOffering: TransactionFixOfferingAPI) => {
+                const fix: TransactionFixOfferingForm = {
+                  ...fixOffering,
+                  startMonth: dayjs(fixOffering.startMonth),
+                  dueMonth: dayjs(fixOffering.dueMonth),
+                }
+                return fix
               }
-            }),
+            ),
+            giftOfferings: transaction.giftOfferings.map(
+              (giftOffering: TransactionGiftOfferingAPI) => {
+                const gift: TransactionGiftOfferingForm = {
+                  ...giftOffering,
+                  transferDate: dayjs(giftOffering.transferDate),
+                }
+                return gift
+              }
+            ),
+            projectOfferings: transaction.projectOfferings.map(
+              (projectOffering: TransactionProjectOfferingAPI) => {
+                const project: TransactionProjectOfferingForm = {
+                  ...projectOffering,
+                  startDate: dayjs(projectOffering.startDate),
+                  dueDate: dayjs(projectOffering.dueDate),
+                }
+                return project
+              }
+            ),
           }
 
-          form.setFieldsValue(response)
+          form.setFieldsValue(transactionResponse)
           setIsLoading(false)
         })
-        .catch((_) => {
-          // TODO: แก้ชื่อ
-          message.error('Update Fail !')
+        .catch((error) => {
+          console.error(error)
+          message.error('Update Fail!')
           navigate('/transaction')
         })
     }
   }, [])
 
   // TODO: แยกไฟล์ให้ถูก
-  const onSubmit = async (value: TransactionForm) => {
-    if (isEditing) {
-      console.log('edit mode', form.getFieldValue('offerings'))
-      const edited: CreateTransactions = {
-        donorName: value.donorName,
-        staffName: value.staffName,
-        department: value.department,
-        fromBank: value.fromBank,
-        toBank: value.toBank,
-        amount: parseFloat(value.amount),
-        descriptions: value.descriptions,
-        transferDate: value.transferDate.format('DD/MM/YYYY HH:mm:ss'),
-        offerings: [],
-      }
-      console.log('key id', paramsId)
-      console.log('after edit ', edited)
+  const onSubmit = async (transaction: TransactionForm) => {
+    const fixOfferings: TransactionFixOfferingForm[] | [] =
+      form.getFieldValue('fixOfferings')
+    const giftOfferings: TransactionGiftOfferingForm[] | [] =
+      form.getFieldValue('giftOfferings')
+    const projectOfferings: TransactionProjectOfferingForm[] | [] =
+      form.getFieldValue('projectOfferings')
 
-      try {
-        if (paramsId) {
-          API.updateTransaction(edited, parseInt(paramsId))
+    if (paramsId) {
+      const transactionEdited: UpdateTransactionAPI = {
+        id: transaction.id!,
+        donorId: transaction.donorId!,
+        staffId: transaction.staffId!,
+        departmentId: transaction.departmentId!,
+        fromBankId: transaction.fromBankId!,
+        toBankId: transaction.toBankId!,
+        amount: parseFloat(transaction.amount),
+        descriptions: transaction.descriptions,
+        transferDate: +transaction.transferDate!,
+        fixOfferings:
+          fixOfferings.length > 0
+            ? fixOfferings.map((fixOffering: TransactionFixOfferingForm) => {
+                const fix: UpdateTransactionFixOfferingAPI = {
+                  id: fixOffering.id,
+                  staffId: fixOffering.staffId,
+                  departmentId: fixOffering.departmentId,
+                  startMonth: +fixOffering.startMonth,
+                  dueMonth: +fixOffering.dueMonth,
+                  amount: parseFloat(fixOffering.amount.toString()),
+                }
+                return fix
+              })
+            : [],
+        giftOfferings:
+          giftOfferings.length > 0
+            ? giftOfferings.map((giftOffering: TransactionGiftOfferingForm) => {
+                const gift: UpdateTransactionGiftOfferingAPI = {
+                  ...giftOffering,
+                  transferDate: +giftOffering.transferDate,
+                }
+                return gift
+              })
+            : [],
+        projectOfferings:
+          projectOfferings.length > 0
+            ? projectOfferings.map(
+                (projectOffering: TransactionProjectOfferingForm) => {
+                  const project: UpdateTransactionProjectOfferingAPI = {
+                    ...projectOffering,
+                    startDate: +projectOffering.startDate,
+                    dueDate: +projectOffering.dueDate,
+                  }
+                  return project
+                }
+              )
+            : [],
+      }
+      API.updateTransaction(transactionEdited, parseInt(paramsId))
+        .then(() => {
+          console.log('Edit of paramID', transactionEdited)
           message.success('Update successful!')
           navigate('/transaction/')
-        }
-      } catch (err) {
-        message.error('Update Fail!')
-      }
+        })
+        .catch((error) => {
+          console.error(error)
+          message.error('Update Fail!')
+        })
     } else {
-      console.log('to create', value)
-      console.log('transferDate!!', value.transferDate)
-
-      const transaction: CreateTransactions = {
-        donorName: value.donorName,
-        staffName: value.staffName,
-        department: value.department,
-        fromBank: value.fromBank,
-        toBank: value.toBank,
+      console.log('fixOfferings.length', fixOfferings.length)
+      const transactionCreated: CreateTransactionAPI = {
+        donorId: transaction.donorId!,
+        staffId: transaction.staffId!,
+        departmentId: transaction.departmentId!,
+        fromBankId: transaction.fromBankId!,
+        toBankId: transaction.toBankId!,
         // TODO: Transactions
-        amount: parseFloat(value.amount),
-        transferDate: value.transferDate.format('DD/MM/YYYY HH:mm:ss'),
-        descriptions: value.descriptions,
-        offerings: [],
+        amount: parseFloat(transaction.amount),
+        transferDate: +transaction.transferDate!,
+        descriptions: transaction.descriptions,
+        fixOfferings:
+          fixOfferings.length > 0
+            ? fixOfferings.map((fixOffering: TransactionFixOfferingForm) => {
+                const fix: CreateTransactionFixOfferingAPI = {
+                  staffId: fixOffering.staffId,
+                  departmentId: fixOffering.departmentId,
+                  startMonth: +fixOffering.startMonth,
+                  dueMonth: +fixOffering.dueMonth,
+                  amount: parseFloat(fixOffering.amount.toString()),
+                }
+                return fix
+              })
+            : [],
+        giftOfferings:
+          giftOfferings.length > 0
+            ? giftOfferings.map((giftOffering: TransactionGiftOfferingForm) => {
+                const gift: CreateTransactionGiftOfferingAPI = {
+                  ...giftOffering,
+                  transferDate: +giftOffering.transferDate,
+                }
+                return gift
+              })
+            : [],
+        projectOfferings:
+          projectOfferings.length > 0
+            ? projectOfferings.map(
+                (projectOffering: TransactionProjectOfferingForm) => {
+                  const project: CreateTransactionProjectOfferingAPI = {
+                    ...projectOffering,
+                    startDate: +projectOffering.startDate,
+                    dueDate: +projectOffering.dueDate,
+                  }
+                  return project
+                }
+              )
+            : [],
       }
-      // value.offerings
-      // form.getFieldValue("offerings")
-
-      const saveOffers: CreateOffering[] = form
-        .getFieldValue('offerings')
-        .map((offer: TransactionOfferingForm) => {
-          const offerapi: CreateOffering = {
-            ...offer,
-            amount: parseFloat(offer.amount),
-            startDate: offer.startDate.format('DD/MM/YYYY'),
-            dueDate: offer.dueDate.format('DD/MM/YYYY'),
-          }
-          return offerapi
+      console.log('transactionCreated !!', transactionCreated)
+      API.createTransaction(transactionCreated)
+        .then(() => {
+          message.success('Add successful!')
+          navigate('/transaction/')
         })
-      // console.log('offering', saveOffers)
-      // console.log('offering length', saveOffers.length)
-      try {
-        const response = API.createTransaction(transaction)
-        response.then(() => {
-          if (saveOffers.length > 0) {
-            API.createOffering(saveOffers)
-          }
+        .catch((err) => {
+          message.error('Add Fail!'), err
         })
-        message.success('Add successful!')
-        navigate('/transaction/')
-      } catch (err) {
-        console.log(err)
-        message.error('Add Fail!')
-      }
     }
-  } /// out of submit
+  }
+  /// out of submit
 
   return (
     <div className="transaction-add-form">
       {isLoading ? (
-        // <div>รอก่อนนน</div>
+        // TODO: ทำ Skeleton !!
         <Spin />
       ) : (
         <Form
           onFinish={onSubmit}
           form={form}
-          initialValues={initialForm}
+          initialValues={initialTransactionForm}
           className="input-transaction"
         >
           <Space direction="vertical" size={20} style={{ display: 'flex' }}>
             <BasicForm />
             <OfferingsButton form={form} />
+            <TransactionOfferingList />
             <Row>
               <Col span={24}>
                 <Form.Item
@@ -221,7 +305,7 @@ const TransactionFormPage: React.FC<{
                     type="primary"
                     htmlType="submit"
                   >
-                    {isEditing
+                    {paramsId
                       ? `${t('transacButton.edit')}`
                       : `${t('transacButton.submit')}`}
                   </Button>
@@ -249,7 +333,7 @@ const TransactionFormPage: React.FC<{
                 </Col>
                 <Col>
                   <Button size={'large'} type="primary" htmlType="submit">
-                    {isEditing
+                    {paramsId
                       ? `${t('transacButton.edit')}`
                       : `${t('transacButton.submit')}`}
                   </Button>
@@ -262,5 +346,4 @@ const TransactionFormPage: React.FC<{
     </div>
   )
 }
-
 export default TransactionFormPage

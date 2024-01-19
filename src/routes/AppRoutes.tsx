@@ -27,12 +27,12 @@ const AppRoutes: React.FC = () => {
         },
         {
           path: 'form',
-          element: <TransactionFormPage isEdit={false} />,
+          element: <TransactionFormPage />,
           errorElement: <ErrorPage />,
         },
         {
           path: 'edit/:id',
-          element: <TransactionFormPage isEdit={true} />,
+          element: <TransactionFormPage/>,
           errorElement: <ErrorPage />,
         },
       ],

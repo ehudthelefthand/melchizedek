@@ -5,61 +5,86 @@ import { useMediaQuery } from 'react-responsive'
 import dayjs from 'dayjs'
 import { Input, Space, Button, Row, Col } from 'antd'
 import API from '../../api'
-import {
-  PageTransaction,
-  ToStringTransaction,
-  TransactionAPI,
-} from '../../api/transactionapi'
+import { PageTransactionAPI, TransactionAPI } from '../../api/transactionapi'
 import TableView from './components/TableViewConponent'
 import MobileViewComponent from './components/MobileViewComponent'
-import { Banks, Department, Donor, Staff } from '../../api/models'
+import {
+  TransactionFixOfferingList,
+  TransactionGiftOfferingList,
+  TransactionLists,
+  TransactionProjectOfferingList,
+} from '../../model/model'
+import { BankAPI, DepartmentAPI, DonorAPI, StaffAPI } from '../../api/models'
 
 const { Search } = Input
 
 const TransactionPage: React.FC = () => {
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
   const [t] = useTranslation('translation')
-  const [pageTransactions, setPageTransactions] = useState<PageTransaction>()
-  const [onlyTrans, setOnlyTrans] = useState<ToStringTransaction[]>([])
+  const [pageTransactions, setPageTransactions] = useState<PageTransactionAPI>()
+  const [transactions, setTransactions] = useState<TransactionLists[]>([])
 
   // Metadatums
-  const [banks, setBanks] = useState<Banks[]>([])
-  const [departments, setDepartments] = useState<Department[]>([])
-  const [staff, setStaff] = useState<Staff[]>([])
-  const [donor, setDonor] = useState<Donor[]>([])
+  const [banks, setBanks] = useState<BankAPI[]>([])
+  const [departments, setDepartments] = useState<DepartmentAPI[]>([])
+  const [staffs, setStaffs] = useState<StaffAPI[]>([])
+  const [donors, setDonors] = useState<DonorAPI[]>([])
 
   useEffect(() => {
     API.getTranactions()
-      .then((transaction) => {
-        const transactionFormattedData = transaction.data.data.map(
-          (transac: TransactionAPI) => {
-            return {
-              ...transac,
-              createAt: dayjs(transac.createAt).format('DD/MM/YYYY HH:mm:ss'),
-              transferDate: dayjs(transac.transferDate).format(
-                'DD/MM/YYYY HH:mm:ss'
-              ),
-              // amount: parseFloat(transac.amount.toString()),
-              amount: transac.amount.toLocaleString('th-TH', {
+      .then((pageTransaction) => {
+        const transactionFormattedData: TransactionLists[] =
+          pageTransaction.data.map((transaction: TransactionAPI) => {
+            const result: TransactionLists = {
+              ...transaction,
+              createAt: dayjs(transaction.createAt),
+              transferDate: dayjs(transaction.transferDate),
+              amount: transaction.amount.toLocaleString('th-TH', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               }),
+              fixOfferings: transaction.fixOfferings.map((fixOffering) => {
+                const fix: TransactionFixOfferingList = {
+                  ...fixOffering,
+                  startMonth: dayjs(fixOffering.startMonth),
+                  dueMonth: dayjs(fixOffering.startMonth),
+                }
+                return fix
+              }),
+              giftOfferings: transaction.giftOfferings.map((giftOffering) => {
+                const gift: TransactionGiftOfferingList = {
+                  ...giftOffering,
+                  transferDate: dayjs(giftOffering.transferDate),
+                }
+                return gift
+              }),
+              projectOfferings: transaction.projectOfferings.map(
+                (projectOffering) => {
+                  const project: TransactionProjectOfferingList = {
+                    ...projectOffering,
+                    startDate: dayjs(projectOffering.startDate),
+                    dueDate: dayjs(projectOffering.dueDate),
+                  }
+                  return project
+                }
+              ),
             }
-          }
-        )
-        console.log('format tranaction', transactionFormattedData)
-        setPageTransactions(transaction)
-        setOnlyTrans(transactionFormattedData)
+            return result
+          })
+
+        setPageTransactions(pageTransaction)
+        setTransactions(transactionFormattedData)
       })
-      .catch(console.error)
+      .catch((error: any) => {
+        console.error('TransactionPage', error)
+      })
 
     API.getMetadatum()
       .then((metadatums) => {
-        console.log('metadatums <<', metadatums)
-        setBanks(metadatums.data.Bank)
-        setDepartments(metadatums.data.Department)
-        setStaff(metadatums.data.Staff)
-        setDonor(metadatums.data.Donor)
+        setBanks(metadatums.banks)
+        setDepartments(metadatums.departments)
+        setStaffs(metadatums.staffs)
+        setDonors(metadatums.donors)
       })
       .catch(console.error)
   }, [])
@@ -75,10 +100,7 @@ const TransactionPage: React.FC = () => {
           />
         </Col>
         <Col xs={24} md={12}>
-          <Link
-            to={'/transaction/form'}
-            state={{ transactionID: onlyTrans.length }}
-          >
+          <Link to={'/transaction/form'}>
             <Button size="large" type="primary" className="btn-primary">
               {t('transacButton.addData')}
             </Button>
@@ -88,19 +110,19 @@ const TransactionPage: React.FC = () => {
       {isMobile ? (
         <MobileViewComponent
           props={{
-            transactions: onlyTrans,
+            transactions: transactions,
           }}
         />
       ) : (
         <TableView
           props={{
-            transactions: onlyTrans,
-            setTransaction: setOnlyTrans,
+            transactions: transactions,
+            setTransactions: setTransactions,
             pagesTransaction: pageTransactions,
             banks: banks,
             departments: departments,
-            staffs: staff,
-            donors: donor,
+            staffs: staffs,
+            donors: donors,
           }}
         />
       )}

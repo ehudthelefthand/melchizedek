@@ -1,12 +1,12 @@
 import { Row, Col, Space, Button, Modal, FormInstance } from 'antd'
 import FixOfferingForm from './FixOffering'
-import OfferingList from './OfferingList'
 import ProjectOfferingForm from './ProjectOffering'
 import { PropsWithChildren, useState } from 'react'
 import '../Transaction.css'
 import { TransactionForm } from '../../../model/model'
+import FixOfferingList from './FixOfferingList'
 
-function OfferingsForm(
+function OfferingButtonForm(
   props: PropsWithChildren<{ form: FormInstance<TransactionForm> }>
 ) {
   const form = props.form
@@ -89,10 +89,10 @@ function OfferingsForm(
             </Row>
           </Col>
         </Row>
-        <OfferingList transactionForm={form} />
+        {/* <FixOfferingList transactionForm={form} /> */}
       </Space>
     </>
   )
 }
 
-export default OfferingsForm
+export default OfferingButtonForm

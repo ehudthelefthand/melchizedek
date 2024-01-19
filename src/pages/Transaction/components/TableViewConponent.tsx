@@ -1,17 +1,15 @@
 import { Modal, Space, Table, message } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import {
-  PageTransaction,
-  ToStringTransaction,
-  TransactionAPI,
-} from '../../../api/transactionapi'
+import { PageTransactionAPI } from '../../../api/transactionapi'
 import { useNavigate } from 'react-router-dom'
-import API from '../../../api'
-import { useEffect, useState } from 'react'
+import { Key, useEffect, useState } from 'react'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import type { FilterValue } from 'antd/es/table/interface'
-import { Banks, Department, Donor, Staff } from '../../../api/models'
+import { BankAPI, DepartmentAPI, DonorAPI, StaffAPI } from '../../../api/models'
+import { TransactionForm, TransactionLists } from '../../../model/model'
+import dayjs from 'dayjs'
+import API from '../../../api'
 
 interface TableParams {
   pagination?: TablePaginationConfig
@@ -21,65 +19,63 @@ interface TableParams {
 }
 
 interface Props {
-  transactions: ToStringTransaction[]
-  setTransaction: React.Dispatch<React.SetStateAction<any[]>>
-  pagesTransaction: PageTransaction | undefined
-  banks: Banks[]
-  departments: Department[]
-  staffs: Staff[]
-  donors: Donor[]
+  transactions: TransactionLists[]
+  setTransactions: React.Dispatch<React.SetStateAction<TransactionLists[]>>
+  pagesTransaction: PageTransactionAPI | undefined
+  banks: BankAPI[]
+  departments: DepartmentAPI[]
+  staffs: StaffAPI[]
+  donors: DonorAPI[]
 }
 
 const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
   const [t] = useTranslation('translation')
   const navigate = useNavigate()
 
-  const {
-    transactions,
-    pagesTransaction,
-    banks,
-    departments,
-    staffs,
-  } = props
+  const { transactions, pagesTransaction, banks, departments, staffs } = props
+  const toBank = banks.filter((bank) => bank.id <= 4)
 
-  const toBank = banks.filter((bank) => bank.id <= 3)
+  const transactionFormated: TransactionLists[] = transactions.map(
+    (transac: TransactionLists) => {
+      const result: TransactionLists = {
+        ...transac,
+        transferDate: dayjs(transac.transferDate).format('DD/MM/YYYY HH:mm:ss'),
+        createAt: dayjs(transac.createAt).format('DD/MM/YYYY HH:mm:ss'),
+      }
+      return result
+    }
+  )
 
   const [tableParams, _] = useState<TableParams>({
     pagination: {
-      current: pagesTransaction?.data.page,
-      pageSize: pagesTransaction?.data.itemPerPage,
+      current: pagesTransaction?.page,
+      pageSize: pagesTransaction?.itemPerPage,
     },
   })
 
-  const onEdit = (record: TransactionAPI) => {
-    console.log('record', record)
-    navigate(`/transaction/edit/${record.id}`, {
-      state: { isEdit: true },
-    })
-    console.log('edit page:', record)
+  const onEdit = (transaction: TransactionForm) => {
+    navigate(`/transaction/edit/${transaction.id}`)
   }
 
-  const onDelete = (record: TransactionAPI) => {
+  const onDelete = (transaction: TransactionForm) => {
     Modal.confirm({
       title: `${t('transacMessage.confirmDelete')}`,
       centered: true,
       width: 400,
       onOk() {
-        try {
-          console.log('delete success')
-          message.success(`${t('transacMessage.deleteSuccess')}`)
-          API.deleteTransactionByID(record.id)
-          setTimeout(() => {
+        API.deleteTransactionByID(transaction.id!)
+          .then(() => {
+            message.success(`${t('transacMessage.deleteSuccess')}`)
             window.location.reload()
-          }, 500)
-        } catch (err) {
-          console.log(err)
-        }
+          })
+          .catch(() => {
+            message.error(`${t('transacMessage.deleteFail')}`)
+          })
       },
     })
   }
 
-  const columns: ColumnsType<ToStringTransaction> = [
+  const columns: ColumnsType<TransactionLists> = [
     {
       title: '#',
       width: 60,
@@ -92,7 +88,7 @@ const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
     },
     {
       title: t('transacList.createAt'),
-      width: 150,
+      width: 140,
       dataIndex: 'createAt',
       key: 'createAt',
       align: 'left',
@@ -117,7 +113,7 @@ const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
       title: t('transacList.dateTransfers'),
       dataIndex: 'transferDate',
       key: 'transferDate',
-      width: 150,
+      width: 140,
       align: 'left',
     },
     {
@@ -127,8 +123,8 @@ const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
       width: 150,
       align: 'left',
       filters: banks.map((bank) => ({ text: bank.code, value: bank.code })),
-      onFilter: (value: any, record: ToStringTransaction) =>
-        record.toBank === value,
+      onFilter: (fromBank: boolean | Key, record: TransactionLists) =>
+        record.fromBank === fromBank,
     },
     {
       title: t('transacList.toBank'),
@@ -137,8 +133,8 @@ const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
       width: 150,
       align: 'left',
       filters: toBank.map((bank) => ({ text: bank.code, value: bank.code })),
-      onFilter: (value: any, record: ToStringTransaction) =>
-        record.toBank === value,
+      onFilter: (toBank: boolean | Key, record: TransactionLists) =>
+        record.toBank === toBank,
     },
     {
       title: t('transacList.staffName'),
@@ -147,24 +143,24 @@ const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
       key: 'staffName',
       align: 'left',
       filters: staffs.map((staff) => ({
-        text: staff.fullname,
-        value: staff.fullname,
+        text: staff.fullName,
+        value: staff.fullName,
       })),
-      onFilter: (value: any, record: ToStringTransaction) =>
-        record.staffName === value,
+      onFilter: (staffName: boolean | Key, record: TransactionLists) =>
+        record.staffName === staffName,
     },
     {
       title: t('transacList.department'),
       dataIndex: 'department',
       key: 'department',
-      width: 120,
+      width: 80,
       align: 'center',
       filters: departments.map((department) => ({
         text: department.name,
         value: department.name,
       })),
-      onFilter: (value: any, record: ToStringTransaction) =>
-        record.department === value,
+      onFilter: (department: boolean | Key, record: TransactionLists) =>
+        record.department === department,
     },
     {
       title: t('transacList.slip'),
@@ -184,7 +180,7 @@ const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
       title: t('transacList.descriptions'),
       dataIndex: 'descriptions',
       key: 'descriptions',
-      width: 100,
+      width: 120,
       align: 'center',
     },
     {
@@ -193,14 +189,14 @@ const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
       fixed: 'right',
       width: 100,
       align: 'center',
-      render: (value: TransactionAPI) => (
-        <Space size={'large'} key={value.id}>
+      render: (transaction: TransactionForm) => (
+        <Space size={'large'} key={transaction.id}>
           <EditOutlined
-            onClick={() => onEdit(value)}
+            onClick={() => onEdit(transaction)}
             style={{ cursor: 'pointer', color: '#2196F3', fontSize: 20 }}
           />
           <DeleteOutlined
-            onClick={() => onDelete(value)}
+            onClick={() => onDelete(transaction)}
             style={{ cursor: 'pointer', color: '#a9a9a9', fontSize: 20 }}
           />
         </Space>
@@ -208,18 +204,12 @@ const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
     },
   ]
 
-  useEffect(() => {
-    transactions.map((transaction) => {
-      console.log('each item in table', transaction)
-    })
-  }, [])
-
   return (
     <>
       <Table
         columns={columns}
         rowKey={(record) => record.id}
-        dataSource={transactions}
+        dataSource={transactionFormated}
         scroll={{ x: 0 }}
         sticky={{ offsetHeader: 0 }}
         pagination={tableParams.pagination}

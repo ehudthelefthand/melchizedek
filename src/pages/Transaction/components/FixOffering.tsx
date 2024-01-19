@@ -6,18 +6,22 @@ import {
   Input,
   InputNumber,
   Row,
+  Select,
+  SelectProps,
   Space,
 } from 'antd'
 import { FormInstance } from 'antd/es/form/Form'
 import { useTranslation } from 'react-i18next'
 
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, useEffect, useState } from 'react'
 import {
-  FixOffering,
+  FixOfferingFormAntd,
+  TransactionFixOfferingForm,
   TransactionForm,
-  TransactionOfferingForm,
 } from '../../../model/model'
-import dayjs from 'dayjs'
+import API from '../../../api'
+import { DepartmentAPI, StaffAPI } from '../../../api/models'
+
 const { RangePicker } = DatePicker
 
 interface Props {
@@ -28,9 +32,10 @@ interface Props {
 
 function FixOfferingForm(props: PropsWithChildren<Props>) {
   const { offerID, onCancel, transactionForm } = props
-  const [offeringForm] = Form.useForm<FixOffering>()
+  const [offeringForm] = Form.useForm<FixOfferingFormAntd>()
   const [t] = useTranslation('translation')
-  // const [days, setDays] = useState<Dayjs[]>()
+  const [staffs, setStaffs] = useState<StaffAPI[]>([])
+  const [departments, setDepartments] = useState<DepartmentAPI[]>([])
 
   // TODO: OfferingForm
   // const findTransacID = transactionForm.data.offerings.find(
@@ -38,58 +43,70 @@ function FixOfferingForm(props: PropsWithChildren<Props>) {
   // )
 
   useEffect(() => {
-    offeringForm.setFieldsValue({
-      staffName: transactionForm.getFieldValue('staffName'),
-      department: transactionForm.getFieldValue('department'),
-    })
-
-    if (offerID) {
-      console.log('Offering id is cilcked!!', offerID)
-      const offeringSelected: TransactionOfferingForm = transactionForm
-        .getFieldValue('offerings')
-        .filter((offer: TransactionOfferingForm) => offer.id === offerID)[0]
-
-      offeringForm.setFieldsValue({
-        amount: offeringSelected.amount,
-        date: [offeringSelected.startDate, offeringSelected.dueDate],
+    API.getMetadatum()
+      .then((metadatums) => {
+        setStaffs(metadatums.staffs)
+        setDepartments(metadatums.departments)
       })
-      console.log('offeringForm', offeringForm)
-
-      // form.setFieldsValue({
-      //   staffName: findTransacID!.staffName,
-      //   department: findTransacID!.department,
-      //   amount: findTransacID!.amount,
-      //   date: formatDate.formatTwoDate(
-      //     findTransacID!.startDate,
-      //     findTransacID!.dueDate
-      //   ),
-      // })
-    }
+      .catch(console.error)
+    // edit
+    // if (offerID) {
+    //   const offeringSelected: TransactionFixOfferingForm = transactionForm
+    //     .getFieldValue('offerings')
+    //     .filter((offer: TransactionFixOfferingForm) => offer.id === offerID)[0]
+    //   offeringForm.setFieldsValue({
+    //     amount: offeringSelected.amount,
+    //     date: [offeringSelected.startMonth, offeringSelected.dueMonth],
+    //   })
+    //   console.log('offeringForm', offeringForm)
+    // form.setFieldsValue({
+    //   staffName: findTransacID!.staffName,
+    //   department: findTransacID!.department,
+    //   amount: findTransacID!.amount,
+    //   date: formatDate.formatTwoDate(
+    //     findTransacID!.startDate,
+    //     findTransacID!.dueDate
+    //   ),
+    // })
+    // }
   }, [])
 
-  const onSubmit = (value: FixOffering) => {
-    console.log('fix', value)
-    console.log('day', dayjs())
+  const staffAPI: SelectProps['options'] = staffs.map((staff) => ({
+    label: staff.fullName,
+    value: staff.id,
+  }))
 
-    const offering: TransactionOfferingForm = {
-      id: 0,
-      staffName: value.staffName,
-      department: value.department,
-      kind: 'Fix',
-      amount: value.amount,
-      startDate: value.date[0],
-      dueDate: value.date[1],
-      descriptions: '',
-      projectName: '',
+  const departmentAPI: SelectProps['options'] = departments.map(
+    (department) => ({
+      label: department.name,
+      value: department.id,
+    })
+  )
+
+  const onSubmit = (value: FixOfferingFormAntd) => {
+    const offering: TransactionFixOfferingForm = {
+      id: 1,
+      staffId: value.staffId,
+      departmentId: value.departmentId,
+      amount:  parseFloat(value.amount),
+      startMonth: value.months[0],
+      dueMonth: value.months[1],
     }
-    console.log('offers', offering)
+    console.log('offering', offering)
 
     transactionForm.setFieldsValue({
-      offerings: [...transactionForm.getFieldValue('offerings'), offering],
+      fixOfferings: [
+        ...transactionForm.getFieldValue('fixOfferings'),
+        offering,
+      ],
     })
-    console.log(transactionForm.getFieldValue('offerings'))
 
+    console.log('getForm', transactionForm.getFieldValue('fixOfferings'))
     onCancel()
+
+    // transactionForm.setFieldsValue({
+    //   fixOfferings: [...transactionForm.getFieldValue('fixOfferings'), offering],
+    // })
 
     // edit offerings
     // if (offerID) {
@@ -130,7 +147,7 @@ function FixOfferingForm(props: PropsWithChildren<Props>) {
     //     offerings: [...transactionForm.data.offerings, offer],
     //   })
     //   console.log('transactionForm.data', transactionForm.data)
-    //   onCancel()
+    // onCancel()
     // }
   }
 
@@ -141,20 +158,32 @@ function FixOfferingForm(props: PropsWithChildren<Props>) {
         <Space direction="vertical" size={20} style={{ display: 'flex' }}>
           <Row gutter={15} style={{ rowGap: 20 }}>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-              <Form.Item key={'staffName'} name={'staffName'} hasFeedback>
-                <Input
-                  placeholder={t('offeringForm.staffName')}
+              <Form.Item
+                key={'staffId'}
+                name={'staffId'}
+                rules={[{ required: true, message: 'Please fill staff name' }]}
+                hasFeedback
+              >
+                <Select
+                  options={staffAPI}
                   size="large"
-                  disabled
+                  placeholder={t('transacForm.staffName')}
                 />
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-              <Form.Item key={'department'} name={'department'} hasFeedback>
-                <Input
-                  placeholder={t('offeringForm.department')}
+              <Form.Item
+                key={'departmentId'}
+                name={'departmentId'}
+                rules={[
+                  { required: true, message: 'Please select a department' },
+                ]}
+                hasFeedback
+              >
+                <Select
+                  placeholder={t('transacForm.department')}
+                  options={departmentAPI}
                   size="large"
-                  disabled
                 />
               </Form.Item>
             </Col>
@@ -195,8 +224,8 @@ function FixOfferingForm(props: PropsWithChildren<Props>) {
             </Col>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
               <Form.Item
-                name={'date'}
-                key={'date'}
+                name={'months'}
+                key={'months'}
                 rules={[
                   {
                     required: true,

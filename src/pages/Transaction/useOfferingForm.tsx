@@ -1,43 +1,32 @@
 import { createContext, useContext, useState } from 'react'
+import { TransactionFixOfferingForm } from '../../model/model'
+import dayjs from 'dayjs'
 
-import { OfferingAPI } from '../../api/transactionapi'
-
-export const initialForm: OfferingAPI[] = [
+const initialFixOfferingForm: TransactionFixOfferingForm[] = [
   {
     id: 0,
     staffName: '',
     department: '',
-    kind: '',
     amount: 0,
-    projectName: '',
-    startDate: '',
-    dueDate: '',
-    descriptions: '',
+    startMonth: dayjs(),
+    dueMonth: dayjs(),
   },
 ]
 
 export const offeringFormContext = createContext({
   // ค่าเริ่มต้น
-  data: initialForm,
-  setData: (_: OfferingAPI) => {},
+  data: initialFixOfferingForm,
+  setData: (_: TransactionFixOfferingForm) => {},
 })
 
 //  สร้างก้อนข้อมูล
 export function useOfferingFormProvider() {
-  const [offeringForm, setOfferingForm] = useState(initialForm)
+  const [offeringForm, setOfferingForm] = useState(initialFixOfferingForm)
   return {
     data: offeringForm,
     setData: setOfferingForm,
     offeringFormContext,
   }
-  //   เศษซากอารยธรรม   const TransactionFormProvider = useMemo(() => (props: PropsWithChildren<{}>) => (
-  //       <transactionFormContext.Provider value={{
-  //           transactionForm,
-  //           setTransactionForm,
-  //       }}>
-  //           {props.children}
-  //       </transactionFormContext.Provider>
-  //     ), [])
 }
 
 export function useOfferingForm() {
