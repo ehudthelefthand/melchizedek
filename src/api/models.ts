@@ -19,52 +19,35 @@ export interface TokenUser {
 export type SignIn = Omit<Users, 'id' | 'fullName' | 'department' | 'role'>
 export type UserInfo = Omit<Users, 'id' | 'password' | 'username' | 'userName'>
 
-export interface Banks {
+export interface BankAPI {
   id: number
   code: string
 }
 
-export interface Department {
+export interface DepartmentAPI {
   id: number
   name: string
 }
 
-export interface Donor {
+export interface DonorAPI {
   id: number
-  fullname: string
+  fullName: string
 }
 
-export interface Staff {
+export interface StaffAPI {
   id: number
-  fullname: string
+  fullName: string
 }
 
-export interface ProjectName {
+export interface ProjectAPI {
   id: number
   name: string
 }
 
-export interface Metadatum {
-  data: {
-    Department: Department[]
-    Bank: Banks[]
-    Staff: Staff[]
-    Donor: Donor[]
-    ProjectName: ProjectName[]
-  }
+export interface MetadatumAPI {
+  departments: DepartmentAPI[]
+  banks: BankAPI[]
+  staffs: StaffAPI[]
+  donors: DonorAPI[]
+  projects: ProjectAPI[]
 }
-
-export interface Offering {
-  id: number
-  staffName: string
-  department: string
-  kind: string
-  amount: number
-  projectName: string
-  startDate: string
-  dueDate: string
-  descriptions: string
-  // transactionid: number
-}
-
-export type CreateOffering = Omit<Offering, 'id'>
