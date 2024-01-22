@@ -1,15 +1,12 @@
-import apiServices from './axiosapi'
-import {
-  CreateTransactionAPI,
-  PageTransactionAPI,
-  TransactionAPI,
-  UpdateTransactionAPI,
-} from './transactionapi'
-
-import { MetadatumAPI, SignIn, TokenUser } from './models'
+import { CreateTransactionRequest } from './request/transaction'
+import { LoginRequest } from './request/user'
+import { LoginResponse } from './response/user'
+import { PageTransactionResponse, TransactionResponse } from './response/transaction'
+import { MetadatumsResponse } from './metadatums'
+import apiServices from './axiosAPI'
 
 const API = {
-  async userLogIn(user: SignIn): Promise<TokenUser> {
+  async userLogIn(user: LoginRequest): Promise<LoginResponse> {
     console.log('entries login')
     const json = JSON.stringify(user)
     const response = await apiServices.post('/login', json, {
@@ -20,7 +17,7 @@ const API = {
     return response.data
   },
 
-  async getTranactions(): Promise<PageTransactionAPI> {
+  async getTranactions(): Promise<PageTransactionResponse> {
     const token = localStorage.getItem('token')
     const response = await apiServices.get('/transactions', {
       headers: {
@@ -33,7 +30,7 @@ const API = {
     return response.data
   },
 
-  async getTransactionByID(id: string): Promise<TransactionAPI> {
+  async getTransactionByID(id: string): Promise<TransactionResponse> {
     const token = localStorage.getItem('token')
     const response = await apiServices.get(`/transactions/${id}`, {
       headers: {
@@ -46,18 +43,18 @@ const API = {
     return response.data
   },
 
-  async createTransaction(transaction: CreateTransactionAPI) {
+  async createTransaction(transaction: CreateTransactionRequest) {
     const token = localStorage.getItem('token')
-    const json = JSON.stringify(transaction)
-    await apiServices.post('/transactions', json, {
+    // const json = JSON.stringify(transaction)
+    await apiServices.post('/transactions', transaction, {
       headers: {
-        'Content-Type': 'application/json',
+        // 'Content-Type': 'application/json',
         Authorization: 'Bearer ' + token,
       },
     })
   },
 
-  async updateTransaction(transaction: UpdateTransactionAPI, id: number) {
+  async updateTransaction(transaction: CreateTransactionRequest, id: number) {
     const token = localStorage.getItem('token')
     const json = JSON.stringify(transaction)
     apiServices.put(`/transactions/${id}`, json, {
@@ -80,28 +77,7 @@ const API = {
       })
   },
 
-  // getOffering(): Promise<any> {
-  //   return new Promise<any>((resolve) => {
-  //     apiServices.get('/offerings').then((response: AxiosResponse) => {
-  //       resolve(response.data)
-  //     })
-  //   })
-  // },
-
-  // updateOffering(offering: Offering) {
-  //   return new Promise<void>((resolve) => {
-  //     setTimeout(() => {
-  //       const foundIndex = offerings.findIndex(
-  //         (value) => value.ID === offering.ID
-  //       )
-  //       if (foundIndex !== -1) {
-  //         offerings[foundIndex] = offering
-  //       }
-  //       resolve(console.log('offering update'))
-  //     }, 1000)
-  //   })
-  // },
-  async getMetadatum(): Promise<MetadatumAPI> {
+  async getMetadatum(): Promise<MetadatumsResponse> {
     const token = localStorage.getItem('token')
     const response = await apiServices.get('/metadatums', {
       headers: {

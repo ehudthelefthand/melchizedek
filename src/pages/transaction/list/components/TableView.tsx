@@ -1,15 +1,15 @@
 import { Modal, Space, Table, message } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { PageTransactionAPI } from '../../../api/transactionapi'
 import { useNavigate } from 'react-router-dom'
-import { Key, useEffect, useState } from 'react'
+import { Key, PropsWithChildren, useState } from 'react'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import type { FilterValue } from 'antd/es/table/interface'
-import { BankAPI, DepartmentAPI, DonorAPI, StaffAPI } from '../../../api/models'
-import { TransactionForm, TransactionLists } from '../../../model/model'
 import dayjs from 'dayjs'
-import API from '../../../api'
+import API from '../../../../api'
+import { TransactionForm, TransactionLists } from '../../model/transaction'
+import { PageTransactionResponse } from '../../../../api/response/transaction'
+import { Bank, Department, Donor, Staff } from '../../../../api/metadatums'
 
 interface TableParams {
   pagination?: TablePaginationConfig
@@ -18,17 +18,17 @@ interface TableParams {
   filters?: Record<string, FilterValue>
 }
 
-interface Props {
-  transactions: TransactionLists[]
-  setTransactions: React.Dispatch<React.SetStateAction<TransactionLists[]>>
-  pagesTransaction: PageTransactionAPI | undefined
-  banks: BankAPI[]
-  departments: DepartmentAPI[]
-  staffs: StaffAPI[]
-  donors: DonorAPI[]
-}
-
-const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
+function TableView(
+  props: PropsWithChildren<{
+    transactions: TransactionLists[]
+    setTransactions: React.Dispatch<React.SetStateAction<TransactionLists[]>>
+    pagesTransaction: PageTransactionResponse | undefined
+    banks: Bank[]
+    departments: Department[]
+    staffs: Staff[]
+    donors: Donor[]
+  }>
+) {
   const [t] = useTranslation('translation')
   const navigate = useNavigate()
 
@@ -218,4 +218,4 @@ const TableViewComponent: React.FC<{ props: Props }> = ({ props }) => {
   )
 }
 
-export default TableViewComponent
+export default TableView

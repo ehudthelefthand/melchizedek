@@ -1,5 +1,4 @@
-import './error.css'
-
+import './errorPage.css'
 const ErrorPage: React.FC = () => {
   return (
     <>

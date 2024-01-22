@@ -6,12 +6,14 @@ import AppRoutes from './routes/AppRoutes'
 
 import { ConfigProvider, Layout } from 'antd'
 import MzkHeader from './components/Header'
-import { AppProvider } from './AuthContext'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
+import { ServiceContext, useCreateService } from './service/service'
 
 const { Sider } = Layout
 
 export const App: React.FC = () => {
+  const abc = useCreateService()
+
   return (
     <ConfigProvider
       theme={{
@@ -31,43 +33,41 @@ export const App: React.FC = () => {
         },
       }}
     >
-      <AppProvider>
+      <ServiceContext.Provider value={abc}>
         <AppRoutes />
-      </AppProvider>
+      </ServiceContext.Provider>
     </ConfigProvider>
   )
 }
 
-export const Root: React.FC = () => {
+export const DashboardLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false)
   return (
-    <ConfigProvider>
-      <Layout style={{ minHeight: '100%' }}>
-        <Sider
-          style={{
-            position: 'fixed',
-            left: 0,
-            top: 0,
-            bottom: 0,
-            zIndex: 4,
-            boxShadow: '0px 0px 5px #21212145',
-          }}
-          theme="light"
-          breakpoint="lg"
-          collapsedWidth="0"
-          collapsible
-          collapsed={collapsed}
-          onCollapse={(value) => setCollapsed(value)}
-          trigger={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        >
-          <SideMenu />
-        </Sider>
-        <Layout className={`app-content ${collapsed ? 'collapsed' : ''}`}>
-          <MzkHeader />
-          <AppContent />
-        </Layout>
+    <Layout style={{ minHeight: '100%' }}>
+      <Sider
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 4,
+          boxShadow: '0px 0px 5px #21212145',
+        }}
+        theme="light"
+        breakpoint="lg"
+        collapsedWidth="0"
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(value) => setCollapsed(value)}
+        trigger={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+      >
+        <SideMenu />
+      </Sider>
+      <Layout className={`app-content ${collapsed ? 'collapsed' : ''}`}>
+        <MzkHeader />
+        <AppContent />
       </Layout>
-    </ConfigProvider>
+    </Layout>
   )
 }
 

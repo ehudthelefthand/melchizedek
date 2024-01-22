@@ -6,16 +6,15 @@ import {
   InteractionTwoTone,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { TransactionLists } from '../../../model/model'
 import dayjs from 'dayjs'
+import { PropsWithChildren } from 'react'
+import { TransactionLists } from '../../model/transaction'
 
 const { Text } = Typography
 
-interface Props {
-  transactions: TransactionLists[]
-}
-
-const MobileViewComponent: React.FC<{ props: Props }> = ({ props }) => {
+function MobileView(
+  props: PropsWithChildren<{ transactions: TransactionLists[] }>
+) {
   const { transactions } = props
   const [t] = useTranslation('translation')
   return (
@@ -61,7 +60,9 @@ const MobileViewComponent: React.FC<{ props: Props }> = ({ props }) => {
                     {t('transacListMobile.dateTransfers')}
                   </Text>
                   <Text strong>
-                    {dayjs(transaction.transferDate).format('DD/MM/YYYY HH:mm:ss')}
+                    {dayjs(transaction.transferDate).format(
+                      'DD/MM/YYYY HH:mm:ss'
+                    )}
                   </Text>
                 </Space>
               </Col>
@@ -91,4 +92,4 @@ const MobileViewComponent: React.FC<{ props: Props }> = ({ props }) => {
   )
 }
 
-export default MobileViewComponent
+export default MobileView

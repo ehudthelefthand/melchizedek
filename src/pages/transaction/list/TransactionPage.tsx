@@ -4,37 +4,39 @@ import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive'
 import dayjs from 'dayjs'
 import { Input, Space, Button, Row, Col } from 'antd'
-import API from '../../api'
-import { PageTransactionAPI, TransactionAPI } from '../../api/transactionapi'
-import TableView from './components/TableViewConponent'
-import MobileViewComponent from './components/MobileViewComponent'
+import MobileViewComponent from './components/MobileView'
+import API from '../../../api'
 import {
-  TransactionFixOfferingList,
-  TransactionGiftOfferingList,
-  TransactionLists,
-  TransactionProjectOfferingList,
-} from '../../model/model'
-import { BankAPI, DepartmentAPI, DonorAPI, StaffAPI } from '../../api/models'
+  PageTransactionResponse,
+  TransactionResponse,
+} from '../../../api/response/transaction'
+import { TransactionLists } from '../model/transaction'
+import { Bank, Department, Donor, Staff } from '../../../api/metadatums'
+import { TransactionFixOfferingList } from '../model/fixOffering'
+import { TransactionGiftOfferingList } from '../model/giftOffering'
+import { TransactionProjectOfferingList } from '../model/projectOffering'
+import TableView from './components/TableView'
 
 const { Search } = Input
 
 const TransactionPage: React.FC = () => {
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
   const [t] = useTranslation('translation')
-  const [pageTransactions, setPageTransactions] = useState<PageTransactionAPI>()
+  const [pageTransactions, setPageTransactions] =
+    useState<PageTransactionResponse>()
   const [transactions, setTransactions] = useState<TransactionLists[]>([])
 
   // Metadatums
-  const [banks, setBanks] = useState<BankAPI[]>([])
-  const [departments, setDepartments] = useState<DepartmentAPI[]>([])
-  const [staffs, setStaffs] = useState<StaffAPI[]>([])
-  const [donors, setDonors] = useState<DonorAPI[]>([])
+  const [banks, setBanks] = useState<Bank[]>([])
+  const [departments, setDepartments] = useState<Department[]>([])
+  const [staffs, setStaffs] = useState<Staff[]>([])
+  const [donors, setDonors] = useState<Donor[]>([])
 
   useEffect(() => {
     API.getTranactions()
       .then((pageTransaction) => {
         const transactionFormattedData: TransactionLists[] =
-          pageTransaction.data.map((transaction: TransactionAPI) => {
+          pageTransaction.data.map((transaction: TransactionResponse) => {
             const result: TransactionLists = {
               ...transaction,
               createAt: dayjs(transaction.createAt),
@@ -100,7 +102,7 @@ const TransactionPage: React.FC = () => {
           />
         </Col>
         <Col xs={24} md={12}>
-          <Link to={'/transaction/form'}>
+          <Link to={'/transaction/create'}>
             <Button size="large" type="primary" className="btn-primary">
               {t('transacButton.addData')}
             </Button>
@@ -108,22 +110,16 @@ const TransactionPage: React.FC = () => {
         </Col>
       </Row>
       {isMobile ? (
-        <MobileViewComponent
-          props={{
-            transactions: transactions,
-          }}
-        />
+        <MobileViewComponent transactions={transactions} />
       ) : (
         <TableView
-          props={{
-            transactions: transactions,
-            setTransactions: setTransactions,
-            pagesTransaction: pageTransactions,
-            banks: banks,
-            departments: departments,
-            staffs: staffs,
-            donors: donors,
-          }}
+          transactions={transactions}
+          setTransactions={setTransactions}
+          pagesTransaction={pageTransactions}
+          banks={banks}
+          departments={departments}
+          staffs={staffs}
+          donors={donors}
         />
       )}
     </Space>

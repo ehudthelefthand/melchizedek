@@ -1,30 +1,26 @@
 import React, { useEffect } from 'react'
 import { Button, Col, Form, Input, Row, Space, message } from 'antd'
 import { UserOutlined, KeyOutlined } from '@ant-design/icons'
-import '../login/login.css'
+import './loginPage.css'
 import API from '../../api'
-import { SignIn } from '../../api/models'
 import { useNavigate } from 'react-router-dom'
-import { useUser } from '../../AuthContext'
+import { LoginRequest } from '../../api/request/user'
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate()
-  const { setUser } = useUser()
 
   useEffect(() => {
     localStorage.removeItem('token')
     localStorage.removeItem('fullName')
   }, [])
 
-  const onSubmit = async (value: SignIn) => {
+  const onSubmit = async (value: LoginRequest) => {
     await API.userLogIn(value)
       .then((tokenUser) => {
         console.log('tokenUser :', tokenUser)
-        setUser(tokenUser)
-        // localStorage.setItem('fullName', tokenUser.user.fullname)
         localStorage.setItem('token', tokenUser.token)
         navigate('/transaction/')
-        console.log("Login pass")
+        console.log('Login pass')
       })
       .catch(() => {
         message.error('Invalid Username or Password. Please try again.')

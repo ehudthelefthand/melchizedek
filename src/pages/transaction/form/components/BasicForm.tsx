@@ -12,14 +12,14 @@ import {
 import { t } from 'i18next'
 import { useEffect, useState } from 'react'
 
-import API from '../../../api'
-import { BankAPI, DepartmentAPI, DonorAPI, StaffAPI } from '../../../api/models'
+import API from '../../../../api'
+import { Bank, Department, Donor, Staff } from '../../../../api/metadatums'
 
 function BasicForm() {
-  const [banks, setBanks] = useState<BankAPI[]>([])
-  const [departments, setDepartments] = useState<DepartmentAPI[]>([])
-  const [staffs, setStaffs] = useState<StaffAPI[]>([])
-  const [donors, setDonors] = useState<DonorAPI[]>([])
+  const [banks, setBanks] = useState<Bank[]>([])
+  const [departments, setDepartments] = useState<Department[]>([])
+  const [staffs, setStaffs] = useState<Staff[]>([])
+  const [donors, setDonors] = useState<Donor[]>([])
 
   useEffect(() => {
     API.getMetadatum()

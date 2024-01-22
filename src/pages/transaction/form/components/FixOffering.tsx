@@ -3,46 +3,43 @@ import {
   Col,
   DatePicker,
   Form,
-  Input,
   InputNumber,
   Row,
   Select,
-  SelectProps,
   Space,
 } from 'antd'
 import { FormInstance } from 'antd/es/form/Form'
 import { useTranslation } from 'react-i18next'
 
-import { PropsWithChildren, useEffect, useState } from 'react'
+import { PropsWithChildren, useContext, useEffect, useState } from 'react'
+
+import API from '../../../../api'
+import { TransactionForm } from '../../model/transaction'
 import {
   FixOfferingFormAntd,
   TransactionFixOfferingForm,
-  TransactionForm,
-} from '../../../model/model'
-import API from '../../../api'
-import { DepartmentAPI, StaffAPI } from '../../../api/models'
+} from '../../model/fixOffering'
+import { DepartmentResponse, StaffResponse } from '../../../../api/metadatums'
+import { useService } from '../../../../service/service'
 
 const { RangePicker } = DatePicker
 
-interface Props {
-  onCancel: () => void
-  offerID?: number
-  transactionForm: FormInstance<TransactionForm>
-}
-
-function FixOfferingForm(props: PropsWithChildren<Props>) {
-  const { offerID, onCancel, transactionForm } = props
-  const [offeringForm] = Form.useForm<FixOfferingFormAntd>()
+function FixOfferingForm(
+  props: PropsWithChildren<{
+    onCancel: () => void
+    paramsId: string | undefined
+    transactionForm: FormInstance<TransactionForm>
+  }>
+) {
+  const { paramsId, onCancel, transactionForm } = props
+  const [fixOfferingForm] = Form.useForm<FixOfferingFormAntd>()
   const [t] = useTranslation('translation')
-  const [staffs, setStaffs] = useState<StaffAPI[]>([])
-  const [departments, setDepartments] = useState<DepartmentAPI[]>([])
-
-  // TODO: OfferingForm
-  // const findTransacID = transactionForm.data.offerings.find(
-  //   (value) => value.ID === offerID
-  // )
+  const [staffs, setStaffs] = useState<StaffResponse[]>([])
+  const [departments, setDepartments] = useState<DepartmentResponse[]>([])
+  const service = useService()
 
   useEffect(() => {
+    service.store.set({ user: { username: 'mike', token: 'theid11' } })
     API.getMetadatum()
       .then((metadatums) => {
         setStaffs(metadatums.staffs)
@@ -50,7 +47,7 @@ function FixOfferingForm(props: PropsWithChildren<Props>) {
       })
       .catch(console.error)
     // edit
-    // if (offerID) {
+    // if (paramsId) {
     //   const offeringSelected: TransactionFixOfferingForm = transactionForm
     //     .getFieldValue('offerings')
     //     .filter((offer: TransactionFixOfferingForm) => offer.id === offerID)[0]
@@ -71,45 +68,42 @@ function FixOfferingForm(props: PropsWithChildren<Props>) {
     // }
   }, [])
 
-  const staffAPI: SelectProps['options'] = staffs.map((staff) => ({
+  const staffAPI = staffs.map((staff) => ({
     label: staff.fullName,
     value: staff.id,
+    staff,
   }))
 
-  const departmentAPI: SelectProps['options'] = departments.map(
-    (department) => ({
-      label: department.name,
-      value: department.id,
-    })
-  )
+  const departmentAPI = departments.map((department) => ({
+    label: department.name,
+    value: department.id,
+    department,
+  }))
 
   const onSubmit = (value: FixOfferingFormAntd) => {
-    const offering: TransactionFixOfferingForm = {
-      id: 1,
-      staffId: value.staffId,
-      departmentId: value.departmentId,
-      amount:  parseFloat(value.amount),
-      startMonth: value.months[0],
-      dueMonth: value.months[1],
-    }
-    console.log('offering', offering)
-
-    transactionForm.setFieldsValue({
-      fixOfferings: [
-        ...transactionForm.getFieldValue('fixOfferings'),
-        offering,
-      ],
-    })
-
-    console.log('getForm', transactionForm.getFieldValue('fixOfferings'))
-    onCancel()
-
+    // console.log('value', value)
+    // const offering: TransactionFixOfferingForm = {
+    //   id: null,
+    //   staff: value.staffId,
+    //   department: value.departmentId,
+    //   amount: parseFloat(value.amount),
+    //   startMonth: value.months[0],
+    //   dueMonth: value.months[1],
+    // }
+    // console.log('offering', offering)
+    // transactionForm.setFieldsValue({
+    //   fixOfferings: [
+    //     ...transactionForm.getFieldValue('fixOfferings'),
+    //     offering,
+    //   ],
+    // })
+    // console.log('submitOffering', transactionForm.getFieldValue('fixOfferings'))
+    // onCancel()
     // transactionForm.setFieldsValue({
     //   fixOfferings: [...transactionForm.getFieldValue('fixOfferings'), offering],
     // })
-
     // edit offerings
-    // if (offerID) {
+    // if (paramID) {
     //   const editOffer: Offering = {
     //     ID: offerID,
     //     staffName: findTransacID!.staffName,
@@ -153,8 +147,15 @@ function FixOfferingForm(props: PropsWithChildren<Props>) {
 
   return (
     <>
-      <h1 style={{ marginBottom: 10 }}>FIX</h1>
-      <Form onFinish={onSubmit} layout="vertical" form={offeringForm}>
+      <h1 style={{ marginBottom: 10 }}>FIX {service.store.data.user?.username}</h1>
+      <button
+        onClick={() => {
+          service.api.transaction.getOne
+        }}
+      >
+        click
+      </button>
+      <Form onFinish={onSubmit} layout="vertical" form={fixOfferingForm}>
         <Space direction="vertical" size={20} style={{ display: 'flex' }}>
           <Row gutter={15} style={{ rowGap: 20 }}>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
@@ -267,7 +268,7 @@ function FixOfferingForm(props: PropsWithChildren<Props>) {
                       type="primary"
                       htmlType="submit"
                     >
-                      {offerID
+                      {paramsId
                         ? t('transacButton.edit')
                         : t('transacButton.addData')}
                     </Button>

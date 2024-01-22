@@ -1,15 +1,18 @@
 import { Row, Col, Space, Button, Modal, FormInstance } from 'antd'
-import FixOfferingForm from './FixOffering'
 import ProjectOfferingForm from './ProjectOffering'
 import { PropsWithChildren, useState } from 'react'
-import '../Transaction.css'
-import { TransactionForm } from '../../../model/model'
+
 import FixOfferingList from './FixOfferingList'
+import { TransactionForm } from '../../model/transaction'
+import FixOfferingForm from './FixOffering'
 
 function OfferingButtonForm(
-  props: PropsWithChildren<{ form: FormInstance<TransactionForm> }>
+  props: PropsWithChildren<{
+    paramsId: string | undefined
+    transactionForm: FormInstance<TransactionForm>
+  }>
 ) {
-  const form = props.form
+  const { paramsId, transactionForm } = props
   const [offerType, setOfferType] = useState(0)
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -73,7 +76,7 @@ function OfferingButtonForm(
                   {offerType == 1 ? (
                     <ProjectOfferingForm
                       onCancel={() => setModalVisible(false)}
-                      transactionForm={form}
+                      transactionForm={transactionForm}
                     />
                   ) : offerType == 2 ? (
                     // <GiftOfferingForm onCancel={() => setModalVisible(false)} />
@@ -81,7 +84,8 @@ function OfferingButtonForm(
                   ) : (
                     <FixOfferingForm
                       onCancel={() => setModalVisible(false)}
-                      transactionForm={form}
+                      transactionForm={transactionForm}
+                      paramsId={paramsId}
                     />
                   )}
                 </Modal>
@@ -89,7 +93,19 @@ function OfferingButtonForm(
             </Row>
           </Col>
         </Row>
-        {/* <FixOfferingList transactionForm={form} /> */}
+        <Row justify={'center'} style={{ textAlign: 'center' }}>
+          <Col span={8}>
+            <FixOfferingList transactionForm={transactionForm} />
+          </Col>
+          <Col span={8}>
+            {/* <h4>Gift</h4> */}
+            {/* <GiftOfferingList transactionForm={transactionForm} /> */}
+          </Col>
+          <Col span={8}>
+            {/* <h4>Project</h4> */}
+            {/* <ProjectOfferingList transactionForm={transactionForm} /> */}
+          </Col>
+        </Row>
       </Space>
     </>
   )

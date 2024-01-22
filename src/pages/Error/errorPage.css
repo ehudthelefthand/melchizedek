@@ -1,4 +1,4 @@
-export default ErrorPage .error {
+.error {
   display: grid;
   min-height: 100vh;
   place-items: center;

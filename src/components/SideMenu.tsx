@@ -5,12 +5,10 @@ import {
   UserAddOutlined,
 } from '@ant-design/icons'
 import { Link, useLocation } from 'react-router-dom'
-import { useUser } from '../AuthContext'
 import { useTranslation } from 'react-i18next'
 import { useEffect } from 'react'
 
 const SideMenu: React.FC = () => {
-  const { user } = useUser()
   const location = useLocation()
   const selectedKey = location.pathname || '/'
   const [t] = useTranslation('translation')
@@ -23,7 +21,7 @@ const SideMenu: React.FC = () => {
   const items = [
     {
       key: '#',
-      label: user ? `${userFullName}` : '',
+      label: 'username',
       icon: <UserAddOutlined />,
     },
     {

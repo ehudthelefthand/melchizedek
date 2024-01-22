@@ -1,12 +1,11 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 
-import { Root } from '../App'
+import { DashboardLayout } from '../App'
 
 import LoginPage from '../pages/login/LoginPage'
-import ErrorPage from '../pages/Error/ErrorPage'
-
-import TransactionFormPage from '../pages/Transaction/transactionFormPage'
-import TransactionPage from '../pages/Transaction/TransactionPage'
+import ErrorPage from '../pages/error/ErrorPage'
+import TransactionPage from '../pages/transaction/list/TransactionPage'
+import TransactionFormPage from '../pages/transaction/form/transactionFormPage'
 
 const AppRoutes: React.FC = () => {
   const router = createBrowserRouter([
@@ -17,7 +16,7 @@ const AppRoutes: React.FC = () => {
     },
     {
       path: '/transaction',
-      element: <Root />,
+      element: <DashboardLayout />,
       errorElement: <ErrorPage />,
       children: [
         {
@@ -26,13 +25,13 @@ const AppRoutes: React.FC = () => {
           errorElement: <ErrorPage />,
         },
         {
-          path: 'form',
+          path: 'create',
           element: <TransactionFormPage />,
           errorElement: <ErrorPage />,
         },
         {
           path: 'edit/:id',
-          element: <TransactionFormPage/>,
+          element: <TransactionFormPage />,
           errorElement: <ErrorPage />,
         },
       ],

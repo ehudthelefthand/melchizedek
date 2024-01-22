@@ -15,9 +15,10 @@ import { PropsWithChildren, useEffect, useState } from 'react'
 import { FormInstance, useForm } from 'antd/es/form/Form'
 import { useTranslation } from 'react-i18next'
 import TextArea from 'antd/es/input/TextArea'
-import { ProjectName } from '../../../api/models'
-import { ProjectOffering, TransactionForm } from '../../../model/model'
-import API from '../../../api'
+import { TransactionForm } from '../../model/transaction'
+import API from '../../../../api'
+import { Project } from '../../../../api/metadatums'
+import { TransactionProjectOfferingResponse } from '../../../../api/response/projectOffering'
 
 interface Props {
   onCancel: () => void
@@ -30,19 +31,19 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
   // const transactionForm = useTransactionForm()
   const [t] = useTranslation('translation')
   const [form] = useForm()
-  const [projectsName, setProjectsName] = useState<ProjectName[]>([])
+  const [projectsName, setProjectsName] = useState<Project[]>([])
 
   // const findTransacID = transactionForm.data.offerings.find(
   //   (value) => value.ID === offerID
   // )
 
-  useEffect(() => {
-    API.getMetadatum()
-      .then((metadatums) => {
-        console.log('meta useEff', metadatums.data.ProjectName)
-        setProjectsName(metadatums.data.ProjectName)
-      })
-      .catch(console.error)
+  // useEffect(() => {
+  //   API.getMetadatum()
+  //     .then((metadatums) => {
+  //       console.log('meta useEff', metadatums.Project)
+  //       setProjectsName(metadatums.Project)
+  //     })
+  //     .catch(console.error)
     // if (offerID) {
     //   form.setFieldsValue({
     //     staffName: findTransacID!.staffName,
@@ -53,11 +54,11 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
     //     descriptions: findTransacID!.descriptions,
     //   })
     // }
-  }, [])
+  // }, [])
 
-  const onSubmit = (value: ProjectOffering) => {
-    console.log('project >> ', value)
-    if (offerID) {
+  const onSubmit = (value: TransactionProjectOfferingResponse) => {
+    // console.log('project >> ', value)
+    // if (offerID) {
       //   const editOffer: Offering = {
       //     ID: offerID,
       //     staffName: findTransacID!.staffName,
@@ -79,8 +80,8 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
       //     offerings: updateOffering,
       // })
 
-      onCancel()
-    } else {
+    //   onCancel()
+    // } else {
       // const offer: Offering = {
       //   ID: transactionForm.data.offerings.length + 1,
       //   staffName: transactionForm.data.staffName,
@@ -96,8 +97,8 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
       //   ...transactionForm.data,
       //   offerings: [...transactionForm.data.offerings, offer],
       // })
-      onCancel()
-    }
+  //     onCancel()
+  //   }
   }
 
   const projectName: SelectProps['options'] = projectsName.map((project) => ({
