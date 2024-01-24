@@ -15,10 +15,9 @@ import { PropsWithChildren, useEffect, useState } from 'react'
 import { FormInstance, useForm } from 'antd/es/form/Form'
 import { useTranslation } from 'react-i18next'
 import TextArea from 'antd/es/input/TextArea'
-import { TransactionForm } from '../../model/transaction'
-import API from '../../../../api'
-import { Project } from '../../../../api/metadatums'
-import { TransactionProjectOfferingResponse } from '../../../../api/response/projectOffering'
+import { TransactionProjectOfferingResponse } from '../../../../api/transaction/response/projectOffering'
+import { TransactionForm } from '../model/transaction'
+import { useService } from '../../../../service/service'
 
 interface Props {
   onCancel: () => void
@@ -31,7 +30,7 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
   // const transactionForm = useTransactionForm()
   const [t] = useTranslation('translation')
   const [form] = useForm()
-  const [projectsName, setProjectsName] = useState<Project[]>([])
+  const service = useService()
 
   // const findTransacID = transactionForm.data.offerings.find(
   //   (value) => value.ID === offerID
@@ -44,67 +43,66 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
   //       setProjectsName(metadatums.Project)
   //     })
   //     .catch(console.error)
-    // if (offerID) {
-    //   form.setFieldsValue({
-    //     staffName: findTransacID!.staffName,
-    //     department: findTransacID!.department,
-    //     amount: findTransacID!.amount,
-    //     projectName: findTransacID!.projectName,
-    //     date: formatDate.formatDate(findTransacID!.startDate),
-    //     descriptions: findTransacID!.descriptions,
-    //   })
-    // }
+  // if (offerID) {
+  //   form.setFieldsValue({
+  //     staffName: findTransacID!.staffName,
+  //     department: findTransacID!.department,
+  //     amount: findTransacID!.amount,
+  //     projectName: findTransacID!.projectName,
+  //     date: formatDate.formatDate(findTransacID!.startDate),
+  //     descriptions: findTransacID!.descriptions,
+  //   })
+  // }
   // }, [])
 
   const onSubmit = (value: TransactionProjectOfferingResponse) => {
     // console.log('project >> ', value)
     // if (offerID) {
-      //   const editOffer: Offering = {
-      //     ID: offerID,
-      //     staffName: findTransacID!.staffName,
-      //     department: findTransacID!.department,
-      //     kind: 'Project',
-      //     amount: parseFloat(value.amount),
-      //     projectName: value.projectName,
-      //     startDate: formatDate.formatDateTime(value.startDate),
-      //     dueDate: '',
-      //     descriptions: value.descriptions,
-      //   }
-
-      //   const updateOffering = transactionForm.data.offerings.map((offerr) =>
-      //     offerr.ID === offerID ? editOffer : offerr
-      //   )
-
-      //   transactionForm.setData({
-      //     ...transactionForm.data,
-      //     offerings: updateOffering,
-      // })
-
+    //   const editOffer: Offering = {
+    //     ID: offerID,
+    //     staffName: findTransacID!.staffName,
+    //     department: findTransacID!.department,
+    //     kind: 'Project',
+    //     amount: parseFloat(value.amount),
+    //     projectName: value.projectName,
+    //     startDate: formatDate.formatDateTime(value.startDate),
+    //     dueDate: '',
+    //     descriptions: value.descriptions,
+    //   }
+    //   const updateOffering = transactionForm.data.offerings.map((offerr) =>
+    //     offerr.ID === offerID ? editOffer : offerr
+    //   )
+    //   transactionForm.setData({
+    //     ...transactionForm.data,
+    //     offerings: updateOffering,
+    // })
     //   onCancel()
     // } else {
-      // const offer: Offering = {
-      //   ID: transactionForm.data.offerings.length + 1,
-      //   staffName: transactionForm.data.staffName,
-      //   department: transactionForm.data.department,
-      //   kind: 'Project',
-      //   amount: parseFloat(value.amount),
-      //   projectName: value.projectName,
-      //   descriptions: value.descriptions,
-      //   startDate: formatDate.formatDateTime(value.startDate),
-      //   dueDate: '',
-      // }
-      // transactionForm.setData({
-      //   ...transactionForm.data,
-      //   offerings: [...transactionForm.data.offerings, offer],
-      // })
-  //     onCancel()
-  //   }
+    // const offer: Offering = {
+    //   ID: transactionForm.data.offerings.length + 1,
+    //   staffName: transactionForm.data.staffName,
+    //   department: transactionForm.data.department,
+    //   kind: 'Project',
+    //   amount: parseFloat(value.amount),
+    //   projectName: value.projectName,
+    //   descriptions: value.descriptions,
+    //   startDate: formatDate.formatDateTime(value.startDate),
+    //   dueDate: '',
+    // }
+    // transactionForm.setData({
+    //   ...transactionForm.data,
+    //   offerings: [...transactionForm.data.offerings, offer],
+    // })
+    //     onCancel()
+    //   }
   }
 
-  const projectName: SelectProps['options'] = projectsName.map((project) => ({
-    label: project.name,
-    value: project.name,
-  }))
+  const projectName: SelectProps['options'] = service.metadatums
+    .getAllProjects()
+    .map((project) => ({
+      label: project.name,
+      value: project.name,
+    }))
 
   return (
     <>

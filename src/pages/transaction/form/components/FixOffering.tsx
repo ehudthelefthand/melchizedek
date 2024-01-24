@@ -11,16 +11,11 @@ import {
 import { FormInstance } from 'antd/es/form/Form'
 import { useTranslation } from 'react-i18next'
 
-import { PropsWithChildren, useContext, useEffect, useState } from 'react'
+import { PropsWithChildren, useEffect, useState } from 'react'
 
-import API from '../../../../api'
-import { TransactionForm } from '../../model/transaction'
-import {
-  FixOfferingFormAntd,
-  TransactionFixOfferingForm,
-} from '../../model/fixOffering'
-import { DepartmentResponse, StaffResponse } from '../../../../api/metadatums'
 import { useService } from '../../../../service/service'
+import { TransactionForm } from '../model/transaction'
+import { FixOfferingFormAntd } from '../model/fixOffering'
 
 const { RangePicker } = DatePicker
 
@@ -34,18 +29,10 @@ function FixOfferingForm(
   const { paramsId, onCancel, transactionForm } = props
   const [fixOfferingForm] = Form.useForm<FixOfferingFormAntd>()
   const [t] = useTranslation('translation')
-  const [staffs, setStaffs] = useState<StaffResponse[]>([])
-  const [departments, setDepartments] = useState<DepartmentResponse[]>([])
+
   const service = useService()
 
   useEffect(() => {
-    service.store.set({ user: { username: 'mike', token: 'theid11' } })
-    API.getMetadatum()
-      .then((metadatums) => {
-        setStaffs(metadatums.staffs)
-        setDepartments(metadatums.departments)
-      })
-      .catch(console.error)
     // edit
     // if (paramsId) {
     //   const offeringSelected: TransactionFixOfferingForm = transactionForm
@@ -68,17 +55,19 @@ function FixOfferingForm(
     // }
   }, [])
 
-  const staffAPI = staffs.map((staff) => ({
+  const staffAPI = service.metadatums.getAllStaffs().map((staff) => ({
     label: staff.fullName,
     value: staff.id,
     staff,
   }))
 
-  const departmentAPI = departments.map((department) => ({
-    label: department.name,
-    value: department.id,
-    department,
-  }))
+  const departmentAPI = service.metadatums
+    .getAllDepartments()
+    .map((department) => ({
+      label: department.name,
+      value: department.id,
+      department,
+    }))
 
   const onSubmit = (value: FixOfferingFormAntd) => {
     // console.log('value', value)
@@ -147,14 +136,10 @@ function FixOfferingForm(
 
   return (
     <>
-      <h1 style={{ marginBottom: 10 }}>FIX {service.store.data.user?.username}</h1>
-      <button
-        onClick={() => {
-          service.api.transaction.getOne
-        }}
-      >
-        click
-      </button>
+      <h1 style={{ marginBottom: 10 }}>
+        FIX {service.reactStore.store.user?.username}
+      </h1>
+
       <Form onFinish={onSubmit} layout="vertical" form={fixOfferingForm}>
         <Space direction="vertical" size={20} style={{ display: 'flex' }}>
           <Row gutter={15} style={{ rowGap: 20 }}>

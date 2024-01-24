@@ -1,15 +1,18 @@
-import { Modal, Space, Table, message } from 'antd'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Modal, Skeleton, Space, Spin, Table, message } from 'antd'
+import {
+  EditOutlined,
+  DeleteOutlined,
+  LoadingOutlined,
+} from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Key, PropsWithChildren, useState } from 'react'
+import { Key, PropsWithChildren, useEffect, useState } from 'react'
 import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
 import type { FilterValue } from 'antd/es/table/interface'
 import dayjs from 'dayjs'
-import API from '../../../../api'
-import { TransactionForm, TransactionLists } from '../../model/transaction'
-import { PageTransactionResponse } from '../../../../api/response/transaction'
-import { Bank, Department, Donor, Staff } from '../../../../api/metadatums'
+import { PageTransactionResponse } from '../../../../api/transaction/response/transaction'
+import { TransactionList } from '../model/transaction'
+import { useService } from '../../../../service/service'
 
 interface TableParams {
   pagination?: TablePaginationConfig
@@ -20,31 +23,20 @@ interface TableParams {
 
 function TableView(
   props: PropsWithChildren<{
-    transactions: TransactionLists[]
-    setTransactions: React.Dispatch<React.SetStateAction<TransactionLists[]>>
+    transactions: TransactionList[]
     pagesTransaction: PageTransactionResponse | undefined
-    banks: Bank[]
-    departments: Department[]
-    staffs: Staff[]
-    donors: Donor[]
   }>
 ) {
   const [t] = useTranslation('translation')
   const navigate = useNavigate()
+  const service = useService()
 
-  const { transactions, pagesTransaction, banks, departments, staffs } = props
-  const toBank = banks.filter((bank) => bank.id <= 4)
+  const { transactions, pagesTransaction } = props
+  const [isLoading, setIsLoading] = useState(true)
 
-  const transactionFormated: TransactionLists[] = transactions.map(
-    (transac: TransactionLists) => {
-      const result: TransactionLists = {
-        ...transac,
-        transferDate: dayjs(transac.transferDate).format('DD/MM/YYYY HH:mm:ss'),
-        createAt: dayjs(transac.createAt).format('DD/MM/YYYY HH:mm:ss'),
-      }
-      return result
-    }
-  )
+  useEffect(() => {
+    setIsLoading(false)
+  }, [])
 
   const [tableParams, _] = useState<TableParams>({
     pagination: {
@@ -53,17 +45,18 @@ function TableView(
     },
   })
 
-  const onEdit = (transaction: TransactionForm) => {
+  const onEdit = (transaction: TransactionList) => {
     navigate(`/transaction/edit/${transaction.id}`)
   }
 
-  const onDelete = (transaction: TransactionForm) => {
+  const onDelete = (transaction: TransactionList) => {
     Modal.confirm({
       title: `${t('transacMessage.confirmDelete')}`,
       centered: true,
       width: 400,
       onOk() {
-        API.deleteTransactionByID(transaction.id!)
+        service.api.transaction
+          .delete(transaction.id)
           .then(() => {
             message.success(`${t('transacMessage.deleteSuccess')}`)
             window.location.reload()
@@ -75,7 +68,7 @@ function TableView(
     })
   }
 
-  const columns: ColumnsType<TransactionLists> = [
+  const columns: ColumnsType<TransactionList> = [
     {
       title: '#',
       width: 60,
@@ -92,6 +85,7 @@ function TableView(
       dataIndex: 'createAt',
       key: 'createAt',
       align: 'left',
+      render: (value: dayjs.Dayjs) => value.format('DD/MM/YYYY HH:mm:ss'),
     },
     {
       title: t('transacList.donorName'),
@@ -115,26 +109,31 @@ function TableView(
       key: 'transferDate',
       width: 140,
       align: 'left',
+      render: (value: dayjs.Dayjs) => value.format('DD/MM/YYYY HH:mm:ss'),
     },
     {
       title: t('transacList.fromBank'),
-      dataIndex: 'fromBank',
-      key: 'fromBank',
+      dataIndex: 'fromBankCode',
+      key: 'fromBankCode',
       width: 150,
       align: 'left',
-      filters: banks.map((bank) => ({ text: bank.code, value: bank.code })),
-      onFilter: (fromBank: boolean | Key, record: TransactionLists) =>
-        record.fromBank === fromBank,
+      filters: service.metadatums
+        .getAllBanks()
+        .map((bank) => ({ text: bank.code, value: bank.code })),
+      onFilter: (fromBankCode: boolean | Key, record: TransactionList) =>
+        record.fromBankCode === fromBankCode,
     },
     {
       title: t('transacList.toBank'),
-      dataIndex: 'toBank',
-      key: 'toBank',
+      dataIndex: 'toBankCode',
+      key: 'toBankCode',
       width: 150,
       align: 'left',
-      filters: toBank.map((bank) => ({ text: bank.code, value: bank.code })),
-      onFilter: (toBank: boolean | Key, record: TransactionLists) =>
-        record.toBank === toBank,
+      filters: service.metadatums
+        .getMZKBanks()
+        .map((bank) => ({ text: bank.code, value: bank.code })),
+      onFilter: (toBankCode: boolean | Key, record: TransactionList) =>
+        record.toBankCode === toBankCode,
     },
     {
       title: t('transacList.staffName'),
@@ -142,25 +141,25 @@ function TableView(
       dataIndex: 'staffName',
       key: 'staffName',
       align: 'left',
-      filters: staffs.map((staff) => ({
+      filters: service.metadatums.getAllStaffs().map((staff) => ({
         text: staff.fullName,
         value: staff.fullName,
       })),
-      onFilter: (staffName: boolean | Key, record: TransactionLists) =>
+      onFilter: (staffName: boolean | Key, record: TransactionList) =>
         record.staffName === staffName,
     },
     {
       title: t('transacList.department'),
-      dataIndex: 'department',
-      key: 'department',
+      dataIndex: 'departmentName',
+      key: 'departmentName',
       width: 80,
       align: 'center',
-      filters: departments.map((department) => ({
+      filters: service.metadatums.getAllDepartments().map((department) => ({
         text: department.name,
         value: department.name,
       })),
-      onFilter: (department: boolean | Key, record: TransactionLists) =>
-        record.department === department,
+      onFilter: (departmentName: boolean | Key, record: TransactionList) =>
+        record.departmentName === departmentName,
     },
     {
       title: t('transacList.slip'),
@@ -189,7 +188,7 @@ function TableView(
       fixed: 'right',
       width: 100,
       align: 'center',
-      render: (transaction: TransactionForm) => (
+      render: (transaction: TransactionList) => (
         <Space size={'large'} key={transaction.id}>
           <EditOutlined
             onClick={() => onEdit(transaction)}
@@ -206,14 +205,20 @@ function TableView(
 
   return (
     <>
-      <Table
-        columns={columns}
-        rowKey={(record) => record.id}
-        dataSource={transactionFormated}
-        scroll={{ x: 0 }}
-        sticky={{ offsetHeader: 0 }}
-        pagination={tableParams.pagination}
-      />
+      {isLoading ? (
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
+          <Skeleton active />
+        </Spin>
+      ) : (
+        <Table
+          columns={columns}
+          rowKey={(record) => record.id}
+          dataSource={transactions}
+          scroll={{ x: 0 }}
+          sticky={{ offsetHeader: 0 }}
+          pagination={tableParams.pagination}
+        />
+      )}
     </>
   )
 }

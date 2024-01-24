@@ -21,8 +21,8 @@ import {
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
-import { TransactionForm } from '../../model/transaction'
-import { TransactionFixOfferingForm } from '../../model/fixOffering'
+import { TransactionForm } from '../model/transaction'
+import { TransactionFixOfferingForm } from '../model/fixOffering'
 
 interface Props {
   transactionForm: FormInstance<TransactionForm>

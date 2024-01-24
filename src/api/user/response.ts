@@ -1,4 +1,4 @@
-export interface LoginResponse {
+export interface UserLoginResponse {
   token: string
   fullname: string
   department: string

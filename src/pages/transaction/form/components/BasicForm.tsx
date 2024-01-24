@@ -10,55 +10,44 @@ import {
   Space,
 } from 'antd'
 import { t } from 'i18next'
-import { useEffect, useState } from 'react'
-
-import API from '../../../../api'
-import { Bank, Department, Donor, Staff } from '../../../../api/metadatums'
+import { useService } from '../../../../service/service'
 
 function BasicForm() {
-  const [banks, setBanks] = useState<Bank[]>([])
-  const [departments, setDepartments] = useState<Department[]>([])
-  const [staffs, setStaffs] = useState<Staff[]>([])
-  const [donors, setDonors] = useState<Donor[]>([])
+  const service = useService()
 
-  useEffect(() => {
-    API.getMetadatum()
-      .then((metadatums) => {
-        setBanks(metadatums.banks)
-        setDepartments(metadatums.departments)
-        setStaffs(metadatums.staffs)
-        setDonors(metadatums.donors)
-      })
-      .catch((error) => console.error('metadatums', error))
-  }, [])
+  const staffAPI: SelectProps['options'] = service.metadatums
+    .getAllStaffs()
+    .map((staff) => ({
+      label: staff.fullName,
+      value: staff.id,
+    }))
 
-  const staffAPI: SelectProps['options'] = staffs.map((staff) => ({
-    label: staff.fullName,
-    value: staff.id,
-  }))
-
-  const departmentAPI: SelectProps['options'] = departments.map(
-    (department) => ({
+  const departmentAPI: SelectProps['options'] = service.metadatums
+    .getAllDepartments()
+    .map((department) => ({
       label: department.name,
       value: department.id,
-    })
-  )
+    }))
 
-  const filterBanksAPI = banks.filter((n) => n.id <= 4)
+  const filterBanksAPI = service.metadatums.getMZKBanks()
   const toBankAPI: SelectProps['options'] = filterBanksAPI.map((bank) => ({
     label: bank.code,
     value: bank.id,
   }))
 
-  const fromBankAPI: SelectProps['options'] = banks.map((bank) => ({
-    label: bank.code,
-    value: bank.id,
-  }))
+  const fromBankAPI: SelectProps['options'] = service.metadatums
+    .getAllBanks()
+    .map((bank) => ({
+      label: bank.code,
+      value: bank.id,
+    }))
 
-  const donorAPI: SelectProps['options'] = donors.map((donor) => ({
-    label: donor.fullName,
-    value: donor.id,
-  }))
+  const donorAPI: SelectProps['options'] = service.metadatums
+    .getAllDonors()
+    .map((donor) => ({
+      label: donor.fullName,
+      value: donor.id,
+    }))
 
   return (
     <>

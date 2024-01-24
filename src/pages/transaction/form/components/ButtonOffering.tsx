@@ -3,8 +3,8 @@ import ProjectOfferingForm from './ProjectOffering'
 import { PropsWithChildren, useState } from 'react'
 
 import FixOfferingList from './FixOfferingList'
-import { TransactionForm } from '../../model/transaction'
 import FixOfferingForm from './FixOffering'
+import { TransactionForm } from '../model/transaction'
 
 function OfferingButtonForm(
   props: PropsWithChildren<{

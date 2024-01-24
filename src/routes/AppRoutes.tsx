@@ -4,8 +4,8 @@ import { DashboardLayout } from '../App'
 
 import LoginPage from '../pages/login/LoginPage'
 import ErrorPage from '../pages/error/ErrorPage'
-import TransactionPage from '../pages/transaction/list/TransactionPage'
-import TransactionFormPage from '../pages/transaction/form/transactionFormPage'
+import TransactionFormPage from '../pages/transaction/form/TransactionFormPage'
+import TransactionListPage from '../pages/transaction/list/TransactionListPage'
 
 const AppRoutes: React.FC = () => {
   const router = createBrowserRouter([
@@ -21,7 +21,7 @@ const AppRoutes: React.FC = () => {
       children: [
         {
           path: '',
-          element: <TransactionPage />,
+          element: <TransactionListPage />,
           errorElement: <ErrorPage />,
         },
         {

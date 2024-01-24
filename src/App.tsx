@@ -12,8 +12,10 @@ import { ServiceContext, useCreateService } from './service/service'
 const { Sider } = Layout
 
 export const App: React.FC = () => {
-  const abc = useCreateService()
-
+  const service = useCreateService()
+  // if (service.isLoading) {
+  //   return <div>กำลังโหลด...</div>
+  // }
   return (
     <ConfigProvider
       theme={{
@@ -33,7 +35,7 @@ export const App: React.FC = () => {
         },
       }}
     >
-      <ServiceContext.Provider value={abc}>
+      <ServiceContext.Provider value={service}>
         <AppRoutes />
       </ServiceContext.Provider>
     </ConfigProvider>

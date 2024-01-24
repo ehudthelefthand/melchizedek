@@ -1,30 +1,32 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Button, Col, Form, Input, Row, Space, message } from 'antd'
 import { UserOutlined, KeyOutlined } from '@ant-design/icons'
 import './loginPage.css'
-import API from '../../api'
 import { useNavigate } from 'react-router-dom'
-import { LoginRequest } from '../../api/request/user'
+import { useService } from '../../service/service'
+import { UserLoginRequest } from '../../api/user/request'
 
 const LoginPage: React.FC = () => {
+  const service = useService()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('fullName')
-  }, [])
-
-  const onSubmit = async (value: LoginRequest) => {
-    await API.userLogIn(value)
-      .then((tokenUser) => {
-        console.log('tokenUser :', tokenUser)
-        localStorage.setItem('token', tokenUser.token)
-        navigate('/transaction/')
-        console.log('Login pass')
+  const onSubmit = async (value: UserLoginRequest) => {
+    const userLoginResponse = await service.api.user.login(value)
+    if (userLoginResponse.token) {
+      console.log('login')
+      service.reactStore.update((store) => {
+        store.user = {
+          username: userLoginResponse.fullname,
+          token: userLoginResponse.token,
+        }
       })
-      .catch(() => {
-        message.error('Invalid Username or Password. Please try again.')
-      })
+      await service.metadatums.loadMetadatums()
+      navigate('/transaction')
+      navigate(0)
+    } else {
+      message.error('Invalid Username or Password. Please try again.')
+      navigate('/')
+    }
   }
 
   return (
