@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import { Store, store } from '../store'
 
 export function useCreateReactStoreService() {
-  const [_reactStore, setReactStore] = useState<Store>(store)
+  const [reactStore, setReactStore] = useState<Store>(store)
 
   const refresh = () => {
-    setReactStore({ ...store })
+      setReactStore({ ...store })
   }
 
   const update = (process: (store: Store) => void) => {
@@ -19,7 +19,7 @@ export function useCreateReactStoreService() {
     } else {
       localStorage.removeItem('token')
     }
-  }, [store])
+  }, [reactStore])
 
   return {
     store,

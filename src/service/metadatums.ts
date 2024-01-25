@@ -10,23 +10,23 @@ import {
 import { api } from '../api/api'
 import { store } from '../store'
 
+let metadatums: MetadatumsResponse = { 
+  staffs: [],
+  departments: [],
+  banks: [],
+  donors: [],
+  projects: [],
+}
 export function useCreateMetadatumsService() {
   const [isLoading, setIsLoading] = useState(true)
-  const [metadatums, setMetadatums] = useState<MetadatumsResponse>({
-    staffs: [],
-    departments: [],
-    banks: [],
-    donors: [],
-    projects: [],
-  })
 
-  // อย่ายุ่งเป็นของ flow login
+  // general reload page
   useEffect(() => {
     if (store.user) {
       api.metadatum
         .get()
         .then((value) => {
-          setMetadatums(value)
+          metadatums = value
           setIsLoading(false)
         })
         .catch((err) => console.error(err))
@@ -35,15 +35,13 @@ export function useCreateMetadatumsService() {
     }
   }, [])
 
-  const loadMetadatums = async () => {
+  // when click login button
+  const loadMetadatums = () => {
     return api.metadatum
       .get()
       .then((value) => {
-        setTimeout(() => {
-          setMetadatums(value)
-        }, 0)
+        metadatums = value
       })
-      .catch((err) => console.error(err))
   }
 
   const getAllStaffs = (): StaffResponse[] => metadatums.staffs
@@ -105,7 +103,6 @@ export function useCreateMetadatumsService() {
   }
 
   return {
-    set: setMetadatums,
     getAllStaffs,
     getStaff,
     getAllDonors,
@@ -117,7 +114,7 @@ export function useCreateMetadatumsService() {
     getMZKBanks,
     getAllProjects,
     getProject,
-    isLoading,
     loadMetadatums,
+    isLoading,
   }
 }

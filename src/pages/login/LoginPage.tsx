@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Col, Form, Input, Row, Space, message } from 'antd'
 import { UserOutlined, KeyOutlined } from '@ant-design/icons'
 import './loginPage.css'
@@ -13,7 +13,6 @@ const LoginPage: React.FC = () => {
   const onSubmit = async (value: UserLoginRequest) => {
     const userLoginResponse = await service.api.user.login(value)
     if (userLoginResponse.token) {
-      console.log('login')
       service.reactStore.update((store) => {
         store.user = {
           username: userLoginResponse.fullname,
@@ -22,7 +21,6 @@ const LoginPage: React.FC = () => {
       })
       await service.metadatums.loadMetadatums()
       navigate('/transaction')
-      navigate(0)
     } else {
       message.error('Invalid Username or Password. Please try again.')
       navigate('/')
