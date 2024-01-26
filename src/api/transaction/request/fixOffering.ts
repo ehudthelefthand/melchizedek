@@ -5,9 +5,10 @@ export interface TransactionFixOfferingUpdateRequest {
   amount: number
   startMonth: number
   dueMonth: number
+  transactionId: number
 }
 
 export type TransactionFixOfferingCreateRequest = Omit<
 TransactionFixOfferingUpdateRequest,
-  'id'
+  'id' | 'transactionId'
 >

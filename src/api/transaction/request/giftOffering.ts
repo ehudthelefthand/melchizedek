@@ -4,9 +4,10 @@ export interface TransactionGiftOfferingUpdateRequest {
   departmentId: number
   amount: number
   transferDate: number
+  transactionId: number
 }
 
 export type TransactionGiftOfferingCreateRequest = Omit<
-TransactionGiftOfferingUpdateRequest,
-  'id'
+  TransactionGiftOfferingUpdateRequest,
+  'id' | 'transactionId'
 >

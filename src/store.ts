@@ -9,11 +9,12 @@ export const store: Store = {
   user: null,
 }
 
+const username = localStorage.getItem('userName')
 const token = localStorage.getItem('token')
-if (token) {
+
+if (token && username) {
   store.user = {
-    username: '',
+    username: username,
     token: token,
   }
 }
-

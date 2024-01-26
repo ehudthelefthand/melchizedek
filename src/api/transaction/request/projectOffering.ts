@@ -4,12 +4,12 @@ export interface TransactionProjectOfferingUpdateRequest {
   departmentId: number
   projectId: number
   amount: number
-  startDate: number
-  dueDate: number
+  date: number
   descriptions: string
+  transactionId: number
 }
 
 export type TransactionProjectOfferingCreateRequest = Omit<
   TransactionProjectOfferingUpdateRequest,
-  'id'
+  'id' | 'transactionId'
 >

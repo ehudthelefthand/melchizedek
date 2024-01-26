@@ -14,7 +14,6 @@ import {
   UserOutlined,
   DollarOutlined,
   PartitionOutlined,
-  FieldTimeOutlined,
   CarryOutOutlined,
   DeleteOutlined,
   EditTwoTone,
@@ -22,8 +21,8 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { TransactionForm } from '../model/transaction'
-import { TransactionFixOfferingForm } from '../model/fixOffering'
 import { useService } from '../../../../service/service'
+import { TransactionGiftOfferingForm } from '../model/giftOffering'
 
 interface Props {
   transactionForm: FormInstance<TransactionForm>
@@ -32,14 +31,14 @@ interface Props {
   setOfferingType: React.Dispatch<React.SetStateAction<any>>
 }
 
-function FixOfferingList(props: Props) {
+function GiftOfferingList(props: Props) {
   const { transactionForm, setModalVisible, setEditId, setOfferingType } = props
   const [t] = useTranslation('translation')
   const { Text } = Typography
   const [_deleteOffer, setDeleteOffer] = useState(false)
   const service = useService()
-  const fixOfferings: TransactionFixOfferingForm[] =
-    transactionForm.getFieldValue('fixOfferings')
+  const giftOfferings: TransactionGiftOfferingForm[] =
+    transactionForm.getFieldValue('giftOfferings')
 
   const handleDelete = (id: number) => {
     Modal.confirm({
@@ -49,27 +48,29 @@ function FixOfferingList(props: Props) {
       okText: 'Yes',
       cancelText: 'No',
       onOk: () => {
-        const newOfferings = fixOfferings.filter(
-          (fix: TransactionFixOfferingForm) => fix.id !== id
+        const newOfferings = giftOfferings.filter(
+          (gift: TransactionGiftOfferingForm) => gift.id !== id
         )
-        transactionForm.setFieldValue('fixOfferings', newOfferings)
+        transactionForm.setFieldValue('giftOfferings', newOfferings)
         setDeleteOffer(true)
         message.success('Item deleted successfully')
         setEditId(null)
+        setOfferingType(null)
       },
       onCancel: () => {
         setDeleteOffer(true)
         setEditId(null)
+        setOfferingType(null)
       },
     })
-
+    setOfferingType(null)
     setDeleteOffer(false)
   }
 
-  const renderItem = (fix: TransactionFixOfferingForm, index: number) => (
+  const renderItem = (gift: TransactionGiftOfferingForm, index: number) => (
     <List.Item>
       <Card
-        title={'Fix'}
+        title={'Gift'}
         extra={
           <>
             <Button
@@ -77,8 +78,8 @@ function FixOfferingList(props: Props) {
               danger
               type="text"
               onClick={() => {
-                handleDelete(fix.id! || index)
-                setEditId(fix.id!)
+                handleDelete(gift.id! || index)
+                setEditId(gift.id!)
               }}
             >
               <DeleteOutlined />
@@ -88,8 +89,8 @@ function FixOfferingList(props: Props) {
               size="small"
               onClick={() => {
                 setModalVisible(true)
-                setEditId(fix.id! || index)
-                setOfferingType('fix')
+                setEditId(gift.id! || index)
+                setOfferingType('gift')
               }}
             >
               <EditTwoTone />
@@ -102,7 +103,7 @@ function FixOfferingList(props: Props) {
             <Space>
               <PartitionOutlined />
               <Text>
-                {service.metadatums.getDepartment(fix.departmentId).name}
+                {service.metadatums.getDepartment(gift.departmentId).name}
               </Text>
             </Space>
           </Col>
@@ -110,25 +111,19 @@ function FixOfferingList(props: Props) {
             <Space>
               {' '}
               <UserOutlined />
-              {service.metadatums.getStaff(fix.staffId).fullName}
+              {service.metadatums.getStaff(gift.staffId).fullName}
             </Space>
           </Col>
           <Col span={12}>
             <Space>
               <DollarOutlined />
-              <Text>{fix.amount}</Text>
+              <Text>{gift.amount}</Text>
             </Space>
           </Col>
-          <Col span={12}>
+          <Col span={24}>
             <Space>
               <CarryOutOutlined />
-              <Text>{fix.startMonth.format('MM/YYYY')}</Text>
-            </Space>
-          </Col>
-          <Col span={12}>
-            <Space>
-              <FieldTimeOutlined />
-              <Text>{fix.dueMonth.format('MM/YYYY')}</Text>
+              <Text>{gift.transferDate.format('DD/MM/YYYY')}</Text>
             </Space>
           </Col>
         </Row>
@@ -143,7 +138,7 @@ function FixOfferingList(props: Props) {
           itemLayout="horizontal"
           // bordered
           size="large"
-          dataSource={fixOfferings}
+          dataSource={giftOfferings}
           renderItem={renderItem}
         />
       </Col>
@@ -151,4 +146,4 @@ function FixOfferingList(props: Props) {
   )
 }
 
-export default FixOfferingList
+export default GiftOfferingList

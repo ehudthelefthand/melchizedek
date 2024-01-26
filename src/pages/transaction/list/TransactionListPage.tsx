@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive'
@@ -64,6 +64,7 @@ function TransactionListPage() {
                   startMonth: dayjs(fixOffering.startMonth),
                   dueMonth: dayjs(fixOffering.startMonth),
                 }
+
                 return fix
               }),
               giftOfferings: transaction.giftOfferings.map((giftOffering) => {
@@ -77,6 +78,7 @@ function TransactionListPage() {
                   amount: giftOffering.amount,
                   transferDate: dayjs(giftOffering.transferDate),
                 }
+
                 return gift
               }),
               projectOfferings: transaction.projectOfferings.map(
@@ -91,8 +93,7 @@ function TransactionListPage() {
                     amount: projectOffering.amount,
                     project: service.metadatums.getProject(projectOffering.id)
                       .name,
-                    startDate: dayjs(projectOffering.startDate),
-                    dueDate: dayjs(projectOffering.dueDate),
+                    date: dayjs(projectOffering.date),
                     descriptions: projectOffering.descriptions,
                   }
                   return project

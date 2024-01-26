@@ -7,8 +7,8 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Key, PropsWithChildren, useEffect, useState } from 'react'
-import { ColumnsType, TablePaginationConfig } from 'antd/es/table'
-import type { FilterValue } from 'antd/es/table/interface'
+import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table'
+// import type { FilterValue } from 'antd/es/table/interface'
 import dayjs from 'dayjs'
 import { PageTransactionResponse } from '../../../../api/transaction/response/transaction'
 import { TransactionList } from '../model/transaction'
@@ -18,7 +18,6 @@ interface TableParams {
   pagination?: TablePaginationConfig
   sortField?: string
   sortOrder?: string
-  filters?: Record<string, FilterValue>
 }
 
 function TableView(
@@ -34,16 +33,26 @@ function TableView(
   const { transactions, pagesTransaction } = props
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    setIsLoading(false)
-  }, [])
-
-  const [tableParams, _] = useState<TableParams>({
+  const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: pagesTransaction?.page,
       pageSize: pagesTransaction?.itemPerPage,
     },
   })
+
+  const handleTableChange: TableProps<TransactionList>['onChange'] = (
+    pagination,
+    sorter
+  ) => {
+    setTableParams({
+      pagination,
+      ...sorter,
+    })
+  }
+
+  useEffect(() => {
+    setIsLoading(false)
+  }, [tableParams])
 
   const onEdit = (transaction: TransactionList) => {
     navigate(`/transaction/edit/${transaction.id}`)
@@ -217,6 +226,7 @@ function TableView(
           scroll={{ x: 0 }}
           sticky={{ offsetHeader: 0 }}
           pagination={tableParams.pagination}
+          onChange={handleTableChange}
         />
       )}
     </>

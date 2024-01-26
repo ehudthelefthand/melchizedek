@@ -6,7 +6,6 @@ export interface TransactionProjectOfferingList {
   departmentName: string
   amount: number
   project: string
-  startDate: dayjs.Dayjs
-  dueDate: dayjs.Dayjs
+  date: dayjs.Dayjs
   descriptions: string
 }

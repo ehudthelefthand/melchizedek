@@ -1,16 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import {
-  Button,
-  Card,
-  Col,
-  Form,
-  message,
-  Row,
-  Select,
-  Space,
-  Spin,
-} from 'antd'
+import { Button, Col, Form, message, Modal, Row, Space, Spin } from 'antd'
 
 import TextArea from 'antd/es/input/TextArea'
 import './transactionFormPage.css'
@@ -27,7 +17,6 @@ import { TransactionProjectOfferingForm } from './model/projectOffering'
 import { TransactionFixOfferingResponse } from '../../../api/transaction/response/fixOffering'
 import { TransactionProjectOfferingResponse } from '../../../api/transaction/response/projectOffering'
 
-import OfferingButton from './components/ButtonOffering'
 import { useService } from '../../../service/service'
 import {
   TransactionCreateRequest,
@@ -46,16 +35,22 @@ import {
   TransactionProjectOfferingCreateRequest,
   TransactionProjectOfferingUpdateRequest,
 } from '../../../api/transaction/request/projectOffering'
+import FixOfferingList from './components/FixOfferingList'
+import FixOfferingForm from './components/FixOffering'
+import GiftOfferingForm from './components/GiftOffering'
+import ProjectOfferingForm from './components/ProjectOffering'
+import GiftOfferingList from './components/GiftOfferingList'
+import ProjectOfferingList from './components/ProjectOfferingList'
 
 const initialTransactionForm: TransactionForm = {
   id: null,
-  donor: null,
+  donorId: null,
   amount: '',
   transferDate: null,
-  toBank: null,
-  fromBank: null,
-  staff: null,
-  department: null,
+  toBankId: null,
+  fromBankId: null,
+  staffId: null,
+  departmentId: null,
   descriptions: '',
   fixOfferings: [],
   giftOfferings: [],
@@ -68,26 +63,29 @@ const TransactionFormPage = () => {
   const { id: paramsId } = useParams<string>()
   const [form] = Form.useForm<TransactionForm>()
   const [t] = useTranslation('translation')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
+  const [editId, setEditId] = useState<number | null>(null)
+  const [offeringType, setOfferingType] = useState<string | null>(null)
   const service = useService()
 
   useEffect(() => {
     //TODOe Set value to edit form
-
     if (paramsId) {
+      console.log('paramsId', paramsId)
       setIsLoading(true)
       service.api.transaction
         .getOne(parseInt(paramsId))
         .then((transaction) => {
           const transactionResponse: TransactionForm = {
             id: transaction.id,
-            staff: service.metadatums.getStaff(transaction.staffId),
-            donor: service.metadatums.getDonor(transaction.donorId),
-            department: service.metadatums.getDepartment(
+            staffId: service.metadatums.getStaff(transaction.staffId).id,
+            donorId: service.metadatums.getDonor(transaction.donorId).id,
+            departmentId: service.metadatums.getDepartment(
               transaction.departmentId
-            ),
-            toBank: service.metadatums.getBank(transaction.toBankId),
-            fromBank: service.metadatums.getBank(transaction.fromBankId),
+            ).id,
+            toBankId: service.metadatums.getBank(transaction.toBankId).id,
+            fromBankId: service.metadatums.getBank(transaction.fromBankId).id,
             amount: transaction.amount.toString(),
             transferDate: dayjs(transaction.transferDate),
             descriptions: transaction.descriptions,
@@ -97,10 +95,10 @@ const TransactionFormPage = () => {
                   id: fixOffering.id,
                   startMonth: dayjs(fixOffering.startMonth),
                   dueMonth: dayjs(fixOffering.dueMonth),
-                  staff: service.metadatums.getStaff(fixOffering.staffId),
-                  department: service.metadatums.getDepartment(
+                  staffId: service.metadatums.getStaff(fixOffering.staffId).id,
+                  departmentId: service.metadatums.getDepartment(
                     fixOffering.departmentId
-                  ),
+                  ).id,
                   amount: fixOffering.amount,
                 }
                 return fix
@@ -110,10 +108,10 @@ const TransactionFormPage = () => {
               (giftOffering: TransactionGiftOfferingResponse) => {
                 const gift: TransactionGiftOfferingForm = {
                   id: giftOffering.id,
-                  staff: service.metadatums.getStaff(giftOffering.id),
-                  department: service.metadatums.getDepartment(
+                  staffId: service.metadatums.getStaff(giftOffering.staffId).id,
+                  departmentId: service.metadatums.getDepartment(
                     giftOffering.departmentId
-                  ),
+                  ).id,
                   amount: giftOffering.amount,
                   transferDate: dayjs(giftOffering.transferDate),
                 }
@@ -124,14 +122,16 @@ const TransactionFormPage = () => {
               (projectOffering: TransactionProjectOfferingResponse) => {
                 const project: TransactionProjectOfferingForm = {
                   id: projectOffering.id,
-                  staff: service.metadatums.getStaff(projectOffering.staffId),
-                  department: service.metadatums.getDepartment(
+                  staffId: service.metadatums.getStaff(projectOffering.staffId)
+                    .id,
+                  departmentId: service.metadatums.getDepartment(
                     projectOffering.departmentId
-                  ),
+                  ).id,
                   amount: projectOffering.amount,
-                  startDate: dayjs(projectOffering.startDate),
-                  dueDate: dayjs(projectOffering.dueDate),
-                  project: service.metadatums.getProject(projectOffering.id),
+                  date: dayjs(projectOffering.date),
+                  projectId: service.metadatums.getProject(
+                    projectOffering.projectId
+                  ).id,
                   descriptions: projectOffering.descriptions,
                 }
                 return project
@@ -162,11 +162,11 @@ const TransactionFormPage = () => {
     if (paramsId) {
       const transactionEdited: TransactionUpdateRequest = {
         id: parseInt(paramsId),
-        donorId: transaction.donor!.id,
-        staffId: transaction.staff!.id,
-        departmentId: transaction.department!.id,
-        toBankId: transaction.toBank!.id,
-        fromBankId: transaction.fromBank!.id,
+        donorId: transaction.donorId!,
+        staffId: transaction.staffId!,
+        departmentId: transaction.departmentId!,
+        toBankId: transaction.toBankId!,
+        fromBankId: transaction.fromBankId!,
         amount: parseFloat(transaction.amount),
         descriptions: transaction.descriptions,
         transferDate: +transaction.transferDate!,
@@ -175,11 +175,12 @@ const TransactionFormPage = () => {
             ? fixOfferings.map((fixOffering: TransactionFixOfferingForm) => {
                 const fix: TransactionFixOfferingUpdateRequest = {
                   id: fixOffering.id,
-                  staffId: fixOffering.staff.id,
-                  departmentId: fixOffering.department.id,
+                  staffId: fixOffering.staffId,
+                  departmentId: fixOffering.departmentId,
                   startMonth: +fixOffering.startMonth,
                   dueMonth: +fixOffering.dueMonth,
                   amount: parseFloat(fixOffering.amount.toString()),
+                  transactionId: parseInt(paramsId),
                 }
                 return fix
               })
@@ -189,10 +190,11 @@ const TransactionFormPage = () => {
             ? giftOfferings.map((giftOffering: TransactionGiftOfferingForm) => {
                 const gift: TransactionGiftOfferingUpdateRequest = {
                   id: giftOffering.id,
-                  staffId: giftOffering.staff.id,
-                  departmentId: giftOffering.department.id,
+                  staffId: giftOffering.staffId,
+                  departmentId: giftOffering.departmentId,
                   transferDate: +giftOffering.transferDate,
                   amount: parseFloat(giftOffering.amount.toString()),
+                  transactionId: parseInt(paramsId),
                 }
                 return gift
               })
@@ -203,13 +205,13 @@ const TransactionFormPage = () => {
                 (projectOffering: TransactionProjectOfferingForm) => {
                   const project: TransactionProjectOfferingUpdateRequest = {
                     id: projectOffering.id,
-                    staffId: projectOffering.staff.id,
-                    departmentId: projectOffering.department.id,
-                    startDate: +projectOffering.startDate,
-                    projectId: projectOffering.project.id,
-                    dueDate: +projectOffering.dueDate,
+                    staffId: projectOffering.staffId,
+                    departmentId: projectOffering.departmentId,
+                    date: +projectOffering.date,
+                    projectId: projectOffering.projectId,
                     amount: parseFloat(projectOffering.amount.toString()),
                     descriptions: projectOffering.descriptions,
+                    transactionId: parseInt(paramsId),
                   }
                   return project
                 }
@@ -220,7 +222,7 @@ const TransactionFormPage = () => {
         .update(transactionEdited)
         .then(() => {
           message.success('Update successful!')
-          navigate('/transaction/')
+          navigate('/transaction')
         })
         .catch((error: Error) => {
           console.error(error)
@@ -228,11 +230,11 @@ const TransactionFormPage = () => {
         })
     } else {
       const transactionCreated: TransactionCreateRequest = {
-        donorId: transaction.donor!.id,
-        staffId: transaction.staff!.id,
-        departmentId: transaction.department!.id,
-        toBankId: transaction.toBank!.id,
-        fromBankId: transaction.fromBank!.id,
+        donorId: transaction.donorId!,
+        staffId: transaction.staffId!,
+        departmentId: transaction.departmentId!,
+        toBankId: transaction.toBankId!,
+        fromBankId: transaction.fromBankId!,
         amount: parseFloat(transaction.amount),
         descriptions: transaction.descriptions,
         transferDate: +transaction.transferDate!,
@@ -240,8 +242,8 @@ const TransactionFormPage = () => {
           fixOfferings.length > 0
             ? fixOfferings.map((fixOffering: TransactionFixOfferingForm) => {
                 const fix: TransactionFixOfferingCreateRequest = {
-                  staffId: fixOffering.staff.id,
-                  departmentId: fixOffering.department.id,
+                  staffId: fixOffering.staffId,
+                  departmentId: fixOffering.departmentId,
                   startMonth: +fixOffering.startMonth,
                   dueMonth: +fixOffering.dueMonth,
                   amount: parseFloat(fixOffering.amount.toString()),
@@ -253,8 +255,8 @@ const TransactionFormPage = () => {
           giftOfferings.length > 0
             ? giftOfferings.map((giftOffering: TransactionGiftOfferingForm) => {
                 const gift: TransactionGiftOfferingCreateRequest = {
-                  staffId: giftOffering.staff.id,
-                  departmentId: giftOffering.department.id,
+                  staffId: giftOffering.staffId,
+                  departmentId: giftOffering.departmentId,
                   transferDate: +giftOffering.transferDate,
                   amount: parseFloat(giftOffering.amount.toString()),
                 }
@@ -266,11 +268,10 @@ const TransactionFormPage = () => {
             ? projectOfferings.map(
                 (projectOffering: TransactionProjectOfferingForm) => {
                   const project: TransactionProjectOfferingCreateRequest = {
-                    staffId: projectOffering.staff.id,
-                    departmentId: projectOffering.department.id,
-                    startDate: +projectOffering.startDate,
-                    projectId: projectOffering.project.id,
-                    dueDate: +projectOffering.dueDate,
+                    staffId: projectOffering.staffId,
+                    departmentId: projectOffering.departmentId,
+                    date: +projectOffering.date,
+                    projectId: projectOffering.projectId,
                     amount: parseFloat(projectOffering.amount.toString()),
                     descriptions: projectOffering.descriptions,
                   }
@@ -283,7 +284,7 @@ const TransactionFormPage = () => {
         .create(transactionCreated)
         .then(() => {
           message.success('Create successful!')
-          navigate('/transaction/')
+          navigate('/transaction')
         })
         .catch((error: Error) => {
           console.error(error)
@@ -291,7 +292,12 @@ const TransactionFormPage = () => {
         })
     }
   }
-  /// out of submit
+
+  const onCancel = () => {
+    setModalVisible(false)
+    setEditId(null)
+    setOfferingType(null)
+  }
 
   return (
     <div className="transaction-add-form">
@@ -306,10 +312,136 @@ const TransactionFormPage = () => {
           className="input-transaction"
         >
           <Space direction="vertical" size={20} style={{ display: 'flex' }}>
-            {/* TODO: OfferingLists */}
             <BasicForm />
-            <OfferingButton transactionForm={form} paramsId={paramsId} />
-
+            <Row>
+              <Col xs={24} sm={8} md={8}>
+                <Row gutter={[5, 5]}>
+                  <Col xs={24} sm={24} md={8}>
+                    <Button
+                      onClick={() => {
+                        form
+                          .validateFields()
+                          .then(() => {
+                            setModalVisible(true)
+                            setOfferingType('fix')
+                          })
+                          .catch(() => {
+                            message.error('โปรดกรอกข้อมูลให้ครบ!')
+                          })
+                      }}
+                      size="large"
+                      type="primary"
+                      htmlType="button"
+                      style={{ width: "100%" }}
+                    >
+                      Fix
+                    </Button>
+                  </Col>
+                  <Col xs={24} sm={8} md={8}>
+                    <Button
+                      onClick={() => {
+                        form
+                          .validateFields()
+                          .then(() => {
+                            setModalVisible(true)
+                            setOfferingType('gift')
+                          })
+                          .catch(() => {
+                            message.error('โปรดกรอกข้อมูลให้ครบ!')
+                          })
+                      }}
+                      size="large"
+                      type="primary"
+                      htmlType="button"
+                      style={{ width: "100%" }}
+                    >
+                      Gift
+                    </Button>
+                  </Col>
+                  <Col xs={24} sm={8} md={8}>
+                    <Button
+                      onClick={() => {
+                        form
+                          .validateFields()
+                          .then(() => {
+                            setModalVisible(true)
+                            setOfferingType('project')
+                          })
+                          .catch(() => {
+                            message.error('โปรดกรอกข้อมูลให้ครบ!')
+                          })
+                      }}
+                      size="large"
+                      type="primary"
+                      htmlType="button"
+                      style={{ width: "100%" }}
+                    >
+                      Project
+                    </Button>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            <Modal
+              centered
+              open={modalVisible}
+              onCancel={() => {
+                onCancel()
+              }}
+              width={800}
+              footer={null}
+              closeIcon={null}
+              destroyOnClose={true}
+              maskClosable={false}
+            >
+              {offeringType === 'fix' ? (
+                <FixOfferingForm
+                  onCancel={() => onCancel()}
+                  editId={editId!}
+                  transactionForm={form}
+                />
+              ) : offeringType === 'gift' ? (
+                <GiftOfferingForm
+                  onCancel={() => onCancel()}
+                  editId={editId!}
+                  transactionForm={form}
+                />
+              ) : (
+                <ProjectOfferingForm
+                  onCancel={() => onCancel()}
+                  editId={editId!}
+                  transactionForm={form}
+                />
+              )}
+            </Modal>
+            <Space direction="vertical" size={20} style={{ display: 'flex' }}>
+              <Row justify={'center'} style={{ textAlign: 'center' }}>
+                <Col span={8}>
+                  <FixOfferingList
+                    transactionForm={form}
+                    setModalVisible={setModalVisible}
+                    setEditId={setEditId}
+                    setOfferingType={setOfferingType}
+                  />
+                </Col>
+                <Col span={8}>
+                  <GiftOfferingList
+                    transactionForm={form}
+                    setModalVisible={setModalVisible}
+                    setEditId={setEditId}
+                    setOfferingType={setOfferingType}
+                  />
+                </Col>
+                <Col span={8}>
+                  <ProjectOfferingList
+                    transactionForm={form}
+                    setModalVisible={setModalVisible}
+                    setEditId={setEditId}
+                    setOfferingType={setOfferingType}
+                  />
+                </Col>
+              </Row>
+            </Space>
             <Row>
               <Col span={24}>
                 <Form.Item

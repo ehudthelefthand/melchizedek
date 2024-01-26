@@ -4,137 +4,154 @@ import {
   DatePicker,
   DatePickerProps,
   Form,
-  Input,
   InputNumber,
   Row,
   Select,
   SelectProps,
   Space,
 } from 'antd'
-import { PropsWithChildren, useEffect, useState } from 'react'
-import { FormInstance, useForm } from 'antd/es/form/Form'
+import { PropsWithChildren, useEffect } from 'react'
+import { FormInstance } from 'antd/es/form/Form'
 import { useTranslation } from 'react-i18next'
 import TextArea from 'antd/es/input/TextArea'
-import { TransactionProjectOfferingResponse } from '../../../../api/transaction/response/projectOffering'
 import { TransactionForm } from '../model/transaction'
 import { useService } from '../../../../service/service'
+import {
+  ProjectOfferingFormAntd,
+  TransactionProjectOfferingForm,
+} from '../model/projectOffering'
 
-interface Props {
-  onCancel: () => void
-  offerID?: number
-  transactionForm: FormInstance<TransactionForm>
-}
-
-function ProjectOfferingForm(props: PropsWithChildren<Props>) {
-  const { offerID, onCancel } = props
+function ProjectOfferingForm(
+  props: PropsWithChildren<{
+    onCancel: () => void
+    editId: number
+    transactionForm: FormInstance<TransactionForm>
+  }>
+) {
+  const { editId, onCancel, transactionForm } = props
   // const transactionForm = useTransactionForm()
   const [t] = useTranslation('translation')
-  const [form] = useForm()
+  const [projectOfferingForm] = Form.useForm<ProjectOfferingFormAntd>()
   const service = useService()
 
-  // const findTransacID = transactionForm.data.offerings.find(
-  //   (value) => value.ID === offerID
-  // )
+  useEffect(() => {
+    if (editId != null) {
+      const offeringSelected: TransactionProjectOfferingForm = transactionForm
+        .getFieldValue('projectOfferings')
+        .find(
+          (project: TransactionProjectOfferingForm) => project.id === editId
+        )
 
-  // useEffect(() => {
-  //   API.getMetadatum()
-  //     .then((metadatums) => {
-  //       console.log('meta useEff', metadatums.Project)
-  //       setProjectsName(metadatums.Project)
-  //     })
-  //     .catch(console.error)
-  // if (offerID) {
-  //   form.setFieldsValue({
-  //     staffName: findTransacID!.staffName,
-  //     department: findTransacID!.department,
-  //     amount: findTransacID!.amount,
-  //     projectName: findTransacID!.projectName,
-  //     date: formatDate.formatDate(findTransacID!.startDate),
-  //     descriptions: findTransacID!.descriptions,
-  //   })
-  // }
-  // }, [])
+      projectOfferingForm.setFieldsValue({
+        staffId: offeringSelected.staffId,
+        departmentId: offeringSelected.departmentId,
+        amount: offeringSelected.amount,
+        date: offeringSelected.date,
+        projectId: offeringSelected.projectId,
+        descriptions: offeringSelected.descriptions,
+      })
+    }
+  }, [])
 
-  const onSubmit = (value: TransactionProjectOfferingResponse) => {
-    // console.log('project >> ', value)
-    // if (offerID) {
-    //   const editOffer: Offering = {
-    //     ID: offerID,
-    //     staffName: findTransacID!.staffName,
-    //     department: findTransacID!.department,
-    //     kind: 'Project',
-    //     amount: parseFloat(value.amount),
-    //     projectName: value.projectName,
-    //     startDate: formatDate.formatDateTime(value.startDate),
-    //     dueDate: '',
-    //     descriptions: value.descriptions,
-    //   }
-    //   const updateOffering = transactionForm.data.offerings.map((offerr) =>
-    //     offerr.ID === offerID ? editOffer : offerr
-    //   )
-    //   transactionForm.setData({
-    //     ...transactionForm.data,
-    //     offerings: updateOffering,
-    // })
-    //   onCancel()
-    // } else {
-    // const offer: Offering = {
-    //   ID: transactionForm.data.offerings.length + 1,
-    //   staffName: transactionForm.data.staffName,
-    //   department: transactionForm.data.department,
-    //   kind: 'Project',
-    //   amount: parseFloat(value.amount),
-    //   projectName: value.projectName,
-    //   descriptions: value.descriptions,
-    //   startDate: formatDate.formatDateTime(value.startDate),
-    //   dueDate: '',
-    // }
-    // transactionForm.setData({
-    //   ...transactionForm.data,
-    //   offerings: [...transactionForm.data.offerings, offer],
-    // })
-    //     onCancel()
-    //   }
-  }
+  const staffAPI = service.metadatums.getAllStaffs().map((staff) => ({
+    label: staff.fullName,
+    value: staff.id,
+    staff,
+  }))
 
-  const projectName: SelectProps['options'] = service.metadatums
+  const departmentAPI = service.metadatums
+    .getAllDepartments()
+    .map((department) => ({
+      label: department.name,
+      value: department.id,
+      department,
+    }))
+
+  const projectAPI: SelectProps['options'] = service.metadatums
     .getAllProjects()
     .map((project) => ({
       label: project.name,
-      value: project.name,
+      value: project.id,
     }))
+
+  const onSubmit = (value: ProjectOfferingFormAntd) => {
+    const fakeId: [] = transactionForm.getFieldValue('projectOfferings')
+
+    if (editId !== null) {
+      console.log('params', editId)
+      const editOffer: TransactionProjectOfferingForm = {
+        id: editId,
+        staffId: value.staffId,
+        departmentId: value.departmentId,
+        amount: value.amount,
+        date: value.date,
+        projectId: value.projectId,
+        descriptions: value.descriptions,
+      }
+      const updateProjectOffering = transactionForm
+        .getFieldValue('projectOfferings')
+        .map((projectOfferings: TransactionProjectOfferingForm) =>
+          projectOfferings.id === editId ? editOffer : projectOfferings
+        )
+
+      transactionForm.setFieldsValue({
+        ...transactionForm.getFieldsValue(),
+        projectOfferings: updateProjectOffering,
+      })
+    } else {
+      const createProjectOffering: TransactionProjectOfferingForm = {
+        id: fakeId.length + 1,
+        staffId: value.staffId,
+        departmentId: value.departmentId,
+        amount: value.amount,
+        date: value.date,
+        projectId: value.projectId,
+        descriptions: value.descriptions,
+      }
+      transactionForm.setFieldsValue({
+        projectOfferings: [
+          ...transactionForm.getFieldValue('projectOfferings'),
+          createProjectOffering,
+        ],
+      })
+    }
+    onCancel()
+    projectOfferingForm.resetFields()
+  }
 
   return (
     <>
       <h1 style={{ marginBottom: 10 }}>PROJECT</h1>
-      <Form
-        onFinish={onSubmit}
-        layout="vertical"
-        form={form}
-        // initialValues={initialValues}
-      >
+      <Form onFinish={onSubmit} layout="vertical" form={projectOfferingForm}>
         <Space direction="vertical" size={20} style={{ display: 'flex' }}>
           <Row gutter={15} style={{ rowGap: 20 }}>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
               <Form.Item
-                key={'staffName'}
-                name={'staffName'}
-                // name={t('offering-form.staffName')}
+                key={'staffId'}
+                name={'staffId'}
+                rules={[{ required: true, message: 'Please fill staff name' }]}
                 hasFeedback
               >
-                <Input
-                  placeholder={t('offeringForm.staffName')}
+                <Select
+                  options={staffAPI}
                   size="large"
-                  disabled
+                  placeholder={t('transacForm.staffName')}
                 />
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-              <Form.Item key={'department'} name={'department'} hasFeedback>
-                <Input
-                  placeholder={t('offeringForm.department')}
+              <Form.Item
+                key={'departmentId'}
+                name={'departmentId'}
+                rules={[
+                  { required: true, message: 'Please select a department' },
+                ]}
+                hasFeedback
+              >
+                <Select
+                  placeholder={t('transacForm.department')}
+                  options={departmentAPI}
                   size="large"
-                  disabled
                 />
               </Form.Item>
             </Col>
@@ -142,7 +159,8 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
           <Row gutter={15} style={{ rowGap: 20 }}>
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Form.Item
-                name={'projectName'}
+                key={'projectId'}
+                name={'projectId'}
                 rules={[
                   {
                     required: true,
@@ -153,7 +171,7 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
               >
                 <Select
                   placeholder={t('offeringForm.event')}
-                  options={projectName}
+                  options={projectAPI}
                   size="large"
                 />
               </Form.Item>
@@ -162,6 +180,7 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
           <Row gutter={15} style={{ rowGap: 20 }}>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
               <Form.Item
+                key={'amount'}
                 name={'amount'}
                 rules={[
                   { required: true, message: `${t('transacValidate.amount')}` },
@@ -195,6 +214,7 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
               <Form.Item
                 name={'date'}
+                key={'date'}
                 rules={[
                   {
                     required: true,
@@ -246,7 +266,7 @@ function ProjectOfferingForm(props: PropsWithChildren<Props>) {
                       type="primary"
                       htmlType="submit"
                     >
-                      {offerID
+                      {editId
                         ? t('transacButton.edit')
                         : t('transacButton.addData')}
                     </Button>

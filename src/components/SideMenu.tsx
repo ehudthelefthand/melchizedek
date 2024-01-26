@@ -1,40 +1,53 @@
-import { Divider, Menu } from 'antd'
+import { Divider, Menu, MenuProps } from 'antd'
 import {
   DesktopOutlined,
   LogoutOutlined,
   UserAddOutlined,
 } from '@ant-design/icons'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useEffect } from 'react'
+import { useService } from '../service/service'
 
 const SideMenu: React.FC = () => {
   const location = useLocation()
   const selectedKey = location.pathname || '/'
   const [t] = useTranslation('translation')
-  const userFullName = localStorage.getItem('fullName')
-
-  useEffect(() => {
-    console.log('user SideMenu', userFullName)
-  }, [])
+  const service = useService()
+  const navigate = useNavigate()
 
   const items = [
     {
       key: '#',
-      label: 'username',
+      label: service.reactStore.store.user?.username,
       icon: <UserAddOutlined />,
     },
     {
       key: 'transactionPage',
-      label: <Link to={''}>{t('menu.transaction')}</Link>,
+      label: t('menu.transaction'),
       icon: <DesktopOutlined />,
     },
   ]
 
   const logoutItem = {
     key: 'logout',
-    label: <Link to={'/'}>{t('menu.logout')}</Link>,
+    label: t('menu.logout'),
     icon: <LogoutOutlined />,
+  }
+
+  const handleOnClickMenus: MenuProps['onClick'] = (e) => {
+    console.log('click ', e)
+    switch (e.key) {
+      case 'transactionPage':
+        navigate('/transaction')
+        break
+      case 'logout':
+        service.api.user.logout()
+        service.reactStore.update((store) => {
+          store.user = null
+        })
+        navigate('/')
+        break
+    }
   }
 
   return (
@@ -53,6 +66,7 @@ const SideMenu: React.FC = () => {
           defaultSelectedKeys={[selectedKey]}
           mode="inline"
           theme="light"
+          onClick={handleOnClickMenus}
           items={items}
         />
       </div>
@@ -63,6 +77,7 @@ const SideMenu: React.FC = () => {
           defaultSelectedKeys={[selectedKey]}
           mode="inline"
           theme="light"
+          onClick={handleOnClickMenus}
           items={[logoutItem]}
         />
       </div>

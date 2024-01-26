@@ -1,13 +1,9 @@
 import dayjs from 'dayjs'
-import {
-  DepartmentResponse,
-  StaffResponse,
-} from '../../../../api/metadatum/response'
 
 export interface TransactionFixOfferingForm {
   id: number | null
-  staff: StaffResponse
-  department: DepartmentResponse
+  staffId: number
+  departmentId: number
   amount: number
   startMonth: dayjs.Dayjs
   dueMonth: dayjs.Dayjs
@@ -17,6 +13,6 @@ export interface FixOfferingFormAntd {
   id: number
   staffId: number
   departmentId: number
-  amount: string
+  amount: number
   months: dayjs.Dayjs[]
 }

@@ -5,7 +5,7 @@ export function useCreateReactStoreService() {
   const [reactStore, setReactStore] = useState<Store>(store)
 
   const refresh = () => {
-      setReactStore({ ...store })
+    setReactStore({ ...store })
   }
 
   const update = (process: (store: Store) => void) => {
@@ -15,9 +15,10 @@ export function useCreateReactStoreService() {
 
   useEffect(() => {
     if (store.user !== null) {
+      localStorage.setItem('username', store.user.username)
       localStorage.setItem('token', store.user.token)
     } else {
-      localStorage.removeItem('token')
+      localStorage.clear()
     }
   }, [reactStore])
 

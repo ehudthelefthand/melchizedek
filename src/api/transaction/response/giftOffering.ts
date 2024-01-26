@@ -4,4 +4,5 @@ export interface TransactionGiftOfferingResponse {
     departmentId: number
     amount: number
     transferDate: number
+    transactionId: number
   }

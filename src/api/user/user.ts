@@ -8,7 +8,7 @@ export default {
         .post(`/login`, userLoginRequest)
         .then((response) => response.data)
     },
-    logout: (userLogoutRequest: UserLogoutRequest) => {
-      return axios.post(`/logout`, userLogoutRequest)
+    logout: () => {
+      return axios.delete(`/logout`)
     },
   }

@@ -1,18 +1,12 @@
-import {
-  StaffResponse,
-  DepartmentResponse,
-  ProjectResponse,
-} from '../../../../api/metadatum/response'
 import dayjs from 'dayjs'
 
 export interface TransactionProjectOfferingForm {
   id: number | null
-  staff: StaffResponse
-  department: DepartmentResponse
-  project: ProjectResponse
+  staffId: number
+  departmentId: number
+  projectId: number
   amount: number
-  startDate: dayjs.Dayjs
-  dueDate: dayjs.Dayjs
+  date: dayjs.Dayjs
   descriptions: string
 }
 
