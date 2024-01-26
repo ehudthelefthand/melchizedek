@@ -1,8 +1,9 @@
 export interface UserLoginRequest {
-    userName: string
-    password: string
-  }
+  userName: string
+  password: string
+  role: string
+}
 
 export interface UserLogoutRequest {
-    token: string
+  token: string
 }

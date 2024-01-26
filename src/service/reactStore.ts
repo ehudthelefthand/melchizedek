@@ -17,6 +17,7 @@ export function useCreateReactStoreService() {
     if (store.user !== null) {
       localStorage.setItem('username', store.user.username)
       localStorage.setItem('token', store.user.token)
+      localStorage.setItem('role', store.user.role)
     } else {
       localStorage.clear()
     }

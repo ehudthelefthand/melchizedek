@@ -29,7 +29,7 @@ function TransactionListPage() {
 
   useEffect(() => {
     service.api.transaction
-      .getAll()
+      .getAll(service.reactStore.store)
       .then((pageTransaction) => {
         const transactionFormattedData: TransactionList[] =
           pageTransaction.data.map((transaction: TransactionResponse) => {
@@ -99,7 +99,14 @@ function TransactionListPage() {
                   return project
                 }
               ),
+              totalOfferings: {
+                sumFixOfferings: transaction.totalOfferings.sumFixOfferings,
+                sumGiftOfferings: transaction.totalOfferings.sumGiftOfferings,
+                sumProjectOfferings:
+                  transaction.totalOfferings.sumProjectOfferings,
+              },
             }
+            console.log(result)
             return result
           })
 

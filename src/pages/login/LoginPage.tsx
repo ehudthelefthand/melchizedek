@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Button, Col, Form, Input, Row, Space, message } from 'antd'
 import { UserOutlined, KeyOutlined } from '@ant-design/icons'
 import './loginPage.css'
@@ -17,10 +17,11 @@ const LoginPage: React.FC = () => {
         store.user = {
           username: userLoginResponse.fullName,
           token: userLoginResponse.token,
+          role: userLoginResponse.role,
         }
       })
       await service.metadatums.loadMetadatums()
-      navigate('/transaction')
+      navigate(`/transaction`)
     } else {
       message.error('Invalid Username or Password. Please try again.')
       navigate('/')

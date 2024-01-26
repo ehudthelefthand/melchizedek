@@ -18,4 +18,11 @@ export interface TransactionList {
   fixOfferings: TransactionFixOfferingList[]
   giftOfferings: TransactionGiftOfferingList[]
   projectOfferings: TransactionProjectOfferingList[]
+  totalOfferings: TotalOfferingsList
+}
+
+export interface TotalOfferingsList {
+  sumFixOfferings: number
+  sumGiftOfferings: number
+  sumProjectOfferings: number
 }

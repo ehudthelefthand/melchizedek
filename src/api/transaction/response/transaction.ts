@@ -17,6 +17,11 @@ export interface TransactionResponse {
   fixOfferings: TransactionFixOfferingResponse[]
   giftOfferings: TransactionGiftOfferingResponse[]
   projectOfferings: TransactionProjectOfferingResponse[]
+  totalOfferings: {
+    sumFixOfferings: number
+    sumGiftOfferings: number
+    sumProjectOfferings: number
+  }
 }
 
 export interface PageTransactionResponse {
