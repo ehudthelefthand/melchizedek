@@ -17,6 +17,7 @@ import {
   CarryOutOutlined,
   DeleteOutlined,
   EditTwoTone,
+  HighlightOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
@@ -82,7 +83,7 @@ function ProjectOfferingList(props: Props) {
               onClick={() => {
                 handleDelete(projectOffering.id! || index)
                 setEditId(projectOffering.id!)
-                console.log("del id,index",projectOffering.id,index)
+                console.log('del id,index', projectOffering.id, index)
               }}
             >
               <DeleteOutlined />
@@ -142,7 +143,7 @@ function ProjectOfferingList(props: Props) {
           </Col>
           <Col span={12}>
             <Space>
-              <DollarOutlined />
+              <HighlightOutlined />
               <Text>{projectOffering.descriptions}</Text>
             </Space>
           </Col>

@@ -10,7 +10,7 @@ import {
   SelectProps,
   Space,
 } from 'antd'
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import { FormInstance } from 'antd/es/form/Form'
 import { useTranslation } from 'react-i18next'
 import TextArea from 'antd/es/input/TextArea'
@@ -20,6 +20,7 @@ import {
   ProjectOfferingFormAntd,
   TransactionProjectOfferingForm,
 } from '../model/projectOffering'
+import { calculateOffering } from '../utils/calculateOffering'
 
 function ProjectOfferingForm(
   props: PropsWithChildren<{
@@ -33,6 +34,16 @@ function ProjectOfferingForm(
   const [t] = useTranslation('translation')
   const [projectOfferingForm] = Form.useForm<ProjectOfferingFormAntd>()
   const service = useService()
+
+  const [currentEditAmount, setCurrentEditAmount] = useState(0)
+  const [forceRenderValue, forceRender] = useState(Math.random())
+  const offeringAmountCalculation = useMemo(() => {
+    return calculateOffering(
+      props.transactionForm,
+      projectOfferingForm.getFieldValue('amount') ?? 0,
+      currentEditAmount
+    )
+  }, [forceRenderValue, currentEditAmount])
 
   useEffect(() => {
     if (editId != null) {
@@ -50,6 +61,8 @@ function ProjectOfferingForm(
         projectId: offeringSelected.projectId,
         descriptions: offeringSelected.descriptions,
       })
+
+      setCurrentEditAmount(Number(offeringSelected.amount))
     }
   }, [])
 
@@ -184,6 +197,24 @@ function ProjectOfferingForm(
                 name={'amount'}
                 rules={[
                   { required: true, message: `${t('transacValidate.amount')}` },
+                  () => ({
+                    validator(_, value) {
+                      const amount = Number(value)
+                      if (amount >= 0) {
+                        const calculatedResult = calculateOffering(
+                          transactionForm,
+                          amount,
+                          currentEditAmount
+                        )
+                        if (calculatedResult.remainingAmount < 0) {
+                          return Promise.reject(
+                            new Error('จำนวนคงเหลือไม่สามารถติดลบได้')
+                          )
+                        }
+                      }
+                      return Promise.resolve()
+                    },
+                  }),
                 ]}
                 hasFeedback
               >
@@ -206,10 +237,17 @@ function ProjectOfferingForm(
                       return ''
                     }
                   }}
+                  onChange={() => forceRender(Math.random())}
                   size="large"
                   placeholder={t('transacForm.amount')}
                 />
               </Form.Item>
+              <div>
+                ยอดที่เหลือทั้งหมด: {offeringAmountCalculation.leftAmount}
+              </div>
+              <div>
+                ยอดที่เหลือหลัง Project: {offeringAmountCalculation.remainingAmount}
+              </div>
             </Col>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
               <Form.Item

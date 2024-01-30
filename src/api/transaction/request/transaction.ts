@@ -12,7 +12,7 @@ export interface TransactionUpdateRequest {
   amount: number
   transferDate: number
   descriptions: string
-  // images: string;
+  images: File[]
   fixOfferings: TransactionFixOfferingUpdateRequest[]
   giftOfferings: TransactionGiftOfferingUpdateRequest[]
   projectOfferings: TransactionProjectOfferingUpdateRequest[]

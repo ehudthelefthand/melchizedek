@@ -117,7 +117,12 @@ function GiftOfferingList(props: Props) {
           <Col span={12}>
             <Space>
               <DollarOutlined />
-              <Text>{gift.amount}</Text>
+              <Text>
+                {gift.amount.toLocaleString('th-TH', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </Text>
             </Space>
           </Col>
           <Col span={24}>

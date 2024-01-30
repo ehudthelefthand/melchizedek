@@ -116,7 +116,12 @@ function FixOfferingList(props: Props) {
           <Col span={12}>
             <Space>
               <DollarOutlined />
-              <Text>{fix.amount}</Text>
+              <Text>
+                {fix.amount.toLocaleString('th-TH', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </Text>
             </Space>
           </Col>
           <Col span={12}>

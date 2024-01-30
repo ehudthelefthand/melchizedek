@@ -13,8 +13,10 @@ export type TransactionForm = {
   amount: string
   descriptions: string
   transferDate: dayjs.Dayjs | null
-  // image: string
+  images: File[]
+  newImages?: File[]
   fixOfferings: TransactionFixOfferingForm[]
   giftOfferings: TransactionGiftOfferingForm[]
   projectOfferings: TransactionProjectOfferingForm[]
 }
+

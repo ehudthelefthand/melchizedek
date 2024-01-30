@@ -11,7 +11,7 @@ import {
 import { FormInstance } from 'antd/es/form/Form'
 import { useTranslation } from 'react-i18next'
 
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
 
 import { useService } from '../../../../service/service'
 import { TransactionForm } from '../model/transaction'
@@ -19,6 +19,7 @@ import {
   FixOfferingFormAntd,
   TransactionFixOfferingForm,
 } from '../model/fixOffering'
+import { calculateOffering } from '../utils/calculateOffering'
 
 const { RangePicker } = DatePicker
 
@@ -33,6 +34,17 @@ function FixOfferingForm(
   const [fixOfferingForm] = Form.useForm<FixOfferingFormAntd>()
   const [t] = useTranslation('translation')
   const service = useService()
+
+  const [currentEditAmount, setCurrentEditAmount] = useState(0)
+  const [forceRenderValue, forceRender] = useState(Math.random())
+  const offeringAmountCalculation = useMemo(() => {
+    return calculateOffering(
+      props.transactionForm,
+      fixOfferingForm.getFieldValue('amount') ?? 0,
+      currentEditAmount
+    )
+  }, [forceRenderValue, currentEditAmount])
+
   useEffect(() => {
     if (editId !== null) {
       const offeringSelected: TransactionFixOfferingForm = transactionForm
@@ -45,6 +57,8 @@ function FixOfferingForm(
         amount: offeringSelected.amount,
         months: [offeringSelected.startMonth, offeringSelected.dueMonth],
       })
+
+      setCurrentEditAmount(Number(offeringSelected.amount))
     }
   }, [])
 
@@ -66,7 +80,6 @@ function FixOfferingForm(
     const fakeId: [] = transactionForm.getFieldValue('fixOfferings')
 
     if (editId !== null) {
-      console.log('params', editId)
       const editOffer: TransactionFixOfferingForm = {
         id: editId,
         staffId: value.staffId,
@@ -149,6 +162,24 @@ function FixOfferingForm(
                 key={'amount'}
                 rules={[
                   { required: true, message: `${t('transacValidate.amount')}` },
+                  () => ({
+                    validator(_, value) {
+                      const amount = Number(value)
+                      if (amount >= 0) {
+                        const calculatedResult = calculateOffering(
+                          transactionForm,
+                          amount,
+                          currentEditAmount
+                        )
+                        if (calculatedResult.remainingAmount < 0) {
+                          return Promise.reject(
+                            new Error('จำนวนคงเหลือไม่สามารถติดลบได้')
+                          )
+                        }
+                      }
+                      return Promise.resolve()
+                    },
+                  }),
                 ]}
                 hasFeedback
               >
@@ -156,7 +187,7 @@ function FixOfferingForm(
                   style={{ width: '100%' }}
                   stringMode
                   min="0"
-                  max="999999999"
+                  max="10000000"
                   step={0.01}
                   formatter={(value) =>
                     `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -171,10 +202,17 @@ function FixOfferingForm(
                       return ''
                     }
                   }}
+                  onChange={() => forceRender(Math.random())}
                   size="large"
                   placeholder={t('transacForm.amount')}
                 />
               </Form.Item>
+              <div>
+                ยอดที่เหลือทั้งหมด: {offeringAmountCalculation.leftAmount}
+              </div>
+              <div>
+                ยอดที่เหลือหลัง Fix: {offeringAmountCalculation.remainingAmount}
+              </div>
             </Col>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
               <Form.Item
@@ -200,6 +238,7 @@ function FixOfferingForm(
               </Form.Item>
             </Col>
           </Row>
+          <Row></Row>
           <Row justify={'end'} gutter={15}>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>
               <Row gutter={15} style={{ rowGap: 10 }}>

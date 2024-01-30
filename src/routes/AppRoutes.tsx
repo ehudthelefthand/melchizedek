@@ -3,12 +3,13 @@ import SideMenu from '../components/SideMenu'
 import AppContent from '../components/Content'
 import MzkHeader from '../components/Header'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
-import {Layout } from 'antd'
+import { Layout } from 'antd'
 import LoginPage from '../pages/login/LoginPage'
 import ErrorPage from '../pages/error/ErrorPage'
 import TransactionFormPage from '../pages/transaction/form/TransactionFormPage'
 import TransactionListPage from '../pages/transaction/list/TransactionListPage'
 import { useState } from 'react'
+import UserFormPage from '../pages/user/UserFormPage'
 
 const { Sider } = Layout
 
@@ -48,6 +49,18 @@ const router = createBrowserRouter([
     path: '/',
     element: <LoginPage />,
     errorElement: <ErrorPage />,
+  },
+  {
+    path: '/user',
+    element: <DashboardLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: 'create',
+        element: <UserFormPage />,
+        errorElement: <ErrorPage />,
+      },
+    ],
   },
   {
     path: '/transaction',

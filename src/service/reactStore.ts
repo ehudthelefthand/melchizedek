@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Store, store } from '../store'
+import {
+  LOCAL_STORAGE_ROLE_KEY,
+  LOCAL_STORAGE_TOKEN_KEY,
+  LOCAL_STORAGE_USER_NAME_KEY,
+  Store,
+  store,
+} from '../store'
 
 export function useCreateReactStoreService() {
   const [reactStore, setReactStore] = useState<Store>(store)
@@ -15,9 +21,9 @@ export function useCreateReactStoreService() {
 
   useEffect(() => {
     if (store.user !== null) {
-      localStorage.setItem('username', store.user.username)
-      localStorage.setItem('token', store.user.token)
-      localStorage.setItem('role', store.user.role)
+      localStorage.setItem(LOCAL_STORAGE_USER_NAME_KEY, store.user.username)
+      localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, store.user.token)
+      localStorage.setItem(LOCAL_STORAGE_ROLE_KEY, store.user.role)
     } else {
       localStorage.clear()
     }

@@ -13,7 +13,7 @@ export interface TransactionResponse {
   transferDate: number
   descriptions: string
   createAt: number
-  // images: string;
+  images: string[]
   fixOfferings: TransactionFixOfferingResponse[]
   giftOfferings: TransactionGiftOfferingResponse[]
   projectOfferings: TransactionProjectOfferingResponse[]

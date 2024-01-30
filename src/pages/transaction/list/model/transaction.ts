@@ -14,7 +14,7 @@ export interface TransactionList {
   departmentName: string
   descriptions: string
   createAt: dayjs.Dayjs
-  // image: string
+  images: string[]
   fixOfferings: TransactionFixOfferingList[]
   giftOfferings: TransactionGiftOfferingList[]
   projectOfferings: TransactionProjectOfferingList[]

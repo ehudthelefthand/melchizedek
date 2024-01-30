@@ -41,6 +41,7 @@ import GiftOfferingForm from './components/GiftOffering'
 import ProjectOfferingForm from './components/ProjectOffering'
 import GiftOfferingList from './components/GiftOfferingList'
 import ProjectOfferingList from './components/ProjectOfferingList'
+import { calculateOffering } from './utils/calculateOffering'
 
 const initialTransactionForm: TransactionForm = {
   id: null,
@@ -52,6 +53,8 @@ const initialTransactionForm: TransactionForm = {
   staffId: null,
   departmentId: null,
   descriptions: '',
+  images: [],
+  newImages: [],
   fixOfferings: [],
   giftOfferings: [],
   projectOfferings: [],
@@ -72,7 +75,6 @@ const TransactionFormPage = () => {
   useEffect(() => {
     //TODOe Set value to edit form
     if (paramsId) {
-      console.log('paramsId', paramsId)
       setIsLoading(true)
       service.api.transaction
         .getOne(parseInt(paramsId))
@@ -88,6 +90,7 @@ const TransactionFormPage = () => {
             fromBankId: service.metadatums.getBank(transaction.fromBankId).id,
             amount: transaction.amount.toString(),
             transferDate: dayjs(transaction.transferDate),
+            images: [],
             descriptions: transaction.descriptions,
             fixOfferings: transaction.fixOfferings.map(
               (fixOffering: TransactionFixOfferingResponse) => {
@@ -152,6 +155,9 @@ const TransactionFormPage = () => {
 
   // TODO: แยกไฟล์ให้ถูก
   const onSubmit = async (transaction: TransactionForm) => {
+    const images = form.getFieldValue('images')
+    const newImages = form.getFieldValue('newImages')
+
     const fixOfferings: TransactionFixOfferingForm[] | [] =
       form.getFieldValue('fixOfferings')
     const giftOfferings: TransactionGiftOfferingForm[] | [] =
@@ -159,7 +165,21 @@ const TransactionFormPage = () => {
     const projectOfferings: TransactionProjectOfferingForm[] | [] =
       form.getFieldValue('projectOfferings')
 
+    if (calculateOffering(form, 0, 0).leftAmount < 0) {
+      Modal.warning({
+        title: 'โปรดตรวจสอบยอดเงินทั้งหมดก่อน !',
+        content: 'ไม่สามารถแบ่งยอดเงินได้เกินกว่ายอดเงินทั้งหมด..',
+      })
+      return
+    }
+
     if (paramsId) {
+      const formData = new FormData()
+      newImages.forEach((newImage: File) => {
+        // formData has no data??
+        formData.append('photo', newImage)
+      })
+
       const transactionEdited: TransactionUpdateRequest = {
         id: parseInt(paramsId),
         donorId: transaction.donorId!,
@@ -170,6 +190,7 @@ const TransactionFormPage = () => {
         amount: parseFloat(transaction.amount),
         descriptions: transaction.descriptions,
         transferDate: +transaction.transferDate!,
+        images: transaction.images,
         fixOfferings:
           fixOfferings.length > 0
             ? fixOfferings.map((fixOffering: TransactionFixOfferingForm) => {
@@ -220,15 +241,23 @@ const TransactionFormPage = () => {
       }
       service.api.transaction
         .update(transactionEdited)
-        .then(() => {
-          message.success('Update successful!')
-          navigate('/transaction')
+        .then((response) => {
+          service.api.transaction.upload(formData, response.id).then(() => {
+            message.success('Update successful!')
+            navigate('/transaction')
+          })
         })
         .catch((error: Error) => {
           console.error(error)
           message.error('Update Fail!')
         })
     } else {
+      const formData = new FormData()
+      images.forEach((image: File) => {
+        // formData has no data??
+        formData.append('photo', image)
+      })
+
       const transactionCreated: TransactionCreateRequest = {
         donorId: transaction.donorId!,
         staffId: transaction.staffId!,
@@ -238,6 +267,7 @@ const TransactionFormPage = () => {
         amount: parseFloat(transaction.amount),
         descriptions: transaction.descriptions,
         transferDate: +transaction.transferDate!,
+        images: transaction.images,
         fixOfferings:
           fixOfferings.length > 0
             ? fixOfferings.map((fixOffering: TransactionFixOfferingForm) => {
@@ -282,7 +312,10 @@ const TransactionFormPage = () => {
       }
       service.api.transaction
         .create(transactionCreated)
-        .then(() => {
+        .then((response) => {
+          service.api.transaction
+            .upload(formData, response.id)
+            .then(() => console.log('upload images'))
           message.success('Create successful!')
           navigate('/transaction')
         })
@@ -332,7 +365,7 @@ const TransactionFormPage = () => {
                       size="large"
                       type="primary"
                       htmlType="button"
-                      style={{ width: "100%" }}
+                      style={{ width: '100%' }}
                     >
                       Fix
                     </Button>
@@ -353,7 +386,7 @@ const TransactionFormPage = () => {
                       size="large"
                       type="primary"
                       htmlType="button"
-                      style={{ width: "100%" }}
+                      style={{ width: '100%' }}
                     >
                       Gift
                     </Button>
@@ -374,7 +407,7 @@ const TransactionFormPage = () => {
                       size="large"
                       type="primary"
                       htmlType="button"
-                      style={{ width: "100%" }}
+                      style={{ width: '100%' }}
                     >
                       Project
                     </Button>
@@ -416,7 +449,7 @@ const TransactionFormPage = () => {
             </Modal>
             <Space direction="vertical" size={20} style={{ display: 'flex' }}>
               <Row justify={'center'} style={{ textAlign: 'center' }}>
-                <Col span={8}>
+                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
                   <FixOfferingList
                     transactionForm={form}
                     setModalVisible={setModalVisible}
@@ -424,7 +457,7 @@ const TransactionFormPage = () => {
                     setOfferingType={setOfferingType}
                   />
                 </Col>
-                <Col span={8}>
+                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
                   <GiftOfferingList
                     transactionForm={form}
                     setModalVisible={setModalVisible}
@@ -432,7 +465,7 @@ const TransactionFormPage = () => {
                     setOfferingType={setOfferingType}
                   />
                 </Col>
-                <Col span={8}>
+                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
                   <ProjectOfferingList
                     transactionForm={form}
                     setModalVisible={setModalVisible}
@@ -442,34 +475,29 @@ const TransactionFormPage = () => {
                 </Col>
               </Row>
             </Space>
-            <Row>
-              <Col span={24}>
-                <Form.Item
-                  key={'uploadSlip'}
-                  name={'uploadSlip'}
-                  // rules={[{ required: true, message: 'Please upload proof of payment' }]}
-                  hasFeedback
-                >
-                  <MzkUploadFile />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <Form.Item
-                  key={'descriptions'}
-                  name={'descriptions'}
-                  hasFeedback
-                >
-                  <TextArea
-                    allowClear
-                    size="large"
-                    rows={4}
-                    placeholder={t('transacForm.descriptions')}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
+            <Space direction="vertical" size={20} style={{ display: 'flex' }}>
+              <Row>
+                <Col span={24}>
+                  <MzkUploadFile transactionForm={form} paramsId={paramsId} />
+                </Col>
+              </Row>
+              <Row>
+                <Col span={24}>
+                  <Form.Item
+                    key={'descriptions'}
+                    name={'descriptions'}
+                    hasFeedback
+                  >
+                    <TextArea
+                      allowClear
+                      size="large"
+                      rows={4}
+                      placeholder={t('transacForm.descriptions')}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Space>
             {isMobile ? (
               <Row gutter={[0, 8]}>
                 <Col xs={24}>

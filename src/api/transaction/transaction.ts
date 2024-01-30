@@ -8,6 +8,7 @@ import {
   TransactionUpdateRequest,
 } from './request/transaction'
 import { Store } from '../../store'
+import { ImageResponse } from './response/image'
 
 export default {
   getOne: (id: number): Promise<TransactionResponse> => {
@@ -32,5 +33,11 @@ export default {
   },
   delete: (id: number): Promise<TransactionUpdateRequest> => {
     return axios.delete(`/transactions/${id}`).then((response) => response.data)
+  },
+  upload: (form: FormData, id: number) => {
+    return axios.post(`/uploads/${id}`, form).then((response) => response.data)
+  },
+  getImage: (imageName: string): Promise<ImageResponse> => {
+    return axios.get(`/${imageName}`).then((response) => response.data)
   },
 }

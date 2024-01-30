@@ -52,6 +52,7 @@ function TransactionListPage() {
               ).name,
               descriptions: transaction.descriptions,
               createAt: dayjs(transaction.createAt),
+
               fixOfferings: transaction.fixOfferings.map((fixOffering) => {
                 const fix: TransactionFixOfferingList = {
                   id: fixOffering.id,
@@ -105,8 +106,8 @@ function TransactionListPage() {
                 sumProjectOfferings:
                   transaction.totalOfferings.sumProjectOfferings,
               },
+              images: transaction.images
             }
-            console.log(result)
             return result
           })
 

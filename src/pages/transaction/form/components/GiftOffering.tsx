@@ -1,13 +1,14 @@
 import { Button, Col, Form, InputNumber, Row, Select, Space } from 'antd'
 import { FormInstance } from 'antd/es/form/Form'
 import { useTranslation } from 'react-i18next'
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
 import { useService } from '../../../../service/service'
 import { TransactionForm } from '../model/transaction'
 import {
   GiftOfferingFormAntd,
   TransactionGiftOfferingForm,
 } from '../model/giftOffering'
+import { calculateOffering } from '../utils/calculateOffering'
 
 function GiftOfferingForm(
   props: PropsWithChildren<{
@@ -20,6 +21,17 @@ function GiftOfferingForm(
   const [giftOfferingForm] = Form.useForm<GiftOfferingFormAntd>()
   const [t] = useTranslation('translation')
   const service = useService()
+
+  const [currentEditAmount, setCuttentEditAmount] = useState(0)
+  const [forceRenderValue, forceRender] = useState(Math.random())
+  const offeringAmountCalculation = useMemo(() => {
+    return calculateOffering(
+      props.transactionForm,
+      giftOfferingForm.getFieldValue('amount') ?? 0,
+      currentEditAmount
+    )
+  }, [forceRenderValue, currentEditAmount])
+
   useEffect(() => {
     if (editId != null) {
       const offeringSelected: TransactionGiftOfferingForm = transactionForm
@@ -32,6 +44,8 @@ function GiftOfferingForm(
         amount: offeringSelected.amount,
         transferDate: offeringSelected.transferDate,
       })
+
+      setCuttentEditAmount(Number(offeringSelected.amount))
     }
   }, [])
 
@@ -136,6 +150,24 @@ function GiftOfferingForm(
                 key={'amount'}
                 rules={[
                   { required: true, message: `${t('transacValidate.amount')}` },
+                  () => ({
+                    validator(_, value) {
+                      const amount = Number(value)
+                      if (amount >= 0) {
+                        const calculateResult = calculateOffering(
+                          transactionForm,
+                          amount,
+                          currentEditAmount
+                        )
+                        if (calculateResult.remainingAmount < 0) {
+                          return Promise.reject(
+                            new Error('จำนวนเงินไม่สามารถติดลบได้')
+                          )
+                        }
+                      }
+                      return Promise.resolve()
+                    },
+                  }),
                 ]}
                 hasFeedback
               >
@@ -143,7 +175,7 @@ function GiftOfferingForm(
                   style={{ width: '100%' }}
                   stringMode
                   min="0"
-                  max="999999999"
+                  max="10000000"
                   step={0.01}
                   formatter={(value) =>
                     `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -159,9 +191,16 @@ function GiftOfferingForm(
                     }
                   }}
                   size="large"
+                  onChange={() => forceRender(Math.random())}
                   placeholder={t('transacForm.amount')}
                 />
               </Form.Item>
+              <div>
+                ยอดที่เหลือทั้งหมด: {offeringAmountCalculation.leftAmount}
+              </div>
+              <div>
+                ยอดที่เหลือหลัง Fix: {offeringAmountCalculation.remainingAmount}
+              </div>
             </Col>
           </Row>
           <Row justify={'end'} gutter={15}>
