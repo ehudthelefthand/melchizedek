@@ -197,7 +197,7 @@ function TableView(
                 key={imageName}
                 width={50}
                 height={50}
-                src={`${baseURL}/image${imageName}`}
+                src={`${baseURL}/image/${imageName}`}
               />
             ))}
           </>
