@@ -24,6 +24,8 @@ import { PageTransactionResponse } from '../../../../api/transaction/response/tr
 import { TotalOfferingsList, TransactionList } from '../model/transaction'
 import { useService } from '../../../../service/service'
 
+const baseURL = import.meta.env.VITE_REACT_PUBLIC_CORE_API
+
 interface TableParams {
   pagination?: TablePaginationConfig
   sortField?: string
@@ -195,7 +197,7 @@ function TableView(
                 key={imageName}
                 width={50}
                 height={50}
-                src={`http://192.168.1.198:8080/image/${imageName}`}
+                src={`${baseURL}/image${imageName}`}
               />
             ))}
           </>

@@ -4,6 +4,8 @@ import type { FormInstance, GetProp, UploadProps } from 'antd'
 import { Modal, Upload, UploadFile } from 'antd'
 import { TransactionForm } from '../model/transaction'
 
+const baseURL = import.meta.env.VITE_REACT_PUBLIC_CORE_API
+
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
 
 const getBase64 = (file: FileType): Promise<string> =>
@@ -35,7 +37,7 @@ function MzkUploadFile(
           uid: index.toString(),
           name: `${imageName}`,
           status: 'done',
-          url: `http://192.168.1.198:8080/image/${imageName}`,
+          url: `${baseURL}/image/${imageName}`,
         })
       )
 
