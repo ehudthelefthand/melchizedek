@@ -34,7 +34,7 @@ interface Props {
 
 function ProjectOfferingList(props: Props) {
   const { transactionForm, setModalVisible, setEditId, setOfferingType } = props
-  const [t] = useTranslation('translation')
+  const [_] = useTranslation('translation')
   const { Text } = Typography
   const [_deleteOffer, setDeleteOffer] = useState(false)
   const service = useService()
@@ -83,7 +83,6 @@ function ProjectOfferingList(props: Props) {
               onClick={() => {
                 handleDelete(projectOffering.id! || index)
                 setEditId(projectOffering.id!)
-                console.log('del id,index', projectOffering.id, index)
               }}
             >
               <DeleteOutlined />

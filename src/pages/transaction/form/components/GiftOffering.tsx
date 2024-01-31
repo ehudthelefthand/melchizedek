@@ -99,7 +99,6 @@ function GiftOfferingForm(
           createGiftOffering,
         ],
       })
-      console.log('Gift date', createGiftOffering)
     }
 
     onCancel()

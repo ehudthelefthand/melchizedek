@@ -43,7 +43,6 @@ function TableView(
 
   const { transactions, pagesTransaction } = props
   const [isLoading, setIsLoading] = useState(true)
-  const [imageEncode, setImageEncode] = useState('')
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
@@ -63,7 +62,6 @@ function TableView(
   }
 
   useEffect(() => {
-    console.log('tran', transactions)
     setIsLoading(false)
   }, [tableParams])
 
@@ -187,28 +185,24 @@ function TableView(
       title: t('transacList.slip'),
       dataIndex: 'images',
       key: 'images',
-      width: 100,
+      width: 150,
       align: 'center',
-      render: (imageName: string) => {
-        if (imageName[0] !== undefined && imageName[0] !== ''){
-          service.api.transaction
-          .getImage(imageName[0])
-          .then((data) => setImageEncode(data.encode))
-        }
-
-        return imageName[0] !== undefined && imageName[0] !== '' ? (
+      render: (imagesName: string[]) => {
+        return imagesName.length > 0 ? (
           <>
-            <Image
-              width={60}
-              height={50}
-              src={`data:image/*;base64,${imageEncode}`}
-            />
+            {imagesName.map((imageName) => (
+              <Image
+                key={imageName}
+                width={50}
+                height={50}
+                src={`http://192.168.1.198:8080/image/${imageName}`}
+              />
+            ))}
           </>
         ) : (
-          <p>{imageName}</p>
+          <p>-</p>
         )
       },
-      
     },
     {
       title: t('transacList.event'),

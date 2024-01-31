@@ -91,7 +91,6 @@ function ProjectOfferingForm(
     const fakeId: [] = transactionForm.getFieldValue('projectOfferings')
 
     if (editId !== null) {
-      console.log('params', editId)
       const editOffer: TransactionProjectOfferingForm = {
         id: editId,
         staffId: value.staffId,

@@ -25,12 +25,21 @@ function MzkUploadFile(
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewImage, setPreviewImage] = useState('')
   const [previewTitle, setPreviewTitle] = useState('')
+  const [deletedImages, setDeletedImages] = useState<string[]>([])
 
   useEffect(() => {
     if (paramsId) {
-      const images = transactionForm.getFieldValue('images')
-      setPreviewImage(`${images}`)
-      console.log('parsms Img', images)
+      const currentImage = transactionForm.getFieldValue('imagesName')
+      const fileListFromImages = currentImage.map(
+        (imageName: string, index: number) => ({
+          uid: index.toString(),
+          name: `${imageName}`,
+          status: 'done',
+          url: `http://192.168.1.198:8080/image/${imageName}`,
+        })
+      )
+
+      setFileList(fileListFromImages)
     }
   }, [])
 
@@ -60,6 +69,21 @@ function MzkUploadFile(
       const newFileList = fileList.slice()
       newFileList.splice(index, 1)
       setFileList(newFileList)
+
+      transactionForm.setFieldValue(
+        'images',
+        newFileList.map((file) => file.originFileObj)
+      )
+
+      if (paramsId) {
+        const currentImage: string[] =
+          transactionForm.getFieldValue('imagesName')
+        const selectedImage = currentImage.find((_, id) => id === index)
+
+        if (selectedImage) {
+          setDeletedImages([...deletedImages, selectedImage])
+        }
+      }
     },
 
     beforeUpload: (file, allFile) => {
@@ -72,12 +96,13 @@ function MzkUploadFile(
         const images = transactionForm.getFieldValue('images')
         transactionForm.setFieldValue('images', [...images, ...allFile])
       }
-
       return false
     },
     onChange: handleChange,
     onPreview: handlePreview,
   }
+
+  transactionForm.setFieldValue('imagesDelete', deletedImages)
 
   const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
@@ -95,7 +120,7 @@ function MzkUploadFile(
         footer={null}
         onCancel={handleCancel}
       >
-        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+        <img alt="evidence" style={{ width: '100%' }} src={previewImage} />
       </Modal>
     </>
   )

@@ -35,7 +35,6 @@ const SideMenu: React.FC = () => {
   }
 
   const handleOnClickMenus: MenuProps['onClick'] = (e) => {
-    console.log('click ', e)
     switch (e.key) {
       case 'transactionPage':
         navigate('/transaction')

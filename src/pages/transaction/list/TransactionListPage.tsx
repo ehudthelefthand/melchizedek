@@ -106,7 +106,7 @@ function TransactionListPage() {
                 sumProjectOfferings:
                   transaction.totalOfferings.sumProjectOfferings,
               },
-              images: transaction.images
+              images: transaction.images,
             }
             return result
           })

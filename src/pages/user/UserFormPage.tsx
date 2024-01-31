@@ -3,23 +3,12 @@ import { UserRegisterRequest } from '../../api/user/request'
 import { KeyOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useService } from '../../service/service'
 
 function UserFormPage() {
-  const service = useService()
   const [t] = useTranslation('translation')
 
-  const onSubmit = (value: UserRegisterRequest) => {
-    const userRegister: UserRegisterRequest = {
-      userName: value.userName,
-      password: value.password,
-      department: value.department,
-      role: value.role,
-    }
-    //   service.api.user.register(userRegister)
-    console.log('userRegister', userRegister)
-  }
-  
+  const onSubmit = (_: UserRegisterRequest) => {}
+
   return (
     <>
       <Form onFinish={onSubmit}>

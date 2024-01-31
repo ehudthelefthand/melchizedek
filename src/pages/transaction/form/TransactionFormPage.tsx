@@ -42,6 +42,7 @@ import ProjectOfferingForm from './components/ProjectOffering'
 import GiftOfferingList from './components/GiftOfferingList'
 import ProjectOfferingList from './components/ProjectOfferingList'
 import { calculateOffering } from './utils/calculateOffering'
+import { EvidenceDeleteRequest } from '../../../api/transaction/request/image'
 
 const initialTransactionForm: TransactionForm = {
   id: null,
@@ -54,7 +55,9 @@ const initialTransactionForm: TransactionForm = {
   departmentId: null,
   descriptions: '',
   images: [],
+  imagesName: [],
   newImages: [],
+  imagesDelete: [],
   fixOfferings: [],
   giftOfferings: [],
   projectOfferings: [],
@@ -73,7 +76,6 @@ const TransactionFormPage = () => {
   const service = useService()
 
   useEffect(() => {
-    //TODOe Set value to edit form
     if (paramsId) {
       setIsLoading(true)
       service.api.transaction
@@ -91,6 +93,7 @@ const TransactionFormPage = () => {
             amount: transaction.amount.toString(),
             transferDate: dayjs(transaction.transferDate),
             images: [],
+            imagesName: transaction.images,
             descriptions: transaction.descriptions,
             fixOfferings: transaction.fixOfferings.map(
               (fixOffering: TransactionFixOfferingResponse) => {
@@ -153,10 +156,10 @@ const TransactionFormPage = () => {
     }
   }, [])
 
-  // TODO: แยกไฟล์ให้ถูก
   const onSubmit = async (transaction: TransactionForm) => {
     const images = form.getFieldValue('images')
     const newImages = form.getFieldValue('newImages')
+    const deleteImages = form.getFieldValue('imagesDelete')
 
     const fixOfferings: TransactionFixOfferingForm[] | [] =
       form.getFieldValue('fixOfferings')
@@ -176,9 +179,13 @@ const TransactionFormPage = () => {
     if (paramsId) {
       const formData = new FormData()
       newImages.forEach((newImage: File) => {
-        // formData has no data??
         formData.append('photo', newImage)
       })
+
+      const deleteEvidence: EvidenceDeleteRequest = {
+        imagesName: deleteImages,
+        transactionId: parseInt(paramsId),
+      }
 
       const transactionEdited: TransactionUpdateRequest = {
         id: parseInt(paramsId),
@@ -243,8 +250,10 @@ const TransactionFormPage = () => {
         .update(transactionEdited)
         .then((response) => {
           service.api.transaction.upload(formData, response.id).then(() => {
-            message.success('Update successful!')
-            navigate('/transaction')
+            service.api.transaction.deleteImages(deleteEvidence).then(() => {
+              message.success('Update successful!')
+              navigate('/transaction')
+            })
           })
         })
         .catch((error: Error) => {
@@ -315,7 +324,7 @@ const TransactionFormPage = () => {
         .then((response) => {
           service.api.transaction
             .upload(formData, response.id)
-            .then(() => console.log('upload images'))
+            .then((response) => response)
           message.success('Create successful!')
           navigate('/transaction')
         })
@@ -335,7 +344,6 @@ const TransactionFormPage = () => {
   return (
     <div className="transaction-add-form">
       {isLoading ? (
-        // TODO: ทำ Skeleton !!
         <Spin />
       ) : (
         <Form

@@ -34,7 +34,7 @@ interface Props {
 
 function FixOfferingList(props: Props) {
   const { transactionForm, setModalVisible, setEditId, setOfferingType } = props
-  const [t] = useTranslation('translation')
+  const [_] = useTranslation('translation')
   const { Text } = Typography
   const [_deleteOffer, setDeleteOffer] = useState(false)
   const service = useService()

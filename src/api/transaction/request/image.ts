@@ -1,5 +1,9 @@
-export interface ImageRequest {
-  imageName: string
+export interface EvidenceDeleteRequest {
+  imagesName: string[]
+  transactionId: number
 }
 
-export type CreateImageRequest = Omit<ImageRequest, 'id' | 'transactionId'>
+export type CreateImageRequest = Omit<
+  EvidenceDeleteRequest,
+  'id' | 'transactionId'
+>
