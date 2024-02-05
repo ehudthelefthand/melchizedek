@@ -151,7 +151,7 @@ function BasicForm() {
                 placeholder={t('transacForm.dateTransfers')}
                 onOk={(value: DatePickerProps['value']) => value}
                 style={{ width: '100%' }}
-                format={'DD/MM/YYYY HH:mm:ss'}
+                format={'DD/MM/YYYY HH:mm'}
               />
             </Form.Item>
           </Col>

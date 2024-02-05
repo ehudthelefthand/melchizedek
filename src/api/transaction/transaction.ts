@@ -9,6 +9,8 @@ import {
 } from './request/transaction'
 import { Store } from '../../store'
 import { EvidenceDeleteRequest } from './request/image'
+import { PageTransactionReportResponse } from './response/report'
+import { TransactionReportRequest } from './request/report'
 
 export default {
   getOne: (id: number): Promise<TransactionResponse> => {
@@ -37,7 +39,21 @@ export default {
   upload: (form: FormData, id: number) => {
     return axios.post(`/uploads/${id}`, form).then((response) => response.data)
   },
-  deleteImages: (evidences : EvidenceDeleteRequest) => {
-    return axios.post(`/deleteImages`,evidences)
+  deleteImages: (evidences: EvidenceDeleteRequest) => {
+    return axios
+      .post(`/deleteImages`, evidences)
+      .then((response) => response.data)
   },
+  requestReport: (month: TransactionReportRequest) => {
+    return axios.post(`/report/downloads`, month)
+  },
+  getReports: (store: Store): Promise<PageTransactionReportResponse> => {
+    return axios
+      .get(`${store.user?.role}/reports`)
+      .then((response) => response.data)
+  },
+  // TODO: API DownloadLink
+  // getLinkReport: (store: Store, url: string): Promise<string> => {
+  //   return axios.get(`${store.user?.role}/report/${url}`)
+  // },
 }

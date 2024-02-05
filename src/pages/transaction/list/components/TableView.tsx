@@ -24,6 +24,8 @@ import { PageTransactionResponse } from '../../../../api/transaction/response/tr
 import { TotalOfferingsList, TransactionList } from '../model/transaction'
 import { useService } from '../../../../service/service'
 
+const baseURL = import.meta.env.VITE_REACT_PUBLIC_CORE_API
+
 interface TableParams {
   pagination?: TablePaginationConfig
   sortField?: string
@@ -44,10 +46,17 @@ function TableView(
   const { transactions, pagesTransaction } = props
   const [isLoading, setIsLoading] = useState(true)
 
+  // const [page, setPage] = useState<number>()
+  // const [pageSize, setPageSize] = useState<number>()
+
+  // setPage(pagesTransaction?.page)
+  // setPageSize(pagesTransaction?.itemPerPage)
+
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: pagesTransaction?.page,
       pageSize: pagesTransaction?.itemPerPage,
+      total: pagesTransaction?.totalItems,
     },
   })
 
@@ -55,6 +64,7 @@ function TableView(
     pagination,
     sorter
   ) => {
+    console.log('API data: ', pagination)
     setTableParams({
       pagination,
       ...sorter,
@@ -195,7 +205,7 @@ function TableView(
                 key={imageName}
                 width={50}
                 height={50}
-                src={`http://192.168.1.198:8080/image/${imageName}`}
+                src={`${baseURL}/image/${imageName}`}
               />
             ))}
           </>

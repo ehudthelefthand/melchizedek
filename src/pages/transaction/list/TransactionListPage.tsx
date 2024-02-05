@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive'
 import dayjs from 'dayjs'
-import { Input, Space, Button, Row, Col, Skeleton, Spin } from 'antd'
+import { Input, Space, Button, Row, Col, Skeleton, Spin, Modal } from 'antd'
 // import MobileViewComponent from './components/MobileView'
 import {
   PageTransactionResponse,
@@ -15,7 +15,8 @@ import { useService } from '../../../service/service'
 import { TransactionFixOfferingList } from './model/fixOffering'
 import { TransactionGiftOfferingList } from './model/giftOffering'
 import { TransactionProjectOfferingList } from './model/projectOffering'
-import { LoadingOutlined } from '@ant-design/icons'
+import { FileExcelOutlined, LoadingOutlined } from '@ant-design/icons'
+import TransactionReportFilterForm from '../report/TransactionReportFilterForm'
 
 const { Search } = Input
 
@@ -25,12 +26,18 @@ function TransactionListPage() {
   const [transactions, setTransactions] = useState<TransactionList[]>([])
   const [pagination, setPagination] = useState<PageTransactionResponse>()
   const [isLoading, setIsLoading] = useState(true)
+  const [modalVisible, setModalVisible] = useState(false)
   const service = useService()
+
+  const onCancel = () => {
+    setModalVisible(false)
+  }
 
   useEffect(() => {
     service.api.transaction
       .getAll(service.reactStore.store)
       .then((pageTransaction) => {
+        console.log('pageTransaction: ', pageTransaction)
         const transactionFormattedData: TransactionList[] =
           pageTransaction.data.map((transaction: TransactionResponse) => {
             const result: TransactionList = {
@@ -114,7 +121,7 @@ function TransactionListPage() {
         setTransactions(transactionFormattedData)
         setPagination(pageTransaction)
       })
-      .catch((error: any) => {
+      .catch((error) => {
         console.error('TransactionPage', error)
       })
       .finally(() => setIsLoading(false))
@@ -130,22 +137,58 @@ function TransactionListPage() {
         </>
       ) : (
         <Space direction="vertical" size="large" style={{ display: 'flex' }}>
-          <Row justify={'space-between'} gutter={[16, 16]}>
-            <Col xs={24} md={12}>
-              <Search
-                size="large"
-                placeholder={t('transacButton.search')}
-                enterButton
-              />
+          <Row gutter={[5, 5]}>
+            <Col xs={24} sm={24} md={12}>
+              <Col>
+                <Search
+                  size="large"
+                  placeholder={t('transacButton.search')}
+                  enterButton
+                />
+              </Col>
             </Col>
-            <Col xs={24} md={12}>
-              <Link to={'/transaction/create'}>
-                <Button size="large" type="primary" className="btn-primary">
-                  {t('transacButton.addData')}
-                </Button>
-              </Link>
+            <Col xs={24} sm={24} md={12}>
+              <Row justify={'space-between'} gutter={5}>
+                <Col xs={12}>
+                  <Link to={'/transaction/create'}>
+                    <Button size="large" type="primary" style={{ width: isMobile ? '100%' : '' }} className="btn-primary">
+                      {t('transacButton.addData')}
+                    </Button>
+                  </Link>
+                </Col>
+                <Col xs={12}>
+                  <Button
+                    size="large"
+                    type="primary"
+                    style={{ backgroundColor: 'green', width: isMobile ? '100%' : '' }}
+                    className="btn-primary"
+                    onClick={() => {
+                      setModalVisible(true)
+                    }}
+                  >
+                    {/* TODO: translation */}
+                    <FileExcelOutlined /> Export
+                  </Button>
+                </Col>
+              </Row>
             </Col>
           </Row>
+
+          <Modal
+            /* TODO: translation */
+            title={<h2>กรุณาเลือกเดือน</h2>}
+            centered
+            open={modalVisible}
+            onCancel={() => {
+              onCancel()
+            }}
+            footer={null}
+            closeIcon={null}
+            destroyOnClose={true}
+          >
+            <TransactionReportFilterForm onCancel={onCancel} />
+          </Modal>
+          {/* //TODO: mobile ยังไม่พร้อม */}
           {isMobile ? (
             <></>
           ) : (

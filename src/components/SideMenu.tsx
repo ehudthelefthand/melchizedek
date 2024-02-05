@@ -1,5 +1,6 @@
 import { Divider, Menu, MenuProps } from 'antd'
 import {
+  CloudDownloadOutlined,
   DesktopOutlined,
   LogoutOutlined,
   UserAddOutlined,
@@ -26,6 +27,12 @@ const SideMenu: React.FC = () => {
       label: t('menu.transaction'),
       icon: <DesktopOutlined />,
     },
+    {
+      key: 'transactionHistoryReport',
+      // TODO: translation
+      label: 'HistoryReport',
+      icon: <CloudDownloadOutlined />,
+    },
   ]
 
   const logoutItem = {
@@ -38,6 +45,9 @@ const SideMenu: React.FC = () => {
     switch (e.key) {
       case 'transactionPage':
         navigate('/transaction')
+        break
+      case 'transactionHistoryReport':
+        navigate('/transaction/historyReport')
         break
       case 'logout':
         service.api.user.logout()

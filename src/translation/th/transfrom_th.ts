@@ -21,7 +21,7 @@ export default {
     staffName: 'ชื่อสตาฟ',
     department: 'แผนก',
     slip: 'สลิป',
-    event: 'ถวายให้ (event)',
+    event: 'ถวายให้',
     descriptions: 'รายละเอียด'
   },
   transacForm: {
@@ -72,7 +72,7 @@ export default {
     staffName: 'ผู้รับเงิน',
     department: 'แผนก',
     slip: 'สลิป',
-    event: 'ถวายให้ (event)',
+    event: 'ถวายให้',
   },
   transacMessage: {
     confirmDelete: 'ยืนยันการลบข้อมูล!',

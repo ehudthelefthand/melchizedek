@@ -15,7 +15,7 @@ export default {
     offerFix: 'Fix',
   },
   transacList: {
-    createAt: 'createAt',
+    createAt: 'CreateAt',
     donorName: 'DonorName',
     amount: 'Amont',
     dateTransfers: 'Date Transferred',

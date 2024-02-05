@@ -10,6 +10,7 @@ import TransactionFormPage from '../pages/transaction/form/TransactionFormPage'
 import TransactionListPage from '../pages/transaction/list/TransactionListPage'
 import { useState } from 'react'
 import UserFormPage from '../pages/user/UserFormPage'
+import TransactionReportListPage from '../pages/transaction/report/TransactionReportListPage'
 
 const { Sider } = Layout
 
@@ -80,6 +81,11 @@ const router = createBrowserRouter([
       {
         path: 'edit/:id',
         element: <TransactionFormPage />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: 'historyReport',
+        element: <TransactionReportListPage />,
         errorElement: <ErrorPage />,
       },
     ],
