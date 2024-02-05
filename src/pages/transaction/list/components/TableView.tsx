@@ -46,10 +46,17 @@ function TableView(
   const { transactions, pagesTransaction } = props
   const [isLoading, setIsLoading] = useState(true)
 
+  // const [page, setPage] = useState<number>()
+  // const [pageSize, setPageSize] = useState<number>()
+
+  // setPage(pagesTransaction?.page)
+  // setPageSize(pagesTransaction?.itemPerPage)
+
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: pagesTransaction?.page,
       pageSize: pagesTransaction?.itemPerPage,
+      total: pagesTransaction?.totalItems,
     },
   })
 
@@ -57,6 +64,7 @@ function TableView(
     pagination,
     sorter
   ) => {
+    console.log('API data: ', pagination)
     setTableParams({
       pagination,
       ...sorter,

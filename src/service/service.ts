@@ -23,7 +23,12 @@ export const ServiceContext = createContext<
   ReturnType<typeof useCreateService>
 >(null as any)
 
+
 // Use
 export function useService() {
-  return useContext(ServiceContext)
+  const useService = useContext(ServiceContext)
+  if (!useService) {
+    throw new Error('Error in useService function')
+  }
+  return useService; 
 }
