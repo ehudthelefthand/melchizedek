@@ -1,90 +1,20 @@
-import Table, {
-  ColumnType,
-  TablePaginationConfig,
-  TableProps,
-} from 'antd/es/table'
-import { useEffect, useState } from 'react'
+import Table, { ColumnType } from 'antd/es/table'
 
-import { GetProp, Skeleton, Spin, message } from 'antd'
-import { DownloadOutlined, LoadingOutlined } from '@ant-design/icons'
-import {
-  PageTransactionReportResponse,
-  TransactionReportResponse,
-} from '../../../api/transaction/response/report'
-import { useService } from '../../../service/service'
+import { DownloadOutlined } from '@ant-design/icons'
+import { TransactionReportResponse } from '../../../api/transaction/response/report'
 import { STATUS } from '../../../constants/api'
 import { ProcessStatus } from '../components/ServerStatusComponent'
-
-// const data: TransactionReportResponse[] = [
-//   {
-//     id: 1,
-//     fileName: 'eiei',
-//     status: STATUS.success,
-//   },
-//   {
-//     id: 2,
-//     fileName: 'huhu',
-//     status: STATUS.processing,
-//   },
-//   {
-//     id: 3,
-//     fileName: 'hehe',
-//     status: STATUS.error,
-//   },
-// ]
-
-interface TableParams {
-  pagination?: TablePaginationConfig
-  sortField?: string
-  sortOrder?: string
-  filters?: Parameters<GetProp<TableProps, 'onChange'>>[1]
-}
+import useTransactionReport from './useTransactionReport'
 
 function TransactionReportListPage() {
-  const [pagination, setPagination] = useState<PageTransactionReportResponse>()
-  const [tableParams, setTableParams] = useState<TableParams>({
-    pagination: {
-      current: pagination?.page,
-      pageSize: pagination?.itemPerPage,
-    },
-  })
+  const transactionReport = useTransactionReport()
+  const { reportList, isLoading, handleTableChange, tableParams } =
+    transactionReport
 
-  const [report, setTransactionReport] = useState<TransactionReportResponse[]>(
-    []
-  )
   // const [t] = useTranslation('translation')
-  const service = useService()
-  const [isLoading, setIsloading] = useState(false)
-
-  useEffect(() => {
-    // TODO: Test API Report
-    service.api.transaction
-      .getReports(service.reactStore.store)
-      .then((response) => {
-        setPagination(response)
-        setTransactionReport(response.data)
-      })
-      .catch((err) => {
-        console.error(err)
-        message.error(`Database connection is lost!, Please try again.`)
-      })
-      .finally(() => setIsloading(false))
-  }, [])
-
-  const handleTableChange: TableProps<TransactionReportResponse>['onChange'] = (
-    pagination,
-    filters,
-    sorter
-  ) => {
-    setTableParams({
-      pagination,
-      filters,
-      ...sorter,
-    })
-  }
 
   const columns: ColumnType<TransactionReportResponse>[] = [
-    // TODO: translations
+    // TODO: translations แปลภาษา
     {
       title: '#',
       key: 'id',
@@ -112,6 +42,7 @@ function TransactionReportListPage() {
       key: 'dowload',
       render: (res: TransactionReportResponse) => (
         <DownloadOutlined
+          // TODO: refactor Download fn
           onClick={() => {
             console.log(`res: ${res.fileName}`)
             // getLinkReport(res)
@@ -124,15 +55,12 @@ function TransactionReportListPage() {
     },
   ]
 
-  return isLoading ? (
-    <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
-      <Skeleton active />
-    </Spin>
-  ) : (
+  return (
     <Table
+      loading={isLoading}
       columns={columns}
       rowKey={(record) => record.id}
-      dataSource={report}
+      dataSource={reportList}
       pagination={tableParams.pagination}
       onChange={handleTableChange}
     />

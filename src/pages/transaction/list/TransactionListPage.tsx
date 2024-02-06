@@ -27,6 +27,9 @@ function TransactionListPage() {
   const [pagination, setPagination] = useState<PageTransactionResponse>()
   const [isLoading, setIsLoading] = useState(true)
   const [modalVisible, setModalVisible] = useState(false)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [itemsPerPage, setItemsPerPage] = useState<number>(20)
+
   const service = useService()
 
   const onCancel = () => {
@@ -35,7 +38,10 @@ function TransactionListPage() {
 
   useEffect(() => {
     service.api.transaction
-      .getAll(service.reactStore.store)
+      .getAll(service.reactStore.store, {
+        currentPage: currentPage,
+        itemsPerPage: itemsPerPage,
+      })
       .then((pageTransaction) => {
         console.log('pageTransaction: ', pageTransaction)
         const transactionFormattedData: TransactionList[] =
@@ -125,7 +131,7 @@ function TransactionListPage() {
         console.error('TransactionPage', error)
       })
       .finally(() => setIsLoading(false))
-  }, [isLoading])
+  }, [])
 
   return (
     <>
@@ -151,7 +157,12 @@ function TransactionListPage() {
               <Row justify={'space-between'} gutter={5}>
                 <Col xs={12}>
                   <Link to={'/transaction/create'}>
-                    <Button size="large" type="primary" style={{ width: isMobile ? '100%' : '' }} className="btn-primary">
+                    <Button
+                      size="large"
+                      type="primary"
+                      style={{ width: isMobile ? '100%' : '' }}
+                      className="btn-primary"
+                    >
                       {t('transacButton.addData')}
                     </Button>
                   </Link>
@@ -160,7 +171,10 @@ function TransactionListPage() {
                   <Button
                     size="large"
                     type="primary"
-                    style={{ backgroundColor: 'green', width: isMobile ? '100%' : '' }}
+                    style={{
+                      backgroundColor: 'green',
+                      width: isMobile ? '100%' : '',
+                    }}
                     className="btn-primary"
                     onClick={() => {
                       setModalVisible(true)
@@ -195,6 +209,10 @@ function TransactionListPage() {
             <TableView
               transactions={transactions}
               pagesTransaction={pagination}
+              currentPage={currentPage!}
+              setCurrentPage={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+              setItemsPerPage={setItemsPerPage}
             />
           )}
         </Space>

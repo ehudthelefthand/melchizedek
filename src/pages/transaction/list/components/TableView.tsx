@@ -36,6 +36,10 @@ function TableView(
   props: PropsWithChildren<{
     transactions: TransactionList[]
     pagesTransaction: PageTransactionResponse | undefined
+    currentPage: number
+    setCurrentPage: React.Dispatch<React.SetStateAction<any>>
+    itemsPerPage: number
+    setItemsPerPage: React.Dispatch<React.SetStateAction<any>>
   }>
 ) {
   const [t] = useTranslation('translation')
@@ -43,19 +47,13 @@ function TableView(
   const service = useService()
   const { Text } = Typography
 
-  const { transactions, pagesTransaction } = props
+  const { transactions, pagesTransaction, currentPage, itemsPerPage, setCurrentPage } = props
   const [isLoading, setIsLoading] = useState(true)
-
-  // const [page, setPage] = useState<number>()
-  // const [pageSize, setPageSize] = useState<number>()
-
-  // setPage(pagesTransaction?.page)
-  // setPageSize(pagesTransaction?.itemPerPage)
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
-      current: pagesTransaction?.page,
-      pageSize: pagesTransaction?.itemPerPage,
+      current: currentPage,
+      pageSize: itemsPerPage,
       total: pagesTransaction?.totalItems,
     },
   })
@@ -64,7 +62,8 @@ function TableView(
     pagination,
     sorter
   ) => {
-    console.log('API data: ', pagination)
+    console.log("click at: ", pagination.pageSize)
+    setCurrentPage(pagination.current)
     setTableParams({
       pagination,
       ...sorter,
