@@ -35,3 +35,8 @@ export type TransactionCreateRequest = Omit<
   giftOfferings: TransactionGiftOfferingCreateRequest[]
   projectOfferings: TransactionProjectOfferingCreateRequest[]
 }
+
+export interface TransactionPageRequest {
+  currentPage: number
+  itemsPerPage: number
+}

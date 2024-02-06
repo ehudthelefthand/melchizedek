@@ -5,6 +5,7 @@ import {
 } from './response/transaction'
 import {
   TransactionCreateRequest,
+  TransactionPageRequest,
   TransactionUpdateRequest,
 } from './request/transaction'
 import { Store } from '../../store'
@@ -16,9 +17,15 @@ export default {
   getOne: (id: number): Promise<TransactionResponse> => {
     return axios.get(`/transactions/${id}`).then((response) => response.data)
   },
-  getAll: (store: Store): Promise<PageTransactionResponse> => {
+  getAll: (
+    store: Store,
+    pageRequest: TransactionPageRequest
+  ): Promise<PageTransactionResponse> => {
+    const { currentPage, itemsPerPage } = pageRequest
     return axios
-      .get(`${store.user?.role}/transactions`)
+      .get(
+        `${store.user?.role}/transactions?currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
+      )
       .then((response) => response.data)
   },
   create: (transaction: TransactionCreateRequest) => {

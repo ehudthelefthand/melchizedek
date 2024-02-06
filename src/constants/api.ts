@@ -1,5 +1,5 @@
-export enum STATUS  {
-    success = 'success',
-    processing = 'processing',
-    error = 'error'
-  };
+export enum STATUS {
+  success = 'success',
+  processing = 'processing',
+  error = 'error',
+}
