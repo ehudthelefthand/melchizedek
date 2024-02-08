@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { TransactionReportResponse } from '../../../api/transaction/response/report'
 import { useService } from '../../../service/service'
 import { GetProp, TablePaginationConfig, TableProps, message } from 'antd'
+import { initialPagination } from '../../../constants/api'
 
 interface TableParams {
   pagination?: TablePaginationConfig
@@ -15,6 +16,10 @@ const useTransactionReport = () => {
   const [reportList, setReportList] = useState<TransactionReportResponse[]>([])
   const [pagination, setPagination] = useState<PageTransactionReportResponse>()
   const [isLoading, setIsloading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(initialPagination.currentPage)
+  const [itemsPerPage, setItemPerPage] = useState(
+    initialPagination.itemsPerPage
+  )
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: pagination?.page,
@@ -57,7 +62,7 @@ const useTransactionReport = () => {
 
   useEffect(() => {
     service.api.transaction
-      .getReports(service.reactStore.store)
+      .getReports(service.reactStore.store, { currentPage, itemsPerPage })
       .then((response) => {
         response
         setPagination(response)
@@ -72,7 +77,15 @@ const useTransactionReport = () => {
       .finally(() => {
         setIsloading(false)
       })
-  }, [pagination])
+  }, [])
+
+  const getFile = (fileName: string) => {
+    service.api.transaction.getLinkReport(fileName).then((response : any) => {
+      response
+      console.log("res",response)
+    })
+    console.log("fileName",fileName)
+  }
 
   return {
     reportList,
@@ -80,6 +93,7 @@ const useTransactionReport = () => {
     isLoading,
     handleTableChange,
     tableParams,
+    getFile,
   }
 }
 

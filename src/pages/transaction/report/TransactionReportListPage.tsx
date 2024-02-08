@@ -8,7 +8,7 @@ import useTransactionReport from './useTransactionReport'
 
 function TransactionReportListPage() {
   const transactionReport = useTransactionReport()
-  const { reportList, isLoading, handleTableChange, tableParams } =
+  const { reportList, isLoading, handleTableChange, tableParams, getFile } =
     transactionReport
 
   // const [t] = useTranslation('translation')
@@ -41,14 +41,7 @@ function TransactionReportListPage() {
       title: '',
       key: 'dowload',
       render: (res: TransactionReportResponse) => (
-        <DownloadOutlined
-          // TODO: refactor Download fn
-          onClick={() => {
-            console.log(`res: ${res.fileName}`)
-            // getLinkReport(res)
-            // service.api.transaction.getLinkReport(service.reactStore.store, url)
-          }}
-        />
+        <DownloadOutlined onClick={() => getFile(res.fileName)} />
       ),
       width: 10,
       align: 'left',

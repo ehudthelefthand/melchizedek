@@ -1,3 +1,4 @@
+import { PageTransactionRequest } from './../../constants/api'
 import { axios } from '../api'
 import {
   PageTransactionResponse,
@@ -5,13 +6,13 @@ import {
 } from './response/transaction'
 import {
   TransactionCreateRequest,
-  TransactionPageRequest,
   TransactionUpdateRequest,
 } from './request/transaction'
 import { Store } from '../../store'
 import { EvidenceDeleteRequest } from './request/image'
 import { PageTransactionReportResponse } from './response/report'
 import { TransactionReportRequest } from './request/report'
+import { ImageResponse } from './response/image'
 
 export default {
   getOne: (id: number): Promise<TransactionResponse> => {
@@ -19,7 +20,7 @@ export default {
   },
   getAll: (
     store: Store,
-    pageRequest: TransactionPageRequest
+    pageRequest: PageTransactionRequest
   ): Promise<PageTransactionResponse> => {
     const { currentPage, itemsPerPage } = pageRequest
     return axios
@@ -54,13 +55,45 @@ export default {
   requestReport: (month: TransactionReportRequest) => {
     return axios.post(`/report/downloads`, month)
   },
-  getReports: (store: Store): Promise<PageTransactionReportResponse> => {
+  getReports: (
+    store: Store,
+    pageRequest: PageTransactionRequest
+  ): Promise<PageTransactionReportResponse> => {
+    const { currentPage, itemsPerPage } = pageRequest
     return axios
-      .get(`${store.user?.role}/reports`)
+      .get(
+        `${store.user?.role}/reports?currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
+      )
       .then((response) => response.data)
   },
   // TODO: API DownloadLink
-  // getLinkReport: (store: Store, url: string): Promise<string> => {
-  //   return axios.get(`${store.user?.role}/report/${url}`)
-  // },
+  getLinkReport: (url: string): Promise<string> => {
+    return axios
+      .get(`/report/${url}`, {
+        responseType: 'blob', // important
+      })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `${Date.now()}.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        link.removeChild(link)
+
+        return response.data
+      })
+  },
 }
+
+// {
+//   method: 'GET',
+//   responseType: 'blob', // important
+// }).then((response) => {
+//   const url = window.URL.createObjectURL(new Blob([response.data]));
+//   const link = document.createElement('a');
+//   link.href = url;
+//   link.setAttribute('download', `${Date.now()}.xlsx`);
+//   document.body.appendChild(link);
+//   link.click();
+// });
