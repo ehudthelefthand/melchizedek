@@ -5,16 +5,23 @@ import { TransactionReportResponse } from '../../../api/transaction/response/rep
 import { STATUS } from '../../../constants/api'
 import { ProcessStatus } from '../components/ServerStatusComponent'
 import useTransactionReport from './useTransactionReport'
+import { Skeleton } from 'antd'
 
 function TransactionReportListPage() {
   const transactionReport = useTransactionReport()
-  const { reportList, isLoading, handleTableChange, tableParams, getFile } =
-    transactionReport
+  const {
+    reportList,
+    isLoading,
+    handleTableChange,
+    getFile,
+    pagination,
+    totalItems,
+  } = transactionReport
 
+  // TODO: translations แปลภาษา
   // const [t] = useTranslation('translation')
 
   const columns: ColumnType<TransactionReportResponse>[] = [
-    // TODO: translations แปลภาษา
     {
       title: '#',
       key: 'id',
@@ -48,13 +55,23 @@ function TransactionReportListPage() {
     },
   ]
 
+  if (isLoading) {
+    return <Skeleton active={isLoading} />
+  }
+
   return (
     <Table
       loading={isLoading}
       columns={columns}
       rowKey={(record) => record.id}
       dataSource={reportList}
-      pagination={tableParams.pagination}
+      pagination={{
+        pageSize: pagination.itemsPerPage,
+        current: pagination.current,
+        total: totalItems,
+        showSizeChanger: true,
+        pageSizeOptions: [20,40,80,100],
+      }}
       onChange={handleTableChange}
     />
   )

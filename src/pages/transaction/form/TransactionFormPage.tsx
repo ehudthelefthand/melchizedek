@@ -456,8 +456,8 @@ const TransactionFormPage = () => {
               )}
             </Modal>
             <Space direction="vertical" size={20} style={{ display: 'flex' }}>
-              <Row justify={'center'} style={{ textAlign: 'center' }}>
-                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+              <Row gutter={[5, 5]}>
+                <Col xs={24} sm={24} md={12} lg={8} xl={8}>
                   <FixOfferingList
                     transactionForm={form}
                     setModalVisible={setModalVisible}
@@ -465,7 +465,7 @@ const TransactionFormPage = () => {
                     setOfferingType={setOfferingType}
                   />
                 </Col>
-                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                <Col xs={24} sm={24} md={12} lg={8} xl={8}>
                   <GiftOfferingList
                     transactionForm={form}
                     setModalVisible={setModalVisible}
@@ -473,7 +473,7 @@ const TransactionFormPage = () => {
                     setOfferingType={setOfferingType}
                   />
                 </Col>
-                <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+                <Col xs={24} sm={24} md={12} lg={8} xl={8}>
                   <ProjectOfferingList
                     transactionForm={form}
                     setModalVisible={setModalVisible}

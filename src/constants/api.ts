@@ -12,4 +12,5 @@ export interface PageTransactionRequest {
 export const initialPagination = {
   currentPage: 1,
   itemsPerPage: 20,
+  totalItems: 0,
 }

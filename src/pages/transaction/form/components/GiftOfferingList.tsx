@@ -68,9 +68,12 @@ function GiftOfferingList(props: Props) {
   }
 
   const renderItem = (gift: TransactionGiftOfferingForm, index: number) => (
-    <List.Item>
+    <List.Item
+      style={{ justifyContent: "center", alignItems: "center" }}
+    >
       <Card
-        title={'Gift'}
+        style={{ width: "100%", maxWidth: "400px", minHeight: "220px" }}
+        title={'GIFT'}
         extra={
           <>
             <Button
@@ -98,34 +101,33 @@ function GiftOfferingList(props: Props) {
           </>
         }
       >
-        <Row gutter={[8, 8]}>
-          <Col span={12}>
+        <Row gutter={[10, 10]}>
+          <Col span={10} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
             <Space>
               <PartitionOutlined />
-              <Text>
-                {service.metadatums.getDepartment(gift.departmentId).name}
-              </Text>
+              <Text>{service.metadatums.getDepartment(gift.departmentId).name}</Text>
             </Space>
           </Col>
-          <Col span={12}>
+          <Col span={10} offset={4} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
             <Space>
-              {' '}
               <UserOutlined />
-              {service.metadatums.getStaff(gift.staffId).fullName}
+              <Text>{service.metadatums.getStaff(gift.staffId).fullName}</Text>
             </Space>
           </Col>
-          <Col span={12}>
+        </Row>
+        <Row gutter={[10, 10]}>
+          <Col span={10} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
             <Space>
               <DollarOutlined />
               <Text>
                 {gift.amount.toLocaleString('th-TH', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
               </Text>
             </Space>
           </Col>
-          <Col span={24}>
+          <Col span={10} offset={4} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
             <Space>
               <CarryOutOutlined />
               <Text>{gift.transferDate.format('DD/MM/YYYY')}</Text>
@@ -137,17 +139,12 @@ function GiftOfferingList(props: Props) {
   )
 
   return (
-    <Row gutter={[8, 8]}>
-      <Col xs={24} sm={24} md={24}>
-        <List
-          itemLayout="horizontal"
-          // bordered
-          size="large"
-          dataSource={giftOfferings}
-          renderItem={renderItem}
-        />
-      </Col>
-    </Row>
+    <List
+      itemLayout="horizontal"
+      size="large"
+      dataSource={giftOfferings}
+      renderItem={renderItem}
+    />
   )
 }
 

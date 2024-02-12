@@ -12,7 +12,6 @@ import { Store } from '../../store'
 import { EvidenceDeleteRequest } from './request/image'
 import { PageTransactionReportResponse } from './response/report'
 import { TransactionReportRequest } from './request/report'
-import { ImageResponse } from './response/image'
 
 export default {
   getOne: (id: number): Promise<TransactionResponse> => {
@@ -53,7 +52,7 @@ export default {
       .then((response) => response.data)
   },
   requestReport: (month: TransactionReportRequest) => {
-    return axios.post(`/report/downloads`, month)
+    return axios.post(`/report/create`, month)
   },
   getReports: (
     store: Store,
@@ -66,17 +65,16 @@ export default {
       )
       .then((response) => response.data)
   },
-  // TODO: API DownloadLink
-  getLinkReport: (url: string): Promise<string> => {
+  getLinkReport: (fileName: string): Promise<string> => {
     return axios
-      .get(`/report/${url}`, {
-        responseType: 'blob', // important
+      .get(`/report/${fileName}`, {
+        responseType: 'blob',
       })
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `${Date.now()}.xlsx`)
+        link.setAttribute('download', `${fileName}.xlsx`)
         document.body.appendChild(link)
         link.click()
         link.removeChild(link)
@@ -85,15 +83,3 @@ export default {
       })
   },
 }
-
-// {
-//   method: 'GET',
-//   responseType: 'blob', // important
-// }).then((response) => {
-//   const url = window.URL.createObjectURL(new Blob([response.data]));
-//   const link = document.createElement('a');
-//   link.href = url;
-//   link.setAttribute('download', `${Date.now()}.xlsx`);
-//   document.body.appendChild(link);
-//   link.click();
-// });

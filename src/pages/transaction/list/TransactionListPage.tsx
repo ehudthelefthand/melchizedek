@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive'
 import dayjs from 'dayjs'
 import { Input, Space, Button, Row, Col, Skeleton, Spin, Modal } from 'antd'
-// import MobileViewComponent from './components/MobileView'
 import {
   PageTransactionResponse,
   TransactionResponse,
@@ -17,6 +16,7 @@ import { TransactionGiftOfferingList } from './model/giftOffering'
 import { TransactionProjectOfferingList } from './model/projectOffering'
 import { FileExcelOutlined, LoadingOutlined } from '@ant-design/icons'
 import TransactionReportFilterForm from '../report/TransactionReportFilterForm'
+import { initialPagination } from '../../../constants/api'
 
 const { Search } = Input
 
@@ -27,8 +27,12 @@ function TransactionListPage() {
   const [pagination, setPagination] = useState<PageTransactionResponse>()
   const [isLoading, setIsLoading] = useState(true)
   const [modalVisible, setModalVisible] = useState(false)
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [itemsPerPage, setItemsPerPage] = useState<number>(20)
+  const [currentPage, setCurrentPage] = useState<number>(
+    initialPagination.currentPage
+  )
+  const [itemsPerPage, setItemsPerPage] = useState<number>(
+    initialPagination.itemsPerPage
+  )
 
   const service = useService()
 
@@ -43,7 +47,6 @@ function TransactionListPage() {
         itemsPerPage: itemsPerPage,
       })
       .then((pageTransaction) => {
-        console.log('pageTransaction: ', pageTransaction)
         const transactionFormattedData: TransactionList[] =
           pageTransaction.data.map((transaction: TransactionResponse) => {
             const result: TransactionList = {
@@ -131,7 +134,7 @@ function TransactionListPage() {
         console.error('TransactionPage', error)
       })
       .finally(() => setIsLoading(false))
-  }, [])
+  }, [currentPage, itemsPerPage])
 
   return (
     <>
@@ -167,12 +170,12 @@ function TransactionListPage() {
                     </Button>
                   </Link>
                 </Col>
-                <Col xs={12}>
+                <Col xs={12} style={{display: 'flex', flexDirection: 'row', justifyContent: 'end'}}>
                   <Button
                     size="large"
                     type="primary"
                     style={{
-                      backgroundColor: 'green',
+                      backgroundColor: 'rgb(18,124,67)',
                       width: isMobile ? '100%' : '',
                     }}
                     className="btn-primary"
