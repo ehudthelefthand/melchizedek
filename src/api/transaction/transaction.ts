@@ -17,14 +17,11 @@ export default {
   getOne: (id: number): Promise<TransactionResponse> => {
     return axios.get(`/transactions/${id}`).then((response) => response.data)
   },
-  getAll: (
-    store: Store,
-    pageRequest: PageTransactionRequest
-  ): Promise<PageTransactionResponse> => {
+  getAll: (pageRequest: PageTransactionRequest): Promise<PageTransactionResponse> => {
     const { currentPage, itemsPerPage } = pageRequest
     return axios
       .get(
-        `${store.user?.role}/transactions?currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
+        `transactions?currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
       )
       .then((response) => response.data)
   },
@@ -55,13 +52,12 @@ export default {
     return axios.post(`/report/create`, month)
   },
   getReports: (
-    store: Store,
     pageRequest: PageTransactionRequest
   ): Promise<PageTransactionReportResponse> => {
     const { currentPage, itemsPerPage } = pageRequest
     return axios
       .get(
-        `${store.user?.role}/reports?currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
+        `reports?currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
       )
       .then((response) => response.data)
   },

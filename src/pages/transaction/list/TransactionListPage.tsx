@@ -42,7 +42,7 @@ function TransactionListPage() {
 
   useEffect(() => {
     service.api.transaction
-      .getAll(service.reactStore.store, {
+      .getAll({
         currentPage: currentPage,
         itemsPerPage: itemsPerPage,
       })

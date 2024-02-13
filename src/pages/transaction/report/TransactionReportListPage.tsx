@@ -60,20 +60,26 @@ function TransactionReportListPage() {
   }
 
   return (
-    <Table
-      loading={isLoading}
-      columns={columns}
-      rowKey={(record) => record.id}
-      dataSource={reportList}
-      pagination={{
-        pageSize: pagination.itemsPerPage,
-        current: pagination.current,
-        total: totalItems,
-        showSizeChanger: true,
-        pageSizeOptions: [20,40,80,100],
-      }}
-      onChange={handleTableChange}
-    />
+    <>
+    {reportList.length > 0 ? (
+      <Table
+        loading={isLoading}
+        columns={columns}
+        rowKey={(record) => record.id}
+        dataSource={reportList}
+        pagination={{
+          pageSize: pagination.itemsPerPage,
+          current: pagination.current,
+          total: totalItems,
+          showSizeChanger: true,
+          pageSizeOptions: [20,40,80,100],
+        }}
+        onChange={handleTableChange}
+        />
+    ) : (
+      <p>No data</p>
+    )}
+    </>
   )
 }
 

@@ -26,7 +26,7 @@ const useTransactionReport = () => {
 
   useEffect(() => {
     service.api.transaction
-      .getReports(service.reactStore.store, {
+      .getReports({
         currentPage: pagination.current,
         itemsPerPage: pagination.itemsPerPage,
       })
@@ -35,10 +35,10 @@ const useTransactionReport = () => {
         setReportList(response.data)
       })
       .catch((err) => {
-        console.error(err),
-          message.error(
-            'Error report in Database connection is lost!, Please try again.'
-          )
+        console.error(err)
+          // message.error(
+          //   'Error report in Database connection is lost!, Please try again.'
+          // )
       })
       .finally(() => {
         setIsloading(false)
