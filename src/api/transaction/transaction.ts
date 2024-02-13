@@ -1,3 +1,4 @@
+import { PageTransactionRequest } from './../../constants/api'
 import { axios } from '../api'
 import {
   PageTransactionResponse,
@@ -5,7 +6,6 @@ import {
 } from './response/transaction'
 import {
   TransactionCreateRequest,
-  TransactionPageRequest,
   TransactionUpdateRequest,
 } from './request/transaction'
 import { Store } from '../../store'
@@ -19,7 +19,7 @@ export default {
   },
   getAll: (
     store: Store,
-    pageRequest: TransactionPageRequest
+    pageRequest: PageTransactionRequest
   ): Promise<PageTransactionResponse> => {
     const { currentPage, itemsPerPage } = pageRequest
     return axios
@@ -52,15 +52,34 @@ export default {
       .then((response) => response.data)
   },
   requestReport: (month: TransactionReportRequest) => {
-    return axios.post(`/report/downloads`, month)
+    return axios.post(`/report/create`, month)
   },
-  getReports: (store: Store): Promise<PageTransactionReportResponse> => {
+  getReports: (
+    store: Store,
+    pageRequest: PageTransactionRequest
+  ): Promise<PageTransactionReportResponse> => {
+    const { currentPage, itemsPerPage } = pageRequest
     return axios
-      .get(`${store.user?.role}/reports`)
+      .get(
+        `${store.user?.role}/reports?currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
+      )
       .then((response) => response.data)
   },
-  // TODO: API DownloadLink
-  // getLinkReport: (store: Store, url: string): Promise<string> => {
-  //   return axios.get(`${store.user?.role}/report/${url}`)
-  // },
+  getLinkReport: (fileName: string): Promise<string> => {
+    return axios
+      .get(`/report/${fileName}`, {
+        responseType: 'blob',
+      })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `${fileName}.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        link.removeChild(link)
+
+        return response.data
+      })
+  },
 }

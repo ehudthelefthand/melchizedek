@@ -7,17 +7,17 @@ import {
   Modal,
   Row,
   Space,
-  Typography,
   message,
+  Typography
 } from 'antd'
 import {
   UserOutlined,
   DollarOutlined,
   PartitionOutlined,
-  FieldTimeOutlined,
   CarryOutOutlined,
   DeleteOutlined,
   EditTwoTone,
+  MinusOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
@@ -67,9 +67,12 @@ function FixOfferingList(props: Props) {
   }
 
   const renderItem = (fix: TransactionFixOfferingForm, index: number) => (
-    <List.Item>
+    <List.Item
+      style={{ justifyContent: "center", alignItems: "center" }}
+    >
       <Card
-        title={'Fix'}
+        style={{ width: "100%", maxWidth: "400px", minHeight: "220px" }}
+        title={'FIX'}
         extra={
           <>
             <Button
@@ -97,42 +100,46 @@ function FixOfferingList(props: Props) {
           </>
         }
       >
-        <Row gutter={[8, 8]}>
-          <Col span={12}>
+        <Row gutter={[10, 10]}>
+          <Col span={10} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
             <Space>
               <PartitionOutlined />
-              <Text>
-                {service.metadatums.getDepartment(fix.departmentId).name}
-              </Text>
+              <Text>{service.metadatums.getDepartment(fix.departmentId).name}</Text>
             </Space>
           </Col>
-          <Col span={12}>
+          <Col span={10} offset={4} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
             <Space>
-              {' '}
               <UserOutlined />
-              {service.metadatums.getStaff(fix.staffId).fullName}
+              <Text>{service.metadatums.getStaff(fix.staffId).fullName}</Text>
             </Space>
           </Col>
-          <Col span={12}>
+        </Row>
+        <Row gutter={[10, 10]}>
+          <Col span={24} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
             <Space>
               <DollarOutlined />
               <Text>
                 {fix.amount.toLocaleString('th-TH', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
               </Text>
             </Space>
           </Col>
-          <Col span={12}>
+        </Row>
+        <Row gutter={[10, 10]}>
+          <Col span={10} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
             <Space>
               <CarryOutOutlined />
               <Text>{fix.startMonth.format('MM/YYYY')}</Text>
             </Space>
           </Col>
-          <Col span={12}>
+          <Col span={4}>
+            <MinusOutlined />
+          </Col>
+          <Col span={10} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
             <Space>
-              <FieldTimeOutlined />
+              <CarryOutOutlined />
               <Text>{fix.dueMonth.format('MM/YYYY')}</Text>
             </Space>
           </Col>
@@ -142,17 +149,12 @@ function FixOfferingList(props: Props) {
   )
 
   return (
-    <Row gutter={[8, 8]}>
-      <Col xs={24} sm={24} md={24}>
-        <List
-          itemLayout="horizontal"
-          // bordered
-          size="large"
-          dataSource={fixOfferings}
-          renderItem={renderItem}
-        />
-      </Col>
-    </Row>
+    <List
+      itemLayout="horizontal"
+      size="large"
+      dataSource={fixOfferings}
+      renderItem={renderItem}
+    />
   )
 }
 

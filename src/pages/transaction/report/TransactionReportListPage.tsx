@@ -5,16 +5,23 @@ import { TransactionReportResponse } from '../../../api/transaction/response/rep
 import { STATUS } from '../../../constants/api'
 import { ProcessStatus } from '../components/ServerStatusComponent'
 import useTransactionReport from './useTransactionReport'
+import { Skeleton } from 'antd'
 
 function TransactionReportListPage() {
   const transactionReport = useTransactionReport()
-  const { reportList, isLoading, handleTableChange, tableParams } =
-    transactionReport
+  const {
+    reportList,
+    isLoading,
+    handleTableChange,
+    getFile,
+    pagination,
+    totalItems,
+  } = transactionReport
 
+  // TODO: translations แปลภาษา
   // const [t] = useTranslation('translation')
 
   const columns: ColumnType<TransactionReportResponse>[] = [
-    // TODO: translations แปลภาษา
     {
       title: '#',
       key: 'id',
@@ -41,19 +48,16 @@ function TransactionReportListPage() {
       title: '',
       key: 'dowload',
       render: (res: TransactionReportResponse) => (
-        <DownloadOutlined
-          // TODO: refactor Download fn
-          onClick={() => {
-            console.log(`res: ${res.fileName}`)
-            // getLinkReport(res)
-            // service.api.transaction.getLinkReport(service.reactStore.store, url)
-          }}
-        />
+        <DownloadOutlined onClick={() => getFile(res.fileName)} />
       ),
       width: 10,
       align: 'left',
     },
   ]
+
+  if (isLoading) {
+    return <Skeleton active={isLoading} />
+  }
 
   return (
     <Table
@@ -61,7 +65,13 @@ function TransactionReportListPage() {
       columns={columns}
       rowKey={(record) => record.id}
       dataSource={reportList}
-      pagination={tableParams.pagination}
+      pagination={{
+        pageSize: pagination.itemsPerPage,
+        current: pagination.current,
+        total: totalItems,
+        showSizeChanger: true,
+        pageSizeOptions: [20,40,80,100],
+      }}
       onChange={handleTableChange}
     />
   )

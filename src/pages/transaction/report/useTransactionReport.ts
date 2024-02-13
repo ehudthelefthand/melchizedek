@@ -1,66 +1,37 @@
-import { PageTransactionReportResponse } from './../../../api/transaction/response/report'
 import { useEffect, useState } from 'react'
 import { TransactionReportResponse } from '../../../api/transaction/response/report'
 import { useService } from '../../../service/service'
-import { GetProp, TablePaginationConfig, TableProps, message } from 'antd'
-
-interface TableParams {
-  pagination?: TablePaginationConfig
-  sortField?: string
-  sortOrder?: string
-  filters?: Parameters<GetProp<TableProps, 'onChange'>>[1]
-}
+import { TableProps, message } from 'antd'
+import { initialPagination } from '../../../constants/api'
 
 const useTransactionReport = () => {
   const [reportList, setReportList] = useState<TransactionReportResponse[]>([])
-  const [pagination, setPagination] = useState<PageTransactionReportResponse>()
   const [isLoading, setIsloading] = useState(true)
-  const [tableParams, setTableParams] = useState<TableParams>({
-    pagination: {
-      current: pagination?.page,
-      pageSize: pagination?.itemPerPage,
-      total: pagination?.totalItems,
-    },
+  const [pagination, setPagination] = useState({
+    current: initialPagination.currentPage,
+    itemsPerPage: initialPagination.itemsPerPage,
   })
+  const [totalItems, setTotalItems] = useState(initialPagination.totalItems)
 
   const service = useService()
 
   const handleTableChange: TableProps<TransactionReportResponse>['onChange'] = (
-    pagination,
-    filters,
-    sorter
+    pagination
   ) => {
-    setTableParams({
-      pagination,
-      filters,
-      ...sorter,
+    setPagination({
+      current: pagination.current ?? initialPagination.currentPage,
+      itemsPerPage: pagination.pageSize ?? initialPagination.itemsPerPage,
     })
   }
 
-  //   const data: TransactionReportResponse[] = [
-  //     {
-  //       id: 1,
-  //       fileName: 'eiei',
-  //       status: STATUS.success,
-  //     },
-  //     {
-  //       id: 2,
-  //       fileName: 'huhu',
-  //       status: STATUS.processing,
-  //     },
-  //     {
-  //       id: 3,
-  //       fileName: 'hehe',
-  //       status: STATUS.error,
-  //     },
-  //   ]
-
   useEffect(() => {
     service.api.transaction
-      .getReports(service.reactStore.store)
+      .getReports(service.reactStore.store, {
+        currentPage: pagination.current,
+        itemsPerPage: pagination.itemsPerPage,
+      })
       .then((response) => {
-        response
-        setPagination(response)
+        setTotalItems(response.totalItems)
         setReportList(response.data)
       })
       .catch((err) => {
@@ -74,12 +45,18 @@ const useTransactionReport = () => {
       })
   }, [pagination])
 
+  const getFile = async (fileName: string) =>
+    service.api.transaction
+      .getLinkReport(fileName)
+      .then((response: any) => response)
+
   return {
     reportList,
     pagination,
+    totalItems,
     isLoading,
     handleTableChange,
-    tableParams,
+    getFile,
   }
 }
 

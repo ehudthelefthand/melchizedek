@@ -47,7 +47,14 @@ function TableView(
   const service = useService()
   const { Text } = Typography
 
-  const { transactions, pagesTransaction, currentPage, itemsPerPage, setCurrentPage } = props
+  const {
+    transactions,
+    pagesTransaction,
+    currentPage,
+    itemsPerPage,
+    setCurrentPage,
+    setItemsPerPage,
+  } = props
   const [isLoading, setIsLoading] = useState(true)
 
   const [tableParams, setTableParams] = useState<TableParams>({
@@ -55,6 +62,8 @@ function TableView(
       current: currentPage,
       pageSize: itemsPerPage,
       total: pagesTransaction?.totalItems,
+      showSizeChanger: true,
+      pageSizeOptions: [20, 40, 60, 100],
     },
   })
 
@@ -62,8 +71,8 @@ function TableView(
     pagination,
     sorter
   ) => {
-    console.log("click at: ", pagination.pageSize)
     setCurrentPage(pagination.current)
+    setItemsPerPage(pagination.pageSize)
     setTableParams({
       pagination,
       ...sorter,

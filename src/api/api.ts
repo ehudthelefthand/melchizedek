@@ -4,9 +4,9 @@ import transaction from './transaction/transaction'
 import metadatum from './metadatum/metadatum'
 import user from './user/user'
 
-// const baseURL = import.meta.env.VITE_REACT_PUBLIC_CORE_API
-// console.log(import.meta.env)
-const baseURL = 'http://192.168.1.174:8080'
+const baseURL = import.meta.env.VITE_REACT_PUBLIC_CORE_API
+console.log(import.meta.env)
+// const baseURL = 'http://192.168.1.194:8080'
 export const axios: AxiosInstance = apiAxios.create({
   baseURL,
 })
