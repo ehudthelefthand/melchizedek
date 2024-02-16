@@ -1,16 +1,18 @@
 export interface UserLoginRequest {
-  userName: string
+  username: string
   password: string
-  role: string
 }
 
 export interface UserLogoutRequest {
   token: string
 }
 
-export interface UserRegisterRequest {
-  userName: string
+export interface UserCreateRequest {
+  username: string
   password: string
+  fullNameTH: string
+  fullNameEN: string
+  nickName: string
   department: string
   role: string
 }

@@ -16,7 +16,7 @@ const LoginPage: React.FC = () => {
       .then((userLoginResponse) => {
         service.reactStore.update((store) => {
           store.user = {
-            username: userLoginResponse.fullName,
+            username: userLoginResponse.username,
             token: userLoginResponse.token,
             role: userLoginResponse.role,
           }

@@ -1,9 +1,12 @@
 import { Divider, Menu, MenuProps } from 'antd'
 import {
   CloudDownloadOutlined,
+  ContactsOutlined,
   DesktopOutlined,
   LogoutOutlined,
-  UserAddOutlined,
+  SolutionOutlined,
+  TeamOutlined,
+  UserOutlined,
 } from '@ant-design/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -20,7 +23,7 @@ const SideMenu: React.FC = () => {
     {
       key: '#',
       label: service.reactStore.store.user?.username,
-      icon: <UserAddOutlined />,
+      icon: <UserOutlined />,
     },
     {
       key: 'transactionPage',
@@ -30,8 +33,25 @@ const SideMenu: React.FC = () => {
     {
       key: 'transactionHistoryReport',
       // TODO: translation
-      label: 'HistoryReport',
+      label: 'ประวัติการดาวโหลด',
       icon: <CloudDownloadOutlined />,
+    },
+    {
+      key: 'user',
+      label: 'จัดการผู้ใช้',
+      icon: <TeamOutlined />,
+      children: [
+        {
+          key: 'userPage',
+          label: 'ผู้ใช้ทั้งหมด',
+          icon: <SolutionOutlined />,
+        },
+        {
+          key: 'donorPage',
+          label: 'ผู้ถวายทั้งหมด',
+          icon: <ContactsOutlined />,
+        },
+      ],
     },
   ]
 
@@ -48,6 +68,12 @@ const SideMenu: React.FC = () => {
         break
       case 'transactionHistoryReport':
         navigate('/transaction/historyReport')
+        break
+      case 'userPage':
+        navigate('/user')
+        break
+      case 'donorPage':
+        navigate('/donor')
         break
       case 'logout':
         service.api.user.logout()

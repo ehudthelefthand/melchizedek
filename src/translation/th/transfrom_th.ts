@@ -10,6 +10,8 @@ export default {
     submit: 'ยืนยัน',
     edit: 'แก้ไข',
     cancel: 'ยกเลิก',
+    addStaff: 'เพิ่มผู้ใช้ +',
+    addDonor: 'เพิ่มผู้ถวาย +',
   },
   transacList: {
     createAt: 'วันที่สร้าง',
@@ -22,7 +24,7 @@ export default {
     department: 'แผนก',
     slip: 'สลิป',
     event: 'ถวายให้',
-    descriptions: 'รายละเอียด'
+    descriptions: 'รายละเอียด',
   },
   transacForm: {
     donorName: 'ชื่อผู้ถวาย',

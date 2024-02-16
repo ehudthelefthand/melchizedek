@@ -32,7 +32,7 @@ interface TableParams {
   sortOrder?: string
 }
 
-function TableView(
+function TransactionTableView(
   props: PropsWithChildren<{
     transactions: TransactionList[]
     pagesTransaction: PageTransactionResponse | undefined
@@ -180,8 +180,8 @@ function TableView(
       key: 'staffName',
       align: 'left',
       filters: service.metadatums.getAllStaffs().map((staff) => ({
-        text: staff.fullName,
-        value: staff.fullName,
+        text: staff.nickName,
+        value: staff.nickName,
       })),
       onFilter: (staffName: boolean | Key, record: TransactionList) =>
         record.staffName === staffName,
@@ -296,4 +296,4 @@ function TableView(
   )
 }
 
-export default TableView
+export default TransactionTableView

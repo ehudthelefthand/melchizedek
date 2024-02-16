@@ -1,21 +1,20 @@
 import { useEffect, useState } from 'react'
-import { TransactionReportResponse } from '../../../api/transaction/response/report'
+import { UserResponse } from '../../../api/user/response'
 import { useService } from '../../../service/service'
-import { TableProps } from 'antd'
 import { initialPagination } from '../../../constants/api'
+import { TableProps } from 'antd'
 
-const useTransactionReport = () => {
-  const [reportList, setReportList] = useState<TransactionReportResponse[]>([])
-  const [isLoading, setIsloading] = useState(true)
+const useUserList = () => {
+  const service = useService()
+  const [userList, setUserList] = useState<UserResponse[]>([])
   const [pagination, setPagination] = useState({
     current: initialPagination.currentPage,
     itemsPerPage: initialPagination.itemsPerPage,
   })
   const [totalItems, setTotalItems] = useState(initialPagination.totalItems)
+  const [isLoading, setIsloading] = useState(true)
 
-  const service = useService()
-
-  const handleTableChange: TableProps<TransactionReportResponse>['onChange'] = (
+  const handleTableChange: TableProps<UserResponse>['onChange'] = (
     pagination
   ) => {
     setPagination({
@@ -25,32 +24,26 @@ const useTransactionReport = () => {
   }
 
   useEffect(() => {
-    service.api.transaction
-      .getReports({
+    service.api.user
+      .getAll({
         currentPage: pagination.current,
         itemsPerPage: pagination.itemsPerPage,
       })
       .then((response) => {
         setTotalItems(response.totalItems)
-        setReportList(response.data)
+        setUserList(response.data)
       })
       .catch((err) => console.error(err))
       .finally(() => setIsloading(false))
   }, [pagination])
 
-  const getFile = async (fileName: string) =>
-    service.api.transaction
-      .getLinkReport(fileName)
-      .then((response: any) => response)
-
   return {
-    reportList,
+    userList,
     pagination,
     totalItems,
     isLoading,
     handleTableChange,
-    getFile,
   }
 }
 
-export default useTransactionReport
+export default useUserList

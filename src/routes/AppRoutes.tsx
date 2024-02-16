@@ -11,6 +11,8 @@ import TransactionListPage from '../pages/transaction/list/TransactionListPage'
 import { useState } from 'react'
 import UserFormPage from '../pages/user/UserFormPage'
 import TransactionReportListPage from '../pages/transaction/report/TransactionReportListPage'
+import UserListPage from '../pages/user/UserListPage'
+import DonorListPage from '../pages/donor/DonorListPage'
 
 const { Sider } = Layout
 
@@ -57,10 +59,33 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
+        path: '',
+        element: <UserListPage />,
+        errorElement: <ErrorPage />,
+      },
+      {
         path: 'create',
         element: <UserFormPage />,
         errorElement: <ErrorPage />,
       },
+    ],
+  },
+  {
+    path: '/donor',
+    element: <DashboardLayout />,
+    errorElement: <ErrorPage />,
+    // TODO:  Donor Form Page
+    children: [
+      {
+        path: '',
+        element: <DonorListPage />,
+        errorElement: <ErrorPage />,
+      },
+      // {
+      //   path: 'create',
+      //   element: <DonorFormPage />,
+      //   errorElement: <ErrorPage />,
+      // },
     ],
   },
   {

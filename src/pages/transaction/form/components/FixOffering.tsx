@@ -63,7 +63,7 @@ function FixOfferingForm(
   }, [])
 
   const staffAPI = service.metadatums.getAllStaffs().map((staff) => ({
-    label: staff.fullName,
+    label: staff.nickName,
     value: staff.id,
     staff,
   }))

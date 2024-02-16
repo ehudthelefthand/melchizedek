@@ -1,21 +1,20 @@
 import { useEffect, useState } from 'react'
-import { TransactionReportResponse } from '../../../api/transaction/response/report'
-import { useService } from '../../../service/service'
+import { DonorListResponse } from '../../../api/donor/response'
 import { TableProps } from 'antd'
 import { initialPagination } from '../../../constants/api'
+import { useService } from '../../../service/service'
 
-const useTransactionReport = () => {
-  const [reportList, setReportList] = useState<TransactionReportResponse[]>([])
-  const [isLoading, setIsloading] = useState(true)
+const useDonorList = () => {
+  const service = useService()
+  const [donorList, setDonorList] = useState<DonorListResponse[]>([])
   const [pagination, setPagination] = useState({
     current: initialPagination.currentPage,
     itemsPerPage: initialPagination.itemsPerPage,
   })
   const [totalItems, setTotalItems] = useState(initialPagination.totalItems)
+  const [isLoading, setIsloading] = useState(true)
 
-  const service = useService()
-
-  const handleTableChange: TableProps<TransactionReportResponse>['onChange'] = (
+  const handleTableChange: TableProps<DonorListResponse>['onChange'] = (
     pagination
   ) => {
     setPagination({
@@ -25,32 +24,26 @@ const useTransactionReport = () => {
   }
 
   useEffect(() => {
-    service.api.transaction
-      .getReports({
+    service.api.donor
+      .getAll({
         currentPage: pagination.current,
         itemsPerPage: pagination.itemsPerPage,
       })
       .then((response) => {
         setTotalItems(response.totalItems)
-        setReportList(response.data)
+        setDonorList(response.data)
       })
       .catch((err) => console.error(err))
       .finally(() => setIsloading(false))
   }, [pagination])
 
-  const getFile = async (fileName: string) =>
-    service.api.transaction
-      .getLinkReport(fileName)
-      .then((response: any) => response)
-
   return {
-    reportList,
+    donorList,
+    isLoading,
     pagination,
     totalItems,
-    isLoading,
     handleTableChange,
-    getFile,
   }
 }
 
-export default useTransactionReport
+export default useDonorList

@@ -1,4 +1,4 @@
-import { PageTransactionRequest } from './../../constants/api'
+import { PageRequest } from './../../constants/api'
 import { axios } from '../api'
 import {
   PageTransactionResponse,
@@ -8,7 +8,6 @@ import {
   TransactionCreateRequest,
   TransactionUpdateRequest,
 } from './request/transaction'
-import { Store } from '../../store'
 import { EvidenceDeleteRequest } from './request/image'
 import { PageTransactionReportResponse } from './response/report'
 import { TransactionReportRequest } from './request/report'
@@ -17,7 +16,7 @@ export default {
   getOne: (id: number): Promise<TransactionResponse> => {
     return axios.get(`/transactions/${id}`).then((response) => response.data)
   },
-  getAll: (pageRequest: PageTransactionRequest): Promise<PageTransactionResponse> => {
+  getAll: (pageRequest: PageRequest): Promise<PageTransactionResponse> => {
     const { currentPage, itemsPerPage } = pageRequest
     return axios
       .get(
@@ -48,11 +47,11 @@ export default {
       .post(`/deleteImages`, evidences)
       .then((response) => response.data)
   },
-  requestReport: (month: TransactionReportRequest) => {
-    return axios.post(`/report/create`, month)
+  requestReport: (reportRequest: TransactionReportRequest) => {
+    return axios.post(`/report/create`, reportRequest)
   },
   getReports: (
-    pageRequest: PageTransactionRequest
+    pageRequest: PageRequest
   ): Promise<PageTransactionReportResponse> => {
     const { currentPage, itemsPerPage } = pageRequest
     return axios

@@ -18,7 +18,7 @@ function BasicForm() {
   const staffAPI: SelectProps['options'] = service.metadatums
     .getAllStaffs()
     .map((staff) => ({
-      label: staff.fullName,
+      label: staff.nickName,
       value: staff.id,
     }))
 

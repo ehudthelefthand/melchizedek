@@ -1,4 +1,14 @@
-import { Col, Row, Space, DatePicker, Form, Button, message } from 'antd'
+import {
+  Col,
+  Row,
+  Space,
+  DatePicker,
+  Form,
+  Button,
+  message,
+  Select,
+  SelectProps,
+} from 'antd'
 import { PropsWithChildren } from 'react'
 import { useService } from '../../../service/service'
 import { TransactionReportFormAntd } from './model/report'
@@ -15,14 +25,20 @@ const TransactionReportFilterForm = (
   const service = useService()
   const navigate = useNavigate()
 
+  const departments: SelectProps['options'] = [
+    { label: 'BK', value: 'BK' },
+    { label: 'CM', value: 'CM' },
+    { label: 'CR', value: 'CR' },
+  ]
+
   function onSubmit(value: TransactionReportFormAntd) {
     service.api.transaction
       .requestReport({
         startMonth: +value.months[0],
         dueMonth: +value.months[1],
+        department: value.department.toLowerCase(),
       })
       .then(() => {
-        console.log(value.months[0], value.months[1])
         onCancel()
         navigate('/transaction/historyReport')
       })
@@ -37,11 +53,25 @@ const TransactionReportFilterForm = (
   return (
     <Form onFinish={onSubmit} layout="vertical">
       <Space direction="vertical" size={20} style={{ display: 'flex' }}>
-        <Row>
-          <Col span={24}>
+        <Row gutter={[5, 5]}>
+          <Col xs={24} sm={24} md={12} lg={12}>
             <Form.Item
-              name={'months'}
+              key={'department'}
+              name={'department'}
+              rules={[{ required: true, message: 'กรุณาเลือกภูมิภาค' }]}
+              hasFeedback
+            >
+              <Select
+                options={departments}
+                size="large"
+                placeholder={'เลือกภูมิภาค'}
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={12}>
+            <Form.Item
               key={'months'}
+              name={'months'}
               rules={[
                 {
                   required: true,

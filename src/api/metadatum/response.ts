@@ -23,7 +23,7 @@ export interface DonorResponse {
 
 export interface StaffResponse {
   id: number
-  fullName: string
+  nickName: string
 }
 
 export interface ProjectResponse {

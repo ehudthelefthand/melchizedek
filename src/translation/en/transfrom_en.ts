@@ -6,6 +6,8 @@ export default {
   },
   transacButton: {
     addData: 'Add +',
+    addStaff: 'AddUser +',
+    addDonor: 'AddDonor +',
     search: 'Search',
     submit: 'Submit',
     edit: 'Edit',
@@ -25,7 +27,7 @@ export default {
     department: 'Department',
     slip: 'Evidence',
     event: 'Offering (Event)',
-    descriptions: 'Descriptions'
+    descriptions: 'Descriptions',
   },
   transacForm: {
     donorName: 'DonorName',

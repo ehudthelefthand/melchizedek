@@ -115,7 +115,7 @@ function ProjectOfferingList(props: Props) {
           <Col span={10} offset={4} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
             <Space>
               <UserOutlined />
-              <Text>{service.metadatums.getStaff(projectOffering.staffId).fullName}</Text>
+              <Text>{service.metadatums.getStaff(projectOffering.staffId).fullNameTH}</Text>
             </Space>
           </Col>
         </Row>

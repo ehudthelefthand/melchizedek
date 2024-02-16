@@ -4,7 +4,7 @@ export enum STATUS {
   error = 'error',
 }
 
-export interface PageTransactionRequest {
+export interface PageRequest {
   currentPage: number
   itemsPerPage: number
 }

@@ -9,7 +9,7 @@ import {
   TransactionResponse,
 } from '../../../api/transaction/response/transaction'
 import { TransactionList } from './model/transaction'
-import TableView from './components/TableView'
+import TransactionTableView from './components/TableView'
 import { useService } from '../../../service/service'
 import { TransactionFixOfferingList } from './model/fixOffering'
 import { TransactionGiftOfferingList } from './model/giftOffering'
@@ -62,7 +62,7 @@ function TransactionListPage() {
               fromBankCode: service.metadatums.getBank(transaction.fromBankId)
                 .code,
               staffName: service.metadatums.getStaff(transaction.staffId)
-                .fullName,
+                .nickName,
               departmentName: service.metadatums.getDepartment(
                 transaction.departmentId
               ).name,
@@ -73,7 +73,7 @@ function TransactionListPage() {
                 const fix: TransactionFixOfferingList = {
                   id: fixOffering.id,
                   staffName: service.metadatums.getStaff(fixOffering.staffId)
-                    .fullName,
+                    .nickName,
                   departmentName: service.metadatums.getDepartment(
                     fixOffering.departmentId
                   ).name,
@@ -88,7 +88,7 @@ function TransactionListPage() {
                 const gift: TransactionGiftOfferingList = {
                   id: giftOffering.id,
                   staffName: service.metadatums.getStaff(giftOffering.id)
-                    .fullName,
+                    .nickName,
                   departmentName: service.metadatums.getDepartment(
                     giftOffering.id
                   ).name,
@@ -103,7 +103,7 @@ function TransactionListPage() {
                   const project: TransactionProjectOfferingList = {
                     id: projectOffering.id,
                     staffName: service.metadatums.getStaff(projectOffering.id)
-                      .fullName,
+                      .nickName,
                     departmentName: service.metadatums.getDepartment(
                       projectOffering.id
                     ).name,
@@ -209,7 +209,7 @@ function TransactionListPage() {
           {isMobile ? (
             <></>
           ) : (
-            <TableView
+            <TransactionTableView
               transactions={transactions}
               pagesTransaction={pagination}
               currentPage={currentPage!}
