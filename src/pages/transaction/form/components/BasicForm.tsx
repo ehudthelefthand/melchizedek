@@ -15,8 +15,15 @@ import { useEffect, useState } from 'react'
 
 function BasicForm() {
   const service = useService()
+
   const [staffID, setStaffID] = useState<number>(0)
-  const [donorOptions, setDonorOptions] = useState<SelectProps['options']>([])
+  
+  const [donorOptions, setDonorOptions] = useState<SelectProps['options']>(
+    service.metadatums.getAllDonors().map((donor) => ({
+      label: donor.fullName,
+      value: donor.id,
+    }))
+  )
 
   const staffAPI: SelectProps['options'] = service.metadatums
     .getAllStaffs()
