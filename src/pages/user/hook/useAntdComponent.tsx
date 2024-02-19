@@ -46,13 +46,7 @@ const useAntdUserTableData = ({ onDelete }: { onEdit: any; onDelete: any }) => {
       width: 10,
       align: 'left',
     },
-    {
-      title: 'รหัสผ่าน',
-      key: 'password',
-      dataIndex: 'password',
-      width: 20,
-      align: 'left',
-    },
+
     {
       title: 'แผนก',
       key: 'departmentId',
