@@ -8,7 +8,6 @@ import DonorTableView from './components/TableView'
 import useDonorUploadFile from './hook/useDonorUploadFile'
 import UploadFileExcel from '../../components/UploadFileXcel'
 import FullScreenLoading from '../../components/FullScreenLoading'
-import UserTableView from '../user/components/TableView'
 
 function DonorListPage() {
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' })

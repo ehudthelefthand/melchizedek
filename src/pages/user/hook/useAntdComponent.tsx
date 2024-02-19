@@ -4,19 +4,12 @@
 // import { UserResponse } from '../../../api/user/response'
 // import { MouseEventHandler } from 'react'
 
-import { MouseEventHandler } from 'react'
 import { UserResponse } from '../../../api/user/response'
 import { ColumnType } from 'antd/es/table'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { DeleteOutlined } from '@ant-design/icons'
 import { Space } from 'antd'
 
-const useAntdUserTableData = ({
-  onEdit,
-  onDelete,
-}: {
-  onEdit: any
-  onDelete: any
-}) => {
+const useAntdUserTableData = ({ onDelete }: { onEdit: any; onDelete: any }) => {
   const userColumns: ColumnType<UserResponse>[] = [
     {
       title: '#',
