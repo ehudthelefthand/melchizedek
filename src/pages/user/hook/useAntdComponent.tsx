@@ -8,8 +8,11 @@ import { UserResponse } from '../../../api/user/response'
 import { ColumnType } from 'antd/es/table'
 import { DeleteOutlined } from '@ant-design/icons'
 import { Space } from 'antd'
+import { useService } from '../../../service/service'
 
 const useAntdUserTableData = ({ onDelete }: { onEdit: any; onDelete: any }) => {
+  const service = useService()
+
   const userColumns: ColumnType<UserResponse>[] = [
     {
       title: '#',
@@ -53,9 +56,7 @@ const useAntdUserTableData = ({ onDelete }: { onEdit: any; onDelete: any }) => {
       dataIndex: 'departmentId',
       width: 10,
       align: 'left',
-      // TODO: เอาชื่อผู้ถวายมาแสดง
-      // render: (value: UserResponse) =>
-      //   service.metadatums.getDepartment(value.departmentId).name,
+      render: (id: number) => service.metadatums.getDepartment(id).name
     },
     {
       title: 'บทบาท',

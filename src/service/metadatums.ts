@@ -10,7 +10,7 @@ import {
 import { api } from '../api/api'
 import { store } from '../store'
 
-let metadatums: MetadatumsResponse = { 
+let metadatums: MetadatumsResponse = {
   staffs: [],
   departments: [],
   banks: [],
@@ -37,17 +37,15 @@ export function useCreateMetadatumsService() {
 
   // when click login button
   const loadMetadatums = () => {
-    return api.metadatum
-      .get()
-      .then((value) => {
-        metadatums = value
-      })
+    return api.metadatum.get().then((value) => {
+      metadatums = value
+    })
   }
 
   const getAllStaffs = (): StaffResponse[] => metadatums.staffs
 
   const getStaff = (id: number): StaffResponse => {
-    let staff = metadatums.staffs.find((staff) => staff.id === id)
+    let staff = metadatums.staffs.find((staff: any) => staff.id === id)
     if (!staff) {
       staff = { id: 0, nickName: 'No Data.' }
     }
@@ -57,19 +55,14 @@ export function useCreateMetadatumsService() {
   const getAllDepartments = (): DepartmentResponse[] => metadatums.departments
 
   const getDepartment = (id: number): DepartmentResponse => {
-    let department = metadatums.departments.find(
-      (department) => department.id === id
-    )
-    if (!department) {
-      department = { id: 0, name: 'No Data.' }
-    }
-    return department
+    const department = metadatums.departments.find((item) => item.id === id)
+    return department ?? { id: 0, name: 'No Data.' }
   }
 
   const getAllBanks = (): BankResponse[] => metadatums.banks
 
   const getBank = (id: number): BankResponse => {
-    let bank = metadatums.banks.find((bank) => bank.id === id)
+    let bank = metadatums.banks.find((bank: any) => bank.id === id)
     if (!bank) {
       bank = { id: 0, code: 'No Data.' }
     }
