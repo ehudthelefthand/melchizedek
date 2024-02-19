@@ -1,6 +1,6 @@
 import { PageRequest } from './../../constants/api'
 import { axios } from '../api'
-import { UserCreateRequest, UserLoginRequest } from './request'
+import { UserCreateRequest, UserLoginRequest, UserValidate } from './request'
 import { PageUserResponse, UserLoginResponse } from './response'
 
 export default {
@@ -19,7 +19,7 @@ export default {
       )
       .then((response) => response.data)
   },
-  validate: (username: string) => {
+  validate: (username: UserValidate) => {
     return axios
       .post(`/validate/username`, username)
       .then((response) => response.data)
@@ -28,9 +28,16 @@ export default {
     userCreateRequest: UserCreateRequest
   ): Promise<UserCreateRequest> => {
     return axios
-      .post(`/createUser`, userCreateRequest)
+      .post(`/user/create`, userCreateRequest)
       .then((response) => response.data)
   },
+  edit: (id: string) => {
+    return axios.put(`user/edit/${id}`).then((response) => response.data)
+  },
+  delete: (id: string) => {
+    return axios.delete(`user/delete/${id}`).then((response) => response.data)
+  },
+
   importFile: (form: FormData) => {
     return axios.post(`/user/import`, form).then((response) => response.data)
   },

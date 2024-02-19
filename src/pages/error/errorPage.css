@@ -1,21 +1,7 @@
-.error {
-  display: grid;
-  min-height: 100vh;
-  place-items: center;
-  background-color: white;
-}
-
-.error-img {
-  display: grid;
-}
-
-.error-img img {
-  width: 100%;
-}
-
-@media (min-width: 600px) {
-  .error-img {
-    display: grid;
-    width: 500px;
-  }
+#error-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }

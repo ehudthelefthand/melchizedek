@@ -13,6 +13,7 @@ import { PropsWithChildren } from 'react'
 import { useService } from '../../../service/service'
 import { TransactionReportFormAntd } from './model/report'
 import { useNavigate } from 'react-router-dom'
+import { store } from '../../../store'
 
 const { RangePicker } = DatePicker
 
@@ -24,6 +25,7 @@ const TransactionReportFilterForm = (
   const { onCancel } = props
   const service = useService()
   const navigate = useNavigate()
+  const isAdmin = store.user?.role === 'admin'
 
   const departments: SelectProps['options'] = [
     { label: 'BK', value: 'BK' },
@@ -52,23 +54,25 @@ const TransactionReportFilterForm = (
 
   return (
     <Form onFinish={onSubmit} layout="vertical">
-      <Space direction="vertical" size={20} style={{ display: 'flex' }}>
+      <Space direction="vertical" size={20} style={{ display: 'flex', paddingTop: 10,paddingBottom: 10}}>
         <Row gutter={[5, 5]}>
-          <Col xs={24} sm={24} md={12} lg={12}>
-            <Form.Item
-              key={'department'}
-              name={'department'}
-              rules={[{ required: true, message: 'กรุณาเลือกภูมิภาค' }]}
-              hasFeedback
-            >
-              <Select
-                options={departments}
-                size="large"
-                placeholder={'เลือกภูมิภาค'}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={12}>
+          {isAdmin && (
+            <Col xs={24} sm={24} md={12} lg={12}>
+              <Form.Item
+                key={'department'}
+                name={'department'}
+                rules={[{ required: true, message: 'กรุณาเลือกภูมิภาค' }]}
+                hasFeedback
+              >
+                <Select
+                  options={departments}
+                  size="large"
+                  placeholder={'เลือกภูมิภาค'}
+                />
+              </Form.Item>
+            </Col>
+          )}
+          <Col xs={24} sm={24} md={isAdmin ? 12 : 24} lg={isAdmin ? 12 : 24}>
             <Form.Item
               key={'months'}
               name={'months'}

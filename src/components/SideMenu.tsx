@@ -5,7 +5,6 @@ import {
   DesktopOutlined,
   LogoutOutlined,
   SolutionOutlined,
-  TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -18,6 +17,8 @@ const SideMenu: React.FC = () => {
   const [t] = useTranslation('translation')
   const service = useService()
   const navigate = useNavigate()
+
+  const isAdmin = service.reactStore.store.user?.role
 
   const items = [
     {
@@ -36,24 +37,17 @@ const SideMenu: React.FC = () => {
       label: 'ประวัติการดาวโหลด',
       icon: <CloudDownloadOutlined />,
     },
-    {
-      key: 'user',
-      label: 'จัดการผู้ใช้',
-      icon: <TeamOutlined />,
-      children: [
-        {
-          key: 'userPage',
-          label: 'ผู้ใช้ทั้งหมด',
-          icon: <SolutionOutlined />,
-        },
-        {
-          key: 'donorPage',
-          label: 'ผู้ถวายทั้งหมด',
-          icon: <ContactsOutlined />,
-        },
-      ],
+    isAdmin === 'admin' && {
+      key: 'userPage',
+      label: 'ผู้ใช้ทั้งหมด',
+      icon: <SolutionOutlined />,
     },
-  ]
+    isAdmin === 'admin' && {
+      key: 'donorPage',
+      label: 'ผู้ถวายทั้งหมด',
+      icon: <ContactsOutlined />,
+    },
+  ].filter(Boolean) as []
 
   const logoutItem = {
     key: 'logout',

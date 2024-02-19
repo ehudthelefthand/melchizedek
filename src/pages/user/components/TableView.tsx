@@ -1,66 +1,18 @@
 import { Skeleton, Table } from 'antd'
-import { ColumnType } from 'antd/es/table'
+import { ColumnsType } from 'antd/es/table'
 import useUser from '../hook/useUserList'
 import { UserResponse } from '../../../api/user/response'
+// import { useService } from '../../../service/service'
 
-
-function UserTableView() {
+function UserTableView({
+  data,
+}: {
+  data: ColumnsType<UserResponse> | undefined
+}) {
+  // const service = useService()
   const user = useUser()
   const { userList, isLoading, handleTableChange, pagination, totalItems } =
     user
-
-  // TODO: แปลภาษา
-  const columns: ColumnType<UserResponse>[] = [
-    {
-      title: '#',
-      key: 'id',
-      dataIndex: 'id',
-      width: 10,
-      align: 'center',
-    },
-    {
-      title: 'ชื่อภาษาไทย',
-      key: 'fullNameTH',
-      dataIndex: 'fullNameTH',
-      width: 10,
-      align: 'left',
-    },
-    {
-      title: 'ชื่อภาษาอังกฤษ',
-      key: 'fullNameEN',
-      dataIndex: 'fullNameEN',
-      width: 10,
-      align: 'left',
-    },
-    {
-      title: 'ชื่อผู้ใช้',
-      key: 'userName',
-      dataIndex: 'userName',
-      width: 10,
-      align: 'left',
-    },
-    {
-      title: 'รหัสผ่าน',
-      key: 'password',
-      dataIndex: 'password',
-      width: 10,
-      align: 'left',
-    },
-    {
-      title: 'แผนก',
-      key: 'department',
-      dataIndex: 'department',
-      width: 10,
-      align: 'left',
-    },
-    {
-      title: 'บทบาท',
-      key: 'role',
-      dataIndex: 'role',
-      width: 10,
-      align: 'left',
-    },
-  ]
 
   if (isLoading) {
     return <Skeleton active />
@@ -69,7 +21,7 @@ function UserTableView() {
   return (
     <Table
       loading={isLoading}
-      columns={columns}
+      columns={data}
       rowKey={(record) => record.id}
       dataSource={userList}
       pagination={{
@@ -77,7 +29,7 @@ function UserTableView() {
         current: pagination.current,
         total: totalItems,
         showSizeChanger: true,
-        pageSizeOptions: [20, 40, 80, 100],
+        pageSizeOptions: [10, 20, 40, 80, 100],
       }}
       onChange={handleTableChange}
     />

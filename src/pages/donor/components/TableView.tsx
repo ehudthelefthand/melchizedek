@@ -3,7 +3,7 @@ import { ColumnType } from 'antd/es/table'
 import useDonorList from '../hook/useDonorList'
 import { DonorListResponse } from '../../../api/donor/response'
 
-function UserTableView() {
+function DonorTableView() {
   const donor = useDonorList()
   const { donorList, isLoading, handleTableChange, pagination, totalItems } =
     donor
@@ -32,13 +32,6 @@ function UserTableView() {
       align: 'left',
     },
     {
-      title: 'ชื่อเล่น',
-      key: 'nickName',
-      dataIndex: 'nickName',
-      width: 20,
-      align: 'left',
-    },
-    {
       title: 'ประเภท',
       key: 'type',
       dataIndex: 'type',
@@ -49,13 +42,6 @@ function UserTableView() {
       title: 'ผู้ดูแล',
       key: 'staff',
       dataIndex: 'staff',
-      width: 20,
-      align: 'left',
-    },
-    {
-      title: 'note',
-      key: 'note',
-      dataIndex: 'note',
       width: 20,
       align: 'left',
     },
@@ -83,4 +69,4 @@ function UserTableView() {
   )
 }
 
-export default UserTableView
+export default DonorTableView

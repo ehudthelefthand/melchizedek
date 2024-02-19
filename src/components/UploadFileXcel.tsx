@@ -1,11 +1,17 @@
 import { UploadOutlined } from '@ant-design/icons'
-import { Button, Upload } from 'antd'
-import useDonorUploadFile from '../pages/donor/hook/useDonorUploadFile'
+import { Button, Upload, UploadFile, UploadProps } from 'antd'
+import { MouseEventHandler } from 'react'
 
-function UploadFileExcel({ onCancel }: { onCancel: () => void }) {
-  const donorForm = useDonorUploadFile()
-  const { handleUpload, props, fileList, isLoading } = donorForm
-
+function UploadFileExcel({
+  props,
+  handleUpload,
+  fileList,
+}: {
+  props:UploadProps<any>
+  handleUpload: MouseEventHandler<HTMLElement>
+  fileList: UploadFile<any>[]
+  
+}) {
   return (
     <>
       <Upload {...props} maxCount={1}>
@@ -13,9 +19,7 @@ function UploadFileExcel({ onCancel }: { onCancel: () => void }) {
       </Upload>
       <Button
         type="primary"
-        onClick={() => {
-          handleUpload(), isLoading === true ? isLoading : onCancel()
-        }}
+        onClick={handleUpload}
         disabled={fileList.length === 0}
         style={{ marginTop: 16 }}
       >

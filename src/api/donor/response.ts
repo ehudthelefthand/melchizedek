@@ -8,6 +8,11 @@ export interface DonorListResponse {
   note: string
 }
 
+export interface DonorFullNameList {
+  id: number
+  fullName: string
+}
+
 export interface PageDonorResponse {
   data: DonorListResponse[]
   page: number

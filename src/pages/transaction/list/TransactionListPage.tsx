@@ -170,7 +170,14 @@ function TransactionListPage() {
                     </Button>
                   </Link>
                 </Col>
-                <Col xs={12} style={{display: 'flex', flexDirection: 'row', justifyContent: 'end'}}>
+                <Col
+                  xs={12}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'end',
+                  }}
+                >
                   <Button
                     size="large"
                     type="primary"
@@ -193,7 +200,7 @@ function TransactionListPage() {
 
           <Modal
             /* TODO: translation */
-            title={<h2>กรุณาเลือกเดือน</h2>}
+            title={<h2 style={{ textAlign: 'center' }}>กรุณาเลือกเดือน</h2>}
             centered
             open={modalVisible}
             onCancel={() => {
@@ -202,6 +209,7 @@ function TransactionListPage() {
             footer={null}
             closeIcon={null}
             destroyOnClose={true}
+            
           >
             <TransactionReportFilterForm onCancel={onCancel} />
           </Modal>

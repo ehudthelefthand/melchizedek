@@ -6,15 +6,16 @@ import Search from 'antd/es/input/Search'
 
 function UserFormPage() {
   const [t] = useTranslation('translation')
-  const userForm = useUserForm()
   const {
+    message,
     setErrorMessage,
     errorMessage,
     onSubmit,
     departmentAPI,
     role,
+    setMessage,
     handleValidateUsername,
-  } = userForm
+  } = useUserForm()
 
   return (
     <>
@@ -41,10 +42,12 @@ function UserFormPage() {
                   { required: true, message: 'Please fill UserName' },
                   () => ({
                     validator(_, value) {
-                      if (value) {
-                        handleValidateUsername(value)
-                      }
                       setErrorMessage('')
+                      setMessage('')
+
+                      if (!value) return Promise.resolve()
+
+                      return Promise.resolve(handleValidateUsername(value))
                     },
                   }),
                 ]}
@@ -57,7 +60,8 @@ function UserFormPage() {
                   size="large"
                 />
               </Form.Item>
-              {errorMessage !== null && (
+              {message && <p style={{ color: 'green' }}>{message}</p>}
+              {!message && errorMessage !== null && (
                 <p style={{ color: 'red' }}>{errorMessage}</p>
               )}
             </Col>
@@ -105,8 +109,8 @@ function UserFormPage() {
             </Col>
             <Col span={12}>
               <Form.Item
-                key={'departmentId'}
-                name={'departmentId'}
+                key={'department'}
+                name={'department'}
                 rules={[
                   { required: true, message: 'Please select a department' },
                 ]}

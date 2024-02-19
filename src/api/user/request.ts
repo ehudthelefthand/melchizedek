@@ -7,6 +7,10 @@ export interface UserLogoutRequest {
   token: string
 }
 
+export interface UserValidate {
+  username: string
+}
+
 export interface UserCreateRequest {
   username: string
   password: string

@@ -1,6 +1,6 @@
 import { axios } from '../api'
 import { PageRequest } from './../../constants/api'
-import { PageDonorResponse } from './response'
+import { DonorFullNameList, PageDonorResponse } from './response'
 
 export default {
   getAll: (pageRequest: PageRequest): Promise<PageDonorResponse> => {
@@ -11,6 +11,9 @@ export default {
   },
   importFile: (form: FormData) => {
     return axios.post(`donor/import`, form).then((response) => response.data)
+  },
+  getDonorsByStaffId: (staffID: number): Promise<DonorFullNameList[]> => {
+    return axios.get(`/donor/list/${staffID}`).then((response) => response.data)
   },
   // TODO: Create API
 

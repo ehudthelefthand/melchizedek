@@ -29,9 +29,9 @@ const useUserList = () => {
         currentPage: pagination.current,
         itemsPerPage: pagination.itemsPerPage,
       })
-      .then((response) => {
-        setTotalItems(response.totalItems)
-        setUserList(response.data)
+      .then((pageUser) => {
+        setTotalItems(pageUser.totalItems)
+        setUserList(pageUser.data)
       })
       .catch((err) => console.error(err))
       .finally(() => setIsloading(false))

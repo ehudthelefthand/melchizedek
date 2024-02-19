@@ -1,20 +1,29 @@
 import { FileAddOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Button, Col, Modal, Row, Skeleton, Space, Spin } from 'antd'
 import { Link } from 'react-router-dom'
-import MzkUploadFileExcel from '../../components/UploadFileXcel'
-import UserTableView from '../user/components/TableView'
 import useDonorList from './hook/useDonorList'
 import { useMediaQuery } from 'react-responsive'
 import { useTranslation } from 'react-i18next'
+import DonorTableView from './components/TableView'
 import useDonorUploadFile from './hook/useDonorUploadFile'
+import UploadFileExcel from '../../components/UploadFileXcel'
+import FullScreenLoading from '../../components/FullScreenLoading'
+import UserTableView from '../user/components/TableView'
 
 function DonorListPage() {
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
   const [t] = useTranslation('translation')
   const donor = useDonorList()
   const { isLoading } = donor
-  const useUploadFile = useDonorUploadFile()
-  const { onOpen, onCancel, modalVisible } = useUploadFile
+  const {
+    props,
+    isDonorUploadLoading,
+    handleUpload,
+    fileList,
+    modalVisible,
+    onOpen,
+    onCancel,
+  } = useDonorUploadFile()
 
   return (
     <>
@@ -48,8 +57,9 @@ function DonorListPage() {
                   </Button>
                 </Col>
                 <Col>
-                  <Link to={'/user/create'}>
+                  <Link to={'/donor/create'}>
                     <Button
+                      disabled
                       size="large"
                       type="primary"
                       style={{ width: isMobile ? '100%' : '' }}
@@ -72,11 +82,17 @@ function DonorListPage() {
             onCancel={() => onCancel()}
             destroyOnClose={true}
           >
-            <MzkUploadFileExcel onCancel={onCancel} />
+            <UploadFileExcel
+              props={props}
+              handleUpload={handleUpload}
+              fileList={fileList}
+            />
           </Modal>
-
           {/* //TODO: mobile ยังไม่พร้อม */}
-          {isMobile ? <></> : <UserTableView />}
+          {!isMobile && <DonorTableView />}
+          {isDonorUploadLoading && (
+            <FullScreenLoading spinning={isDonorUploadLoading} />
+          )}
         </Space>
       )}
     </>

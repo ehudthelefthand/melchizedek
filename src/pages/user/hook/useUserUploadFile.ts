@@ -35,7 +35,6 @@ const useUserUploadFile = () => {
       if (!isExcel) {
         setFileList([])
         message.error('You can only upload Excel file!')
-        console.log('file', fileList)
       } else {
         service.api.user
           .importFile(formData)

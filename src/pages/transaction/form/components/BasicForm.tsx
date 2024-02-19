@@ -11,9 +11,12 @@ import {
 } from 'antd'
 import { t } from 'i18next'
 import { useService } from '../../../../service/service'
+import { useEffect, useState } from 'react'
 
 function BasicForm() {
   const service = useService()
+  const [staffID, setStaffID] = useState<number>(0)
+  const [donorOptions, setDonorOptions] = useState<SelectProps['options']>([])
 
   const staffAPI: SelectProps['options'] = service.metadatums
     .getAllStaffs()
@@ -42,12 +45,22 @@ function BasicForm() {
       value: bank.id,
     }))
 
-  const donorAPI: SelectProps['options'] = service.metadatums
-    .getAllDonors()
-    .map((donor) => ({
-      label: donor.fullName,
-      value: donor.id,
-    }))
+  const fetchDonors = async (staffID: number) => {
+    try {
+      const response = await service.api.donor.getDonorsByStaffId(staffID)
+      const options = response.map((donor) => ({
+        label: donor.fullName,
+        value: donor.id,
+      }))
+      setDonorOptions(options)
+    } catch (error) {
+      console.error('Error fetching donors:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchDonors(staffID)
+  }, [staffID])
 
   return (
     <>
@@ -64,6 +77,7 @@ function BasicForm() {
                 options={staffAPI}
                 size="large"
                 placeholder={t('transacForm.staffName')}
+                onChange={(selectedStaffID) => setStaffID(selectedStaffID)}
               />
             </Form.Item>
           </Col>
@@ -79,7 +93,7 @@ function BasicForm() {
               <Select
                 size="large"
                 placeholder={t('transacForm.donorName')}
-                options={donorAPI}
+                options={donorOptions}
               />
             </Form.Item>
           </Col>

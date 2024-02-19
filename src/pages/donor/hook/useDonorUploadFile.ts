@@ -6,11 +6,10 @@ import { useService } from '../../../service/service'
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
 
 const useDonorUploadFile = () => {
-  const [modalVisible, setModalVisible] = useState(false)
-  const onOpen = () => setModalVisible(true)
-  const onCancel = () => setModalVisible(false)
   const [fileList, setFileList] = useState<UploadFile[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isDonorUploadLoading, setDonorUploadLoading] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false)
+
   const service = useService()
 
   const isExcelFile = (file: UploadFile<any>) => {
@@ -19,38 +18,41 @@ const useDonorUploadFile = () => {
     return excelExtensions.includes(`.${fileExtension}`)
   }
 
-  const handleUpload = () => {
-    setIsLoading(true)
-    if (fileList.length === 0) {
-      message.error('Please upload Excel file!')
-      setIsLoading(true)
-    } else {
+  const onOpen = () => setModalVisible(true)
+  const onCancel = () => setModalVisible(false)
+
+  function onFinish() {
+    setDonorUploadLoading(false)
+    setModalVisible(false)
+  }
+
+  const handleUpload = async () => {
+    try {
+      setDonorUploadLoading(true)
+
+      if (fileList.length === 0) {
+        message.error('Please upload Excel file!')
+        return
+      }
       const isExcel = isExcelFile(fileList[0])
+
+      if (!isExcel) {
+        setFileList([])
+        message.error('You can only upload Excel file!')
+        return
+      }
 
       const formData = new FormData()
       fileList.forEach((file: any) => {
         formData.append('file', file as FileType)
       })
 
-      if (!isExcel) {
-        setFileList([])
-        message.error('You can only upload Excel file!')
-        console.log('file', fileList)
-      } else {
-        service.api.donor
-          .importFile(formData)
-          .then((response) => {
-            response
-            message.success('Success')
-            onCancel
-          })
-          .catch((err) => {
-            console.error(err), message.error('Upload Fail')
-          })
-          .finally(() => {
-            onCancel(), setIsLoading(false)
-          })
-      }
+      const result = await service.api.donor.importFile(formData)
+      result && message.success('Success')
+    } catch (error) {
+      console.error(error), message.error('Upload Fail')
+    } finally {
+      onFinish()
     }
   }
 
@@ -69,13 +71,14 @@ const useDonorUploadFile = () => {
   }
 
   return {
-    fileList,
-    handleUpload,
     props,
-    onCancel,
-    onOpen,
+    fileList,
     modalVisible,
-    isLoading,
+    isDonorUploadLoading,
+    onOpen,
+    onCancel,
+    handleUpload,
+    setModalVisible,
   }
 }
 

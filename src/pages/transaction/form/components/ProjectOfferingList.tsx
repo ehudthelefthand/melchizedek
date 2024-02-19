@@ -72,11 +72,9 @@ function ProjectOfferingList(props: Props) {
     projectOffering: TransactionProjectOfferingForm,
     index: number
   ) => (
-    <List.Item
-      style={{ justifyContent: "center", alignItems: "center" }}
-    >
+    <List.Item style={{ justifyContent: 'center', alignItems: 'center' }}>
       <Card
-        style={{ width: "100%", maxWidth: "400px", minHeight: "220px" }}
+        style={{ width: '100%', maxWidth: '400px', minHeight: '220px' }}
         title={'PROJECT'}
         extra={
           <>
@@ -106,32 +104,69 @@ function ProjectOfferingList(props: Props) {
         }
       >
         <Row gutter={[10, 10]}>
-          <Col span={10} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          <Col
+            span={10}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'start',
+            }}
+          >
             <Space>
               <PartitionOutlined />
-              <Text>{service.metadatums.getDepartment(projectOffering.departmentId).name}</Text>
+              <Text>
+                {
+                  service.metadatums.getDepartment(projectOffering.departmentId)
+                    .name
+                }
+              </Text>
             </Space>
           </Col>
-          <Col span={10} offset={4} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          <Col
+            span={10}
+            offset={4}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'start',
+            }}
+          >
             <Space>
               <UserOutlined />
-              <Text>{service.metadatums.getStaff(projectOffering.staffId).fullNameTH}</Text>
+              <Text>
+                {service.metadatums.getStaff(projectOffering.staffId).nickName}
+              </Text>
             </Space>
           </Col>
         </Row>
         <Row gutter={[10, 10]}>
-          <Col span={10} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          <Col
+            span={10}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'start',
+            }}
+          >
             <Space>
               <DollarOutlined />
               <Text>
                 {projectOffering.amount.toLocaleString('th-TH', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </Text>
             </Space>
           </Col>
-          <Col span={10} offset={4} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          <Col
+            span={10}
+            offset={4}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'start',
+            }}
+          >
             <Space>
               <CarryOutOutlined />
               <Text>{projectOffering.date.format('DD/MM/YYYY')}</Text>
@@ -139,13 +174,30 @@ function ProjectOfferingList(props: Props) {
           </Col>
         </Row>
         <Row gutter={[10, 10]}>
-          <Col span={10} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          <Col
+            span={10}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'start',
+            }}
+          >
             <Space>
               <ProjectOutlined />
-              <Text>{service.metadatums.getProject(projectOffering.projectId).name}</Text>
+              <Text>
+                {service.metadatums.getProject(projectOffering.projectId).name}
+              </Text>
             </Space>
           </Col>
-          <Col span={10} offset={4} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'start' }}>
+          <Col
+            span={10}
+            offset={4}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'start',
+            }}
+          >
             <Space>
               <ReadOutlined />
               <Text>{projectOffering.descriptions}</Text>

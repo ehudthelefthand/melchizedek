@@ -10,13 +10,14 @@ const useUserForm = () => {
   const [userForm] = Form.useForm<UserForm>()
   const navigate = useNavigate()
   const service = useService()
+  const [message, setMessage] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   const departmentAPI: SelectProps['options'] = service.metadatums
     .getAllDepartments()
     .map((department) => ({
       label: department.name,
-      value: department.id,
+      value: department.name,
     }))
 
   const role: SelectProps['options'] = [
@@ -31,43 +32,33 @@ const useUserForm = () => {
   ]
 
   const isUsernameExists = async (value: string) => {
-    return await service.api.user.validate(value)
+    return await service.api.user.validate({ username: value })
   }
 
   const validateUserName = async (value: string) => {
     try {
-      const result = await isUsernameExists(value)
-      console.log('result', result)
-      if (result.status.exists) {
-        setErrorMessage('ชื่อผู้ใช้นี้มีในระบบแล้ว!')
-        return Promise.reject(`${errorMessage}`)
-      }
-      return Promise.resolve()
+      if (!value) return
+      const temp = value.trim()
+      setMessage('')
+      const result = await isUsernameExists(temp)
+      setMessage('สามารถใช้ชื่อผู้ใช้ได้')
+      return Promise.resolve(result)
     } catch (error) {
       console.error(error)
-      setErrorMessage('เกิดข้อผิดพลาดในการตรวจสอบชื่อผู้ใช้')
+      setMessage('')
+      setErrorMessage('ชื่อผู้ใช้นี้มีในระบบแล้ว')
       return Promise.reject(`${errorMessage}`)
     }
   }
 
-  const handleValidateUsername = (name: string) => {
-    debounce(validateUserName(name), 2000)
+  const handleValidateUsername = async (username: string) => {
+    return debounce(await validateUserName(username), 2000)
   }
 
   const onSubmit = (value: UserCreateRequest) => {
     // TODO: API
 
-    // service.api.user.create({
-    //   username: value.username,
-    //   password: value.password,
-    //   fullNameTH: value.fullNameTH,
-    //   fullNameEN: value.fullNameEN,
-    //   nickName: value.nickName,
-    //   department: value.department,
-    //   role: value.role,
-    // })
-
-    const test: UserCreateRequest = {
+    const createUser: UserCreateRequest = {
       username: value.username,
       password: value.password,
       fullNameTH: value.fullNameTH,
@@ -76,16 +67,20 @@ const useUserForm = () => {
       department: value.department,
       role: value.role,
     }
-    console.log(`createUser`, test)
-    navigate('/transaction')
+
+    service.api.user.create(createUser)
+
+    navigate('/user')
   }
 
   return {
+    message,
     errorMessage,
     userForm,
     onSubmit,
     departmentAPI,
     role,
+    setMessage,
     setErrorMessage,
     handleValidateUsername,
   }

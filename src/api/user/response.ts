@@ -12,6 +12,7 @@ export interface UserResponse {
   nickName: string
   username: string
   password: string
+  departmentId: number
   role: string
 }
 
