@@ -7,22 +7,22 @@ import UserTableView from './components/TableView'
 import useUserList from './hook/useUserList'
 import UploadFileExcel from '../../components/UploadFileXcel'
 import FullScreenLoading from '../../components/FullScreenLoading'
-import useDonorUploadFile from '../donor/hook/useDonorUploadFile'
 import useAntdUserTableData from './hook/useAntdComponent'
 import { useService } from '../../service/service'
 import { useState } from 'react'
+import useUserUploadFile from './hook/useUserUploadFile'
 
 function UserListPage() {
   const { isLoading } = useUserList()
   const {
     props,
-    isDonorUploadLoading,
+    isUserLoading,
     handleUpload,
     fileList,
     modalVisible,
     onOpen,
     onCancel,
-  } = useDonorUploadFile()
+  } = useUserUploadFile()
   const navigate = useNavigate()
   const service = useService()
 
@@ -120,8 +120,8 @@ function UserListPage() {
         </Modal>
         {/* //TODO: mobile ยังไม่พร้อม */}
         {!isMobile && <UserTableView data={userColumns} />}
-        {isDonorUploadLoading && (
-          <FullScreenLoading spinning={isDonorUploadLoading} />
+        {isUserLoading && (
+          <FullScreenLoading spinning={isUserLoading} />
         )}
       </Space>
     </>

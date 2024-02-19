@@ -10,7 +10,7 @@ const useUserUploadFile = () => {
   const onOpen = () => setModalVisible(true)
   const onCancel = () => setModalVisible(false)
   const [fileList, setFileList] = useState<UploadFile[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isUserLoading, setIsUserLoading] = useState(false)
   const service = useService()
 
   const isExcelFile = (file: UploadFile<any>) => {
@@ -20,10 +20,10 @@ const useUserUploadFile = () => {
   }
 
   const handleUpload = () => {
-    setIsLoading(true)
+    setIsUserLoading(true)
     if (fileList.length === 0) {
       message.error('Please upload Excel file!')
-      setIsLoading(true)
+      setIsUserLoading(true)
     } else {
       const isExcel = isExcelFile(fileList[0])
 
@@ -47,7 +47,7 @@ const useUserUploadFile = () => {
             console.error(err), message.error('Upload Fail')
           })
           .finally(() => {
-            onCancel(), setIsLoading(false)
+            onCancel(), setIsUserLoading(false)
           })
       }
     }
@@ -74,7 +74,7 @@ const useUserUploadFile = () => {
     onCancel,
     onOpen,
     modalVisible,
-    isLoading,
+    isUserLoading,
   }
 }
 
