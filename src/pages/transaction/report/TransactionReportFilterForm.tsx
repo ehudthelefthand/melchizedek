@@ -7,13 +7,13 @@ import {
   Button,
   message,
   Select,
-  SelectProps,
 } from 'antd'
 import { PropsWithChildren } from 'react'
 import { useService } from '../../../service/service'
 import { TransactionReportFormAntd } from './model/report'
 import { useNavigate } from 'react-router-dom'
 import { store } from '../../../store'
+import { initialRegion } from '../../../constants/api'
 
 const { RangePicker } = DatePicker
 
@@ -27,18 +27,12 @@ const TransactionReportFilterForm = (
   const navigate = useNavigate()
   const isAdmin = store.user?.role === 'admin'
 
-  const departments: SelectProps['options'] = [
-    { label: 'BK', value: 'BK' },
-    { label: 'CM', value: 'CM' },
-    { label: 'CR', value: 'CR' },
-  ]
-
   function onSubmit(value: TransactionReportFormAntd) {
     service.api.transaction
       .requestReport({
         startMonth: +value.months[0],
         dueMonth: +value.months[1],
-        department: value.department.toLowerCase(),
+        department: value.department,
       })
       .then(() => {
         onCancel()
@@ -54,7 +48,11 @@ const TransactionReportFilterForm = (
 
   return (
     <Form onFinish={onSubmit} layout="vertical">
-      <Space direction="vertical" size={20} style={{ display: 'flex', paddingTop: 10,paddingBottom: 10}}>
+      <Space
+        direction="vertical"
+        size={20}
+        style={{ display: 'flex', paddingTop: 10, paddingBottom: 10 }}
+      >
         <Row gutter={[5, 5]}>
           {isAdmin && (
             <Col xs={24} sm={24} md={12} lg={12}>
@@ -65,7 +63,7 @@ const TransactionReportFilterForm = (
                 hasFeedback
               >
                 <Select
-                  options={departments}
+                  options={initialRegion}
                   size="large"
                   placeholder={'เลือกภูมิภาค'}
                 />

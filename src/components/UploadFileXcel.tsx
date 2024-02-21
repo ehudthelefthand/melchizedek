@@ -1,26 +1,51 @@
 import { UploadOutlined } from '@ant-design/icons'
-import { Button, Upload, UploadFile, UploadProps } from 'antd'
-import { MouseEventHandler } from 'react'
+import { Button, Upload, UploadFile, UploadProps, Typography } from 'antd'
+import { MouseEventHandler, useEffect } from 'react'
+import { getFileExtension, isExcelFile } from '../service/file'
 
 function UploadFileExcel({
   props,
+  error,
   handleUpload,
-  fileList,
+  file,
+  setError,
 }: {
-  props:UploadProps<any>
+  error?: string
+  setError: Function
+  props: UploadProps<any>
   handleUpload: MouseEventHandler<HTMLElement>
-  fileList: UploadFile<any>[]
-  
+  file: UploadFile<any>
 }) {
+  useEffect(() => {
+    if (file) {
+      if (!isExcelFile(file)) {
+        setError(
+          `Wrong file format, require .xlsx file format but found ".${getFileExtension(
+            file
+          )}"`
+        )
+      } else {
+        setError('')
+      }
+    }
+  }, [file])
+
   return (
     <>
       <Upload {...props} maxCount={1}>
-        <Button icon={<UploadOutlined />}>Select File</Button>
+        <Button
+          style={{
+            flexDirection: 'row',
+          }}
+        >
+          <UploadOutlined /> Click to Upload
+        </Button>
       </Upload>
+      {error && <Typography style={{ color: 'red' }}>{error}</Typography>}
       <Button
         type="primary"
         onClick={handleUpload}
-        disabled={fileList.length === 0}
+        disabled={!file || error != ''}
         style={{ marginTop: 16 }}
       >
         Upload File

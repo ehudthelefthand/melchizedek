@@ -1,28 +1,39 @@
 import { FileAddOutlined, LoadingOutlined } from '@ant-design/icons'
-import { Button, Col, Modal, Row, Skeleton, Space, Spin } from 'antd'
+import { Button, Col, Modal, Row, Select, Skeleton, Space, Spin } from 'antd'
 import { Link } from 'react-router-dom'
 import useDonorList from './hook/useDonorList'
 import { useMediaQuery } from 'react-responsive'
 import { useTranslation } from 'react-i18next'
 import DonorTableView from './components/TableView'
-import useDonorUploadFile from './hook/useDonorUploadFile'
 import UploadFileExcel from '../../components/UploadFileXcel'
 import FullScreenLoading from '../../components/FullScreenLoading'
+import useUploadFile from '../../hooks/uploadFile/useUploadFile'
+import { useService } from '../../service/service'
+import { initialRegion } from '../../constants/api'
 
 function DonorListPage() {
+  const formData = new FormData()
+
+  const services = useService()
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
+
   const [t] = useTranslation('translation')
-  const donor = useDonorList()
-  const { isLoading } = donor
+  const { isLoading } = useDonorList()
   const {
     props,
-    isDonorUploadLoading,
+    error,
+    isUploading,
     handleUpload,
     fileList,
     modalVisible,
     onOpen,
     onCancel,
-  } = useDonorUploadFile()
+    setError,
+    onSelectDepartment,
+  } = useUploadFile({
+    formData: formData,
+    callback: (formData) => services.api.donor.importFile(formData),
+  })
 
   return (
     <>
@@ -81,17 +92,44 @@ function DonorListPage() {
             onCancel={() => onCancel()}
             destroyOnClose={true}
           >
-            <UploadFileExcel
-              props={props}
-              handleUpload={handleUpload}
-              fileList={fileList}
-            />
+            <Row
+              style={{
+                justifyContent: 'center',
+              }}
+            >
+              <Select
+                placeholder={'ภูมิภาค'}
+                style={{
+                  width: (window.innerWidth * 45) / 100,
+                  marginTop: 6,
+                  marginBottom: 6,
+                }}
+                onChange={onSelectDepartment}
+                options={initialRegion}
+              />
+            </Row>
+
+            <Col
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginTop: 16,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <UploadFileExcel
+                props={props}
+                error={error}
+                handleUpload={handleUpload}
+                file={fileList[0]}
+                setError={setError}
+              />
+            </Col>
           </Modal>
           {/* //TODO: mobile ยังไม่พร้อม */}
           {!isMobile && <DonorTableView />}
-          {isDonorUploadLoading && (
-            <FullScreenLoading spinning={isDonorUploadLoading} />
-          )}
+          {isUploading && <FullScreenLoading spinning={isUploading} />}
         </Space>
       )}
     </>

@@ -1,59 +1,40 @@
-import { Button, Col, Modal, Row, Skeleton, Space, Spin, message } from 'antd'
+import { Button, Col, Modal, Row, Skeleton, Space, Spin } from 'antd'
 import { FileAddOutlined, LoadingOutlined } from '@ant-design/icons'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useMediaQuery } from 'react-responsive'
 import UserTableView from './components/TableView'
 import useUserList from './hook/useUserList'
 import UploadFileExcel from '../../components/UploadFileXcel'
 import FullScreenLoading from '../../components/FullScreenLoading'
 import useAntdUserTableData from './hook/useAntdComponent'
+import useUploadFile from '../../hooks/uploadFile/useUploadFile'
 import { useService } from '../../service/service'
-import { useState } from 'react'
-import useUserUploadFile from './hook/useUserUploadFile'
 
 function UserListPage() {
-  const { isLoading } = useUserList()
+  const [t] = useTranslation('translation')
+  const formData = new FormData()
+
+  const services = useService()
+  const { isMobile, onEdit, onDelete, isProcess, isLoading } = useUserList()
   const {
     props,
-    isUserLoading,
+    error,
+    isUploading,
     handleUpload,
     fileList,
     modalVisible,
     onOpen,
     onCancel,
-  } = useUserUploadFile()
-  const navigate = useNavigate()
-  const service = useService()
+    setError,
+  } = useUploadFile({
+    formData: formData,
+    callback: () => services.api.user.importFile(formData),
+  })
 
-  const [isProcess, setProcess] = useState<boolean>(false)
-
-  const onEdit = (id: string) => {
-    navigate(`/user/edit/${id}`)
-  }
-
-  const onDelete = async (id: string) => {
-    try {
-      setProcess(true)
-      const result = await service.api.user.delete(id)
-
-      if (result) {
-        message.success(`Delete the user ${id} successfully!`)
-      }
-    } catch (error) {
-      message.error(`Fail to delete the user ${id}!`)
-    } finally {
-      setProcess(false)
-    }
-  }
-
-  const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
   const { userColumns } = useAntdUserTableData({
     onDelete: (id: string) => onDelete(id),
     onEdit: (id: string) => onEdit(id),
   })
-
-  const [t] = useTranslation('translation')
 
   if (isLoading || isProcess) {
     return (
@@ -114,15 +95,15 @@ function UserListPage() {
         >
           <UploadFileExcel
             props={props}
+            error={error}
             handleUpload={handleUpload}
-            fileList={fileList}
+            file={fileList[0]}
+            setError={setError}
           />
         </Modal>
         {/* //TODO: mobile ยังไม่พร้อม */}
         {!isMobile && <UserTableView data={userColumns} />}
-        {isUserLoading && (
-          <FullScreenLoading spinning={isUserLoading} />
-        )}
+        {isUploading && <FullScreenLoading spinning={isUploading} />}
       </Space>
     </>
   )

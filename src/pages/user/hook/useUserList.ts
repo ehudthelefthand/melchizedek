@@ -2,10 +2,15 @@ import { useEffect, useState } from 'react'
 import { UserResponse } from '../../../api/user/response'
 import { useService } from '../../../service/service'
 import { initialPagination } from '../../../constants/api'
-import { TableProps } from 'antd'
+import { TableProps, message } from 'antd'
+import { useNavigate } from 'react-router-dom'
+import { useMediaQuery } from 'react-responsive'
 
 const useUserList = () => {
   const service = useService()
+  const navigate = useNavigate()
+
+  const [isProcess, setProcess] = useState<boolean>(false)
   const [userList, setUserList] = useState<UserResponse[]>([])
   const [pagination, setPagination] = useState({
     current: initialPagination.currentPage,
@@ -37,7 +42,32 @@ const useUserList = () => {
       .finally(() => setIsloading(false))
   }, [pagination])
 
+  const onEdit = (id: string) => {
+    navigate(`/user/edit/${id}`)
+  }
+
+  const onDelete = async (id: string) => {
+    try {
+      setProcess(true)
+      const result = await service.api.user.delete(id)
+
+      if (result) {
+        message.success(`Delete the user ${id} successfully!`)
+      }
+    } catch (error) {
+      message.error(`Fail to delete the user ${id}!`)
+    } finally {
+      setProcess(false)
+    }
+  }
+
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
+
   return {
+    isMobile,
+    onEdit,
+    onDelete,
+    isProcess,
     userList,
     pagination,
     totalItems,

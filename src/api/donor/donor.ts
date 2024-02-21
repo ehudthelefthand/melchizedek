@@ -10,6 +10,7 @@ export default {
       .then((response) => response.data)
   },
   importFile: (form: FormData) => {
+    console.log('form formData', form.get('department'))
     return axios.post(`donor/import`, form).then((response) => response.data)
   },
   getDonorsByStaffId: (staffID: number): Promise<DonorFullNameList[]> => {

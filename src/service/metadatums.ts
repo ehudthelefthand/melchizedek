@@ -71,7 +71,7 @@ export function useCreateMetadatumsService() {
 
   const getMZKBanks = (): BankResponse[] => {
     return metadatums.banks.filter(
-      (bank) => bank.id === 1 || bank.id === 2 || bank.id === 3
+      (bank) => bank.id === 1 || bank.id === 2 || bank.id === 3 || bank.id === 4
     )
   }
 
