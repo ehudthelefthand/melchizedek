@@ -84,4 +84,11 @@ export default {
     deleteSuccess: 'Delete success',
     deleteFail: 'Delete Fail!',
   },
+  donorForm: {
+    create: 'Create Donor',
+    prefix: 'Prefix',
+    fullName: 'Fullname',
+    type: 'Type',
+    staff: 'Staff',
+  },
 }

@@ -7,7 +7,13 @@ export enum STATUS {
 }
 
 export interface PageRequest {
+  current?: number | undefined
   currentPage: number
+  itemsPerPage: number
+}
+
+export interface PageResponse {
+  current: number | undefined
   itemsPerPage: number
 }
 

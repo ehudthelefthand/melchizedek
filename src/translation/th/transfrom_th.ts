@@ -81,4 +81,11 @@ export default {
     deleteSuccess: 'ลบข้อมูลสำเร็จ',
     deleteFail: 'ลบข้อมูลไม่สำเร็จ',
   },
+  donorForm: {
+    create: 'เพิ่มผู้ถวาย',
+    prefix: 'คำนำหน้า',
+    fullName: 'ชื่อ-นามสกุล',
+    type: 'ประเภท',
+    staff: 'ผู้ดูแล',
+  },
 }

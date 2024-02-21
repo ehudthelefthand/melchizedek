@@ -18,7 +18,6 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Key, PropsWithChildren, useEffect, useState } from 'react'
 import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table'
-// import type { FilterValue } from 'antd/es/table/interface'
 import dayjs from 'dayjs'
 import { PageTransactionResponse } from '../../../../api/transaction/response/transaction'
 import { TotalOfferingsList, TransactionList } from '../model/transaction'
@@ -63,7 +62,7 @@ function TransactionTableView(
       pageSize: itemsPerPage,
       total: pagesTransaction?.totalItems,
       showSizeChanger: true,
-      pageSizeOptions: [20, 40, 60, 100],
+      pageSizeOptions: [10,20, 40, 60, 100],
     },
   })
 

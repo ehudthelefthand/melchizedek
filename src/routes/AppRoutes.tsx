@@ -98,24 +98,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  // {
-  //   path: '/donor',
-  //   element: <DashboardLayout />,
-  //   errorElement: <ErrorPage />,
-  //   // TODO:  Donor Form Page
-  //   children: [
-  //     {
-  //       path: '',
-  //       element: <DonorListPage />,
-  //       errorElement: <ErrorPage />,
-  //     },
-  //     // {
-  //     //   path: 'create',
-  //     //   element: <DonorFormPage />,
-  //     //   errorElement: <ErrorPage />,
-  //     // },
-  //   ],
-  // },
+
   {
     path: '/transaction',
     element: <DashboardLayout />,

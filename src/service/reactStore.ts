@@ -3,6 +3,7 @@ import {
   LOCAL_STORAGE_ROLE_KEY,
   LOCAL_STORAGE_TOKEN_KEY,
   LOCAL_STORAGE_USER_NAME_KEY,
+  LOCAL_STORAGE_NICKNAME_Key,
   Store,
   store,
 } from '../store'
@@ -24,6 +25,7 @@ export function useCreateReactStoreService() {
       localStorage.setItem(LOCAL_STORAGE_USER_NAME_KEY, store.user.username)
       localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, store.user.token)
       localStorage.setItem(LOCAL_STORAGE_ROLE_KEY, store.user.role)
+      localStorage.setItem(LOCAL_STORAGE_NICKNAME_Key, store.user.nickName)
     } else {
       localStorage.clear()
     }

@@ -30,7 +30,6 @@ function ProjectOfferingForm(
   }>
 ) {
   const { editId, onCancel, transactionForm } = props
-  // const transactionForm = useTransactionForm()
   const [t] = useTranslation('translation')
   const [projectOfferingForm] = Form.useForm<ProjectOfferingFormAntd>()
   const service = useService()
@@ -245,7 +244,8 @@ function ProjectOfferingForm(
                 ยอดที่เหลือทั้งหมด: {offeringAmountCalculation.leftAmount}
               </div>
               <div>
-                ยอดที่เหลือหลัง Project: {offeringAmountCalculation.remainingAmount}
+                ยอดที่เหลือหลัง Project:{' '}
+                {offeringAmountCalculation.remainingAmount}
               </div>
             </Col>
             <Col xs={24} sm={24} md={12} lg={12} xl={12}>

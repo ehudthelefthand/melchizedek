@@ -19,6 +19,7 @@ const LoginPage: React.FC = () => {
             username: userLoginResponse.username,
             token: userLoginResponse.token,
             role: userLoginResponse.role,
+            nickName: userLoginResponse.nickName
           }
         })
         service.metadatums.loadMetadatums()

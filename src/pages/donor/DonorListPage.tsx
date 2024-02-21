@@ -2,7 +2,6 @@ import { FileAddOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Button, Col, Modal, Row, Select, Skeleton, Space, Spin } from 'antd'
 import { Link } from 'react-router-dom'
 import useDonorList from './hook/useDonorList'
-import { useMediaQuery } from 'react-responsive'
 import { useTranslation } from 'react-i18next'
 import DonorTableView from './components/TableView'
 import UploadFileExcel from '../../components/UploadFileXcel'
@@ -10,15 +9,25 @@ import FullScreenLoading from '../../components/FullScreenLoading'
 import useUploadFile from '../../hooks/uploadFile/useUploadFile'
 import { useService } from '../../service/service'
 import { initialRegion } from '../../constants/api'
+import useAntdDonorTableData from './hook/useAntdComponent'
+import Search from 'antd/es/input/Search'
 
 function DonorListPage() {
   const formData = new FormData()
-
   const services = useService()
-  const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
 
   const [t] = useTranslation('translation')
-  const { isLoading } = useDonorList()
+  const {
+    isMobile,
+    onDelete,
+    isProcess,
+    donorList,
+    isLoading,
+    handleTableChange,
+    pagination,
+    totalItems,
+    handleSearch,
+  } = useDonorList()
   const {
     props,
     error,
@@ -35,9 +44,13 @@ function DonorListPage() {
     callback: (formData) => services.api.donor.importFile(formData),
   })
 
+  const { donorColumns } = useAntdDonorTableData({
+    onDelete: (id: string) => onDelete(id),
+  })
+
   return (
     <>
-      {isLoading ? (
+      {isLoading || isProcess ? (
         <>
           <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
             <Skeleton active />
@@ -45,42 +58,42 @@ function DonorListPage() {
         </>
       ) : (
         <Space direction="vertical" size="large" style={{ display: 'flex' }}>
-          <Row>
-            <Col xs={24} sm={24} md={24}>
-              <Row justify={'end'} gutter={8}>
-                <Col
+          <Row justify={'space-between'}>
+            <Col xs={24} sm={24} md={12}>
+              <Search
+                enterButton
+                size="large"
+                placeholder={t('transacButton.search')}
+                allowClear
+                onChange={(e) => handleSearch(e.target.value.toString())}
+                style={{ width: ' 100%' }}
+              />
+            </Col>
+            <Row gutter={[6, 6]}>
+              <Col xs={12} sm={12} md={12}>
+                <Button
+                  size="large"
                   style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'end',
+                    width: isMobile ? '100%' : '',
                   }}
+                  onClick={() => onOpen()}
                 >
+                  <FileAddOutlined /> Import
+                </Button>
+              </Col>
+              <Col xs={12} sm={12} md={12}>
+                <Link to={'/donor/create'}>
                   <Button
                     size="large"
-                    style={{
-                      width: isMobile ? '100%' : '',
-                    }}
-                    onClick={() => onOpen()}
+                    type="primary"
+                    style={{ width: isMobile ? '100%' : '' }}
+                    className="btn-primary"
                   >
-                    {/* TODO: translation */}
-                    <FileAddOutlined /> Import
+                    {t('transacButton.addDonor')}
                   </Button>
-                </Col>
-                <Col>
-                  <Link to={'/donor/create'}>
-                    <Button
-                      disabled
-                      size="large"
-                      type="primary"
-                      style={{ width: isMobile ? '100%' : '' }}
-                      className="btn-primary"
-                    >
-                      {t('transacButton.addDonor')}
-                    </Button>
-                  </Link>
-                </Col>
-              </Row>
-            </Col>
+                </Link>
+              </Col>
+            </Row>
           </Row>
           <Modal
             /* TODO: translation */
@@ -108,7 +121,6 @@ function DonorListPage() {
                 options={initialRegion}
               />
             </Row>
-
             <Col
               style={{
                 display: 'flex',
@@ -128,7 +140,17 @@ function DonorListPage() {
             </Col>
           </Modal>
           {/* //TODO: mobile ยังไม่พร้อม */}
-          {!isMobile && <DonorTableView />}
+
+          {!isMobile && (
+            <DonorTableView
+              data={donorColumns}
+              donorList={donorList}
+              isLoading={isLoading}
+              handleTableChange={handleTableChange}
+              totalItems={totalItems}
+              pagination={pagination}
+            />
+          )}
           {isUploading && <FullScreenLoading spinning={isUploading} />}
         </Space>
       )}

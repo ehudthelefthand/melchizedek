@@ -5,10 +5,13 @@ export interface DonorListResponse {
   nickName: string
   type: string
   staff: string
-  note: string
 }
 
-export interface DonorFullNameList {
+export interface FilterName {
+  fullName: string
+}
+
+export interface DonorSearchRespones {
   id: number
   fullName: string
 }

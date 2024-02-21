@@ -1,13 +1,11 @@
-import { Button, Col, Form, Row, Space } from 'antd'
+import { Button, Col, Form, Input, Row, Select, Space } from 'antd'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import useDonorForm from './hook/useDonorForm'
 
 function DonorFormPage() {
   const [t] = useTranslation('translation')
-  const {
-    onSubmit,
-  } = useDonorForm()
+  const { onSubmit, type, staffAPI } = useDonorForm()
 
   return (
     <>
@@ -21,18 +19,68 @@ function DonorFormPage() {
                     fontSize: '25px',
                   }}
                 >
-                  {/* TODO: แปลภาษา */}
-                  เพิ่มผู้ถวาย
+                  {t('donorForm.create')}
                 </span>
               </h2>
             </Col>
-
-            {/* TODO: Design UI donor form */}
-
+            <Col span={4}>
+              <Form.Item
+                key={'prefix'}
+                name={'prefix'}
+                rules={[{ required: true, message: 'Please select a Prefix' }]}
+                hasFeedback
+              >
+                <Input placeholder={t('donorForm.prefix')} size="large" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name={'fullName'}
+                key={'fullName'}
+                rules={[{ required: true, message: 'Please fill FullName' }]}
+                hasFeedback
+              >
+                <Input
+                  placeholder={t('donorForm.fullName')}
+                  allowClear
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+            <Col span={4}>
+              <Form.Item
+                key={'type'}
+                name={'type'}
+                rules={[{ required: true, message: 'Please select a type' }]}
+                hasFeedback
+              >
+                <Select
+                  allowClear
+                  options={type}
+                  placeholder={t('donorForm.type')}
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+            <Col span={4}>
+              <Form.Item
+                key={'staff'}
+                name={'staff'}
+                rules={[{ required: true, message: 'Please select a staff' }]}
+                hasFeedback
+              >
+                <Select
+                  allowClear
+                  options={staffAPI}
+                  placeholder={t('donorForm.staff')}
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
           </Row>
           <Row gutter={16} justify="end">
             <Col>
-              <Link to={'/user'}>
+              <Link to={'/donor'}>
                 <Button size={'large'} htmlType="button">
                   {t('transacButton.cancel')}
                 </Button>

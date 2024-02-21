@@ -1,5 +1,6 @@
 export interface UserLoginResponse {
   token: string
+  nickName: string
   username: string
   department: string
   role: string

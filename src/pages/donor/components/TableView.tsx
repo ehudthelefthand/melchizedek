@@ -1,52 +1,24 @@
 import { Skeleton, Table } from 'antd'
-import { ColumnType } from 'antd/es/table'
-import useDonorList from '../hook/useDonorList'
+
+import { ColumnsType, TableProps } from 'antd/es/table'
 import { DonorListResponse } from '../../../api/donor/response'
+import { PageResponse } from '../../../constants/api'
 
-function DonorTableView() {
-  const donor = useDonorList()
-  const { donorList, isLoading, handleTableChange, pagination, totalItems } =
-    donor
-
-  // TODO: แปลภาษา
-  const columns: ColumnType<DonorListResponse>[] = [
-    {
-      title: '#',
-      key: 'id',
-      dataIndex: 'id',
-      width: 10,
-      align: 'center',
-    },
-    {
-      title: 'คำนำหน้า',
-      key: 'prefix',
-      dataIndex: 'prefix',
-      width: 10,
-      align: 'left',
-    },
-    {
-      title: 'ชื่อจริง',
-      key: 'fullname',
-      dataIndex: 'fullName',
-      width: 20,
-      align: 'left',
-    },
-    {
-      title: 'ประเภท',
-      key: 'type',
-      dataIndex: 'type',
-      width: 20,
-      align: 'left',
-    },
-    {
-      title: 'ผู้ดูแล',
-      key: 'staff',
-      dataIndex: 'staff',
-      width: 20,
-      align: 'left',
-    },
-  ]
-
+function DonorTableView({
+  data,
+  donorList,
+  isLoading,
+  handleTableChange,
+  pagination,
+  totalItems,
+}: {
+  data: ColumnsType<DonorListResponse> | undefined
+  donorList: DonorListResponse[] | []
+  isLoading: boolean
+  handleTableChange: TableProps<DonorListResponse>['onChange']
+  pagination: PageResponse
+  totalItems: number
+}) {
   if (isLoading) {
     return <Skeleton active />
   }
@@ -54,7 +26,7 @@ function DonorTableView() {
   return (
     <Table
       loading={isLoading}
-      columns={columns}
+      columns={data}
       rowKey={(record) => record.id}
       dataSource={donorList}
       pagination={{

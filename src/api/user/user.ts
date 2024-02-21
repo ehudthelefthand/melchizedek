@@ -12,10 +12,15 @@ export default {
   logout: () => {
     return axios.delete(`/logout`)
   },
-  getAll: (pageRequest: PageRequest): Promise<PageUserResponse> => {
+  getAll: (
+    pageRequest: PageRequest,
+    search?: string | undefined
+  ): Promise<PageUserResponse> => {
     return axios
       .get(
-        `/users?currentPage=${pageRequest.currentPage}&itemsPerPage=${pageRequest.itemsPerPage}`
+        `/users?search=${search ? search : ''}&currentPage=${
+          pageRequest.currentPage
+        }&itemsPerPage=${pageRequest.itemsPerPage}`
       )
       .then((response) => response.data)
   },
@@ -30,9 +35,6 @@ export default {
     return axios
       .post(`/user/create`, userCreateRequest)
       .then((response) => response.data)
-  },
-  edit: (id: string) => {
-    return axios.put(`user/edit/${id}`).then((response) => response.data)
   },
   delete: (id: string) => {
     return axios.delete(`user/delete/${id}`).then((response) => response.data)

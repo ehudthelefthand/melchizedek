@@ -5,6 +5,7 @@ import { initialPagination } from '../../../constants/api'
 import { TableProps, message } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useMediaQuery } from 'react-responsive'
+import { debounce } from '../../../service/debounce'
 
 const useUserList = () => {
   const service = useService()
@@ -17,7 +18,8 @@ const useUserList = () => {
     itemsPerPage: initialPagination.itemsPerPage,
   })
   const [totalItems, setTotalItems] = useState(initialPagination.totalItems)
-  const [isLoading, setIsloading] = useState(true)
+  const [isLoading, setIsloading] = useState(false)
+  const [search, setSearch] = useState<string>('')
 
   const handleTableChange: TableProps<UserResponse>['onChange'] = (
     pagination
@@ -34,13 +36,24 @@ const useUserList = () => {
         currentPage: pagination.current,
         itemsPerPage: pagination.itemsPerPage,
       })
-      .then((pageUser) => {
-        setTotalItems(pageUser.totalItems)
-        setUserList(pageUser.data)
+      .then((user) => {
+        setTotalItems(user.totalItems)
+        setUserList(user.data)
       })
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        setUserList([])
+      })
       .finally(() => setIsloading(false))
-  }, [pagination])
+  }, [pagination, search])
+
+  const handleSearch = async (fullName: string) => {
+    return debounce(await onSearch(fullName), 2000)
+  }
+
+  const onSearch = (fullName: string) => {
+    setSearch(fullName)
+  }
 
   const onEdit = (id: string) => {
     navigate(`/user/edit/${id}`)
@@ -73,6 +86,7 @@ const useUserList = () => {
     totalItems,
     isLoading,
     handleTableChange,
+    handleSearch,
   }
 }
 

@@ -263,10 +263,10 @@ const TransactionFormPage = () => {
     } else {
       const formData = new FormData()
       images.forEach((image: File) => {
-        // formData has no data??
         formData.append('photo', image)
       })
-
+      console.log("submit id staff", transaction.staffId)
+      console.log("submit id donor", transaction.donorId)
       const transactionCreated: TransactionCreateRequest = {
         donorId: transaction.donorId!,
         staffId: transaction.staffId!,

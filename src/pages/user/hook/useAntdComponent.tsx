@@ -1,17 +1,13 @@
-// import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-// import { Space } from 'antd'
-// import { ColumnType } from 'antd/es/table'
-// import { UserResponse } from '../../../api/user/response'
-// import { MouseEventHandler } from 'react'
-
 import { UserResponse } from '../../../api/user/response'
 import { ColumnType } from 'antd/es/table'
 import { DeleteOutlined } from '@ant-design/icons'
-import { Space } from 'antd'
+import { Modal, Space } from 'antd'
 import { useService } from '../../../service/service'
+import { useTranslation } from 'react-i18next'
 
 const useAntdUserTableData = ({ onDelete }: { onEdit: any; onDelete: any }) => {
   const service = useService()
+  const [t] = useTranslation('translation')
 
   const userColumns: ColumnType<UserResponse>[] = [
     {
@@ -56,7 +52,7 @@ const useAntdUserTableData = ({ onDelete }: { onEdit: any; onDelete: any }) => {
       dataIndex: 'departmentId',
       width: 10,
       align: 'left',
-      render: (id: number) => service.metadatums.getDepartment(id).name
+      render: (id: number) => service.metadatums.getDepartment(id).name,
     },
     {
       title: 'บทบาท',
@@ -78,7 +74,16 @@ const useAntdUserTableData = ({ onDelete }: { onEdit: any; onDelete: any }) => {
             style={{ cursor: 'pointer', color: '#2196F3', fontSize: 20 }}
           /> */}
           <DeleteOutlined
-            onClick={() => onDelete(userResponse.id)}
+            onClick={() =>
+              Modal.confirm({
+                title: `${t('transacMessage.confirmDelete')}`,
+                centered: true,
+                width: 400,
+                onOk() {
+                  onDelete(userResponse.id)
+                },
+              })
+            }
             style={{ cursor: 'pointer', color: '#a9a9a9', fontSize: 20 }}
           />
         </Space>

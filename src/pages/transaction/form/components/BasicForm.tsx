@@ -11,18 +11,34 @@ import {
 } from 'antd'
 import { t } from 'i18next'
 import { useService } from '../../../../service/service'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { DonorSearchRespones } from '../../../../api/donor/response'
 
 function BasicForm() {
   const service = useService()
 
-  const [staffID, setStaffID] = useState<number>(0)
-  
-  const [donorOptions, setDonorOptions] = useState<SelectProps['options']>(
-    service.metadatums.getAllDonors().map((donor) => ({
+  const nickName = service.reactStore.store.user?.nickName
+  const role = service.reactStore.store.user?.role
+  const isAdmin = role === 'admin'
+  const [donorOptions, setDonorOptions] = useState<DonorSearchRespones[]>([])
+
+  const handleDonorSearch = async (newValue: string) => {
+    try {
+      const donorAPI = await service.api.donor.getDonorFilter({
+        fullName: newValue,
+      })
+      setDonorOptions(donorAPI)
+    } catch (error) {
+      console.error(error)
+      setDonorOptions([])
+    }
+  }
+
+  const donorAPI: SelectProps['options'] = donorOptions.map(
+    (donor: DonorSearchRespones) => ({
       label: donor.fullName,
       value: donor.id,
-    }))
+    })
   )
 
   const staffAPI: SelectProps['options'] = service.metadatums
@@ -52,23 +68,6 @@ function BasicForm() {
       value: bank.id,
     }))
 
-  const fetchDonors = async (staffID: number) => {
-    try {
-      const response = await service.api.donor.getDonorsByStaffId(staffID)
-      const options = response.map((donor) => ({
-        label: donor.fullName,
-        value: donor.id,
-      }))
-      setDonorOptions(options)
-    } catch (error) {
-      console.error('Error fetching donors:', error)
-    }
-  }
-
-  useEffect(() => {
-    fetchDonors(staffID)
-  }, [staffID])
-
   return (
     <>
       <Space direction="vertical" size={20} style={{ display: 'flex' }}>
@@ -77,14 +76,18 @@ function BasicForm() {
             <Form.Item
               key={'staffId'}
               name={'staffId'}
-              rules={[{ required: true, message: 'Please fill staff name' }]}
+              rules={
+                isAdmin
+                  ? [{ required: true, message: 'Please fill staff name' }]
+                  : [{ required: false }]
+              }
               hasFeedback
             >
               <Select
+                disabled={!isAdmin}
                 options={staffAPI}
                 size="large"
-                placeholder={t('transacForm.staffName')}
-                onChange={(selectedStaffID) => setStaffID(selectedStaffID)}
+                placeholder={isAdmin ? t('transacForm.staffName') : nickName}
               />
             </Form.Item>
           </Col>
@@ -99,8 +102,13 @@ function BasicForm() {
             >
               <Select
                 size="large"
+                showSearch
                 placeholder={t('transacForm.donorName')}
-                options={donorOptions}
+                filterOption={false}
+                notFoundContent={null}
+                defaultActiveFirstOption={false}
+                onSearch={handleDonorSearch}
+                options={donorAPI}
               />
             </Form.Item>
           </Col>

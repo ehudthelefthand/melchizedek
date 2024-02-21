@@ -47,7 +47,7 @@ export function useCreateMetadatumsService() {
   const getStaff = (id: number): StaffResponse => {
     let staff = metadatums.staffs.find((staff: any) => staff.id === id)
     if (!staff) {
-      staff = { id: 0, nickName: 'No Data.' }
+      staff = { id: 0, nickName: 'No Data.', fullNameTH: 'No Data' }
     }
     return staff
   }

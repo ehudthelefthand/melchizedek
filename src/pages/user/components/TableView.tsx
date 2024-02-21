@@ -1,19 +1,23 @@
 import { Skeleton, Table } from 'antd'
-import { ColumnsType } from 'antd/es/table'
-import useUser from '../hook/useUserList'
+import { ColumnsType, TableProps } from 'antd/es/table'
 import { UserResponse } from '../../../api/user/response'
-// import { useService } from '../../../service/service'
+import { PageResponse } from '../../../constants/api'
 
 function UserTableView({
   data,
+  userList,
+  isLoading,
+  handleTableChange,
+  pagination,
+  totalItems,
 }: {
   data: ColumnsType<UserResponse> | undefined
+  userList: UserResponse[] | []
+  isLoading: boolean
+  handleTableChange: TableProps<UserResponse>['onChange']
+  pagination: PageResponse
+  totalItems: number
 }) {
-  // const service = useService()
-  const user = useUser()
-  const { userList, isLoading, handleTableChange, pagination, totalItems } =
-    user
-
   if (isLoading) {
     return <Skeleton active />
   }

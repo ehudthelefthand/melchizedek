@@ -1,24 +1,42 @@
 import { axios } from '../api'
 import { PageRequest } from './../../constants/api'
-import { DonorFullNameList, PageDonorResponse } from './response'
+import { DonorCreateRequest, DonorSearchRequest } from './request'
+import { DonorSearchRespones, FilterName, PageDonorResponse } from './response'
 
 export default {
-  getAll: (pageRequest: PageRequest): Promise<PageDonorResponse> => {
+  getAll: async (
+    pageRequest: PageRequest,
+    search?: string | undefined
+  ): Promise<PageDonorResponse> => {
     const { currentPage, itemsPerPage } = pageRequest
     return axios
-      .get(`/donors?currentPage=${currentPage}&itemsPerPage${itemsPerPage}`)
+      .get(
+        `/donors?search=${
+          search ? search : ''
+        }&currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
+      )
       .then((response) => response.data)
   },
   importFile: (form: FormData) => {
     console.log('form formData', form.get('department'))
     return axios.post(`donor/import`, form).then((response) => response.data)
   },
-  getDonorsByStaffId: (staffID: number): Promise<DonorFullNameList[]> => {
-    return axios.get(`/donor/list/${staffID}`).then((response) => response.data)
+  create: (donorCreate: DonorCreateRequest) => {
+    return axios
+      .post(`donor/create`, donorCreate)
+      .then((response) => response.data)
   },
-  // TODO: Create API
-
-  //   create: (donorCreate : DonorCreateRequest)=>{
-  //     return
-  //   }
+  delete: (id: string) => {
+    return axios.delete(`donor/delete/${id}`).then((response) => response.data)
+  },
+  search: async (
+    fullName: DonorSearchRequest
+  ): Promise<DonorSearchRespones[]> => {
+    return axios
+      .post(`donor/filter`, fullName)
+      .then((response) => response.data)
+  },
+  getDonorFilter: (filterName: FilterName): Promise<DonorSearchRespones[]> => {
+    return axios.post(`/donor/filter`, filterName).then((response) => response.data)
+  }
 }
