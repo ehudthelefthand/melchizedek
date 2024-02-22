@@ -16,8 +16,8 @@ export interface TransactionUpdateRequest {
   donorId: number
   staffId: number
   departmentId: number
-  fromBankId: number
-  toBankId: number
+  bankId: number
+  yfcBankId: number
   amount: number
   transferDate: number
   descriptions: string

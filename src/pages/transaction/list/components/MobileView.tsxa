@@ -72,16 +72,16 @@ function MobileView(
                 <Space>
                   <BankTwoTone />
                   <Text type="secondary">
-                    {t('transacListMobile.fromBank')}
+                    {t('transacListMobile.bank')}
                   </Text>
-                  <Text>{transaction.fromBank}</Text>
+                  <Text>{transaction.bank}</Text>
                 </Space>
               </Col>
               <Col xs={12}>
                 <Space>
                   <InteractionTwoTone />
-                  <Text type="secondary">{t('transacListMobile.toBank')}</Text>
-                  <Text>{transaction.toBank}</Text>
+                  <Text type="secondary">{t('transacListMobile.yfcBank')}</Text>
+                  <Text>{transaction.yfcBank}</Text>
                 </Space>
               </Col>
             </Row>

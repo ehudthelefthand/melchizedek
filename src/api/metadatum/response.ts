@@ -1,12 +1,18 @@
 export interface MetadatumsResponse {
   departments: DepartmentResponse[]
   banks: BankResponse[]
+  yfcBanks: YFCBankResponse[]
   staffs: StaffResponse[]
   donors: DonorResponse[]
   projects: ProjectResponse[]
 }
 
 export interface BankResponse {
+  id: number
+  code: string
+}
+
+export interface YFCBankResponse {
   id: number
   code: string
 }

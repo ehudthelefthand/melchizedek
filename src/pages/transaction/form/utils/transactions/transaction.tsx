@@ -32,7 +32,7 @@ import { TransactionProjectOfferingList } from '../../../list/model/projectOffer
 import { TransactionList } from '../../../list/model/transaction'
 
 export function createTransadtionForm(
-  transaction: any,
+  transaction: TransactionResponse,
   service: any
 ): TransactionForm {
   return {
@@ -40,8 +40,8 @@ export function createTransadtionForm(
     staffId: service.metadatums.getStaff(transaction.staffId).id,
     donorId: service.metadatums.getDonor(transaction.donorId).id,
     departmentId: service.metadatums.getDepartment(transaction.departmentId).id,
-    toBankId: service.metadatums.getBank(transaction.toBankId).id,
-    fromBankId: service.metadatums.getBank(transaction.fromBankId).id,
+    yfcBankId: service.metadatums.getBank(transaction.yfcBankId).id,
+    bankId: service.metadatums.getBank(transaction.bankId).id,
     amount: transaction.amount.toString(),
     transferDate: dayjs(transaction.transferDate),
     images: [],
@@ -104,18 +104,18 @@ export function editedTransactionForm({
   transaction,
 }: {
   paramsId: string
-  fixOfferings: any
-  giftOfferings: any
-  projectOfferings: any
-  transaction: any
+  fixOfferings: TransactionFixOfferingForm[]
+  giftOfferings: TransactionGiftOfferingForm[]
+  projectOfferings: TransactionProjectOfferingForm[]
+  transaction: TransactionForm
 }): TransactionUpdateRequest {
   return {
     id: parseInt(paramsId),
     donorId: transaction.donorId!,
     staffId: transaction.staffId!,
     departmentId: transaction.departmentId!,
-    toBankId: transaction.toBankId!,
-    fromBankId: transaction.fromBankId!,
+    yfcBankId: transaction.yfcBankId!,
+    bankId: transaction.bankId!,
     amount: parseFloat(transaction.amount),
     descriptions: transaction.descriptions,
     transferDate: +transaction.transferDate!,
@@ -176,17 +176,17 @@ export function createNewTransaction({
   projectOfferings,
   transaction,
 }: {
-  fixOfferings: any
-  giftOfferings: any
-  projectOfferings: any
-  transaction: any
+  fixOfferings: TransactionFixOfferingForm[]
+  giftOfferings: TransactionGiftOfferingForm[]
+  projectOfferings: TransactionProjectOfferingForm[]
+  transaction: TransactionForm
 }): TransactionCreateRequest {
   return {
     donorId: transaction.donorId!,
     staffId: transaction.staffId!,
     departmentId: transaction.departmentId!,
-    toBankId: transaction.toBankId!,
-    fromBankId: transaction.fromBankId!,
+    yfcBankId: transaction.yfcBankId!,
+    bankId: transaction.bankId!,
     amount: parseFloat(transaction.amount),
     descriptions: transaction.descriptions,
     transferDate: +transaction.transferDate!,
@@ -248,8 +248,8 @@ export function formatedTransaction(
         maximumFractionDigits: 2,
       }),
       transferDate: dayjs(transaction.transferDate),
-      toBankCode: service.metadatums.getBank(transaction.toBankId).code,
-      fromBankCode: service.metadatums.getBank(transaction.fromBankId).code,
+      yfcBankCode: service.metadatums.getYFCBank(transaction.yfcBankId).code,
+      bankCode: service.metadatums.getBank(transaction.bankId).code,
       staffName: service.metadatums.getStaff(transaction.staffId).nickName,
       departmentName: service.metadatums.getDepartment(transaction.departmentId)
         .name,

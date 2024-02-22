@@ -8,8 +8,8 @@ export type TransactionForm = {
   donorId: number | null
   staffId: number | null
   departmentId: number | null
-  toBankId: number | null
-  fromBankId: number | null
+  yfcBankId: number | null
+  bankId: number | null
   amount: string
   descriptions: string
   transferDate: dayjs.Dayjs | null

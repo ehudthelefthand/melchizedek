@@ -7,8 +7,8 @@ export interface TransactionResponse {
   staffId: number
   donorId: number
   departmentId: number
-  fromBankId: number
-  toBankId: number
+  bankId: number
+  yfcBankId: number
   amount: number
   transferDate: number
   descriptions: string

@@ -8,8 +8,8 @@ export interface TransactionList {
   donorName: string
   amount: string
   transferDate: dayjs.Dayjs
-  toBankCode: string
-  fromBankCode: string
+  yfcBankCode: string
+  bankCode: string
   staffName: string
   departmentName: string
   descriptions: string

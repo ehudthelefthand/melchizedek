@@ -63,8 +63,10 @@ function BasicForm() {
         }) ?? []
     )
 
-  const filterBanksAPI = service.metadatums.getMZKBanks()
-  const toBankAPI: SelectProps['options'] = filterBanksAPI?.map(
+  
+  const yfcBankCode: SelectProps['options'] = service.metadatums
+  .getAllYFCBanks()
+  ?.map(
     (bank) =>
       ({
         label: bank.code,
@@ -72,7 +74,7 @@ function BasicForm() {
       }) ?? []
   )
 
-  const fromBankAPI: SelectProps['options'] = service.metadatums
+  const BankCode: SelectProps['options'] = service.metadatums
     .getAllBanks()
     ?.map(
       (bank) =>
@@ -202,28 +204,28 @@ function BasicForm() {
         <Row gutter={15} style={{ rowGap: 20 }}>
           <Col xs={24} sm={24} md={12} lg={12} xl={12}>
             <Form.Item
-              key={'fromBankId'}
-              name={'fromBankId'}
+              key={'bankId'}
+              name={'bankId'}
               rules={[{ required: true, message: 'Please select the bank' }]}
               hasFeedback
             >
               <Select
-                placeholder={t('transacForm.fromBank')}
-                options={fromBankAPI}
+                placeholder={t('transacForm.bank')}
+                options={BankCode}
                 size="large"
               />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={12} lg={12} xl={12}>
             <Form.Item
-              key={'toBankId'}
-              name={'toBankId'}
+              key={'yfcBankId'}
+              name={'yfcBankId'}
               rules={[{ required: true, message: 'Please select the bank' }]}
               hasFeedback
             >
               <Select
-                placeholder={t('transacForm.toBank')}
-                options={toBankAPI}
+                placeholder={t('transacForm.yfcBank')}
+                options={yfcBankCode}
                 size="large"
               />
             </Form.Item>

@@ -62,7 +62,7 @@ function UserListPage() {
               style={{ width: ' 100%' }}
             />
           </Col>
-          <Row gutter={[6, 6]}>
+          <Row gutter={[16, 16]}>
             <Col xs={12} sm={12} md={12}>
               <Button
                 size="large"

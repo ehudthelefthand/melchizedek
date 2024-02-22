@@ -62,7 +62,7 @@ function DonorListPage() {
               style={{ width: ' 100%' }}
             />
           </Col>
-          <Row gutter={[6, 6]}>
+          <Row gutter={[14, 14]}>
             <Col xs={12} sm={12} md={12}>
               <Button
                 size="large"
@@ -79,7 +79,11 @@ function DonorListPage() {
                 <Button
                   size="large"
                   type="primary"
-                  style={{ width: isMobile ? '100%' : '' }}
+                  style={{
+                    width: isMobile ? '100%' : '',
+                    paddingRight: 8,
+                    paddingLeft: 8,
+                  }}
                   className="btn-primary"
                 >
                   {t('transacButton.addDonor')}
@@ -113,15 +117,7 @@ function DonorListPage() {
               options={initialRegion}
             />
           </Row>
-          <Col
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              marginTop: 16,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+          <Col>
             <UploadFileExcel
               props={props}
               error={error}

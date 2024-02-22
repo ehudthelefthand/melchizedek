@@ -6,6 +6,7 @@ import {
   MetadatumsResponse,
   ProjectResponse,
   StaffResponse,
+  YFCBankResponse,
 } from '../api/metadatum/response'
 import { api } from '../api/api'
 import { store } from '../store'
@@ -14,6 +15,7 @@ let metadatums: MetadatumsResponse = {
   staffs: [],
   departments: [],
   banks: [],
+  yfcBanks: [],
   donors: [],
   projects: [],
 }
@@ -69,10 +71,14 @@ export function useCreateMetadatumsService() {
     return bank
   }
 
-  const getMZKBanks = (): BankResponse[] => {
-    return metadatums.banks.filter(
-      (bank) => bank.id === 1 || bank.id === 2 || bank.id === 3 || bank.id === 4
-    )
+  const getAllYFCBanks = (): YFCBankResponse[] => metadatums.yfcBanks
+
+  const getYFCBank = (id: number): YFCBankResponse => {
+    let bank = metadatums.yfcBanks.find((yfcBank: any) => yfcBank.id === id)
+    if (!bank) {
+      bank = { id: 0, code: 'No Data.' }
+    }
+    return bank
   }
 
   const getAllDonors = (): DonorResponse[] => metadatums.donors
@@ -104,7 +110,8 @@ export function useCreateMetadatumsService() {
     getDepartment,
     getAllBanks,
     getBank,
-    getMZKBanks,
+    getAllYFCBanks,
+    getYFCBank,
     getAllProjects,
     getProject,
     loadMetadatums,

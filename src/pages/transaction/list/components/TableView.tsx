@@ -149,28 +149,18 @@ function TransactionTableView(
       render: (value: dayjs.Dayjs) => value.format('DD/MM/YYYY HH:mm:ss'),
     },
     {
-      title: t('transacList.fromBank'),
-      dataIndex: 'fromBankCode',
+      title: t('transacList.bank'),
+      dataIndex: 'bankCode',
       key: 'fromBankCode',
       width: 150,
       align: 'left',
-      filters: service.metadatums
-        .getAllBanks()
-        .map((bank) => ({ text: bank.code, value: bank.code })),
-      onFilter: (fromBankCode: boolean | Key, record: TransactionList) =>
-        record.fromBankCode === fromBankCode,
     },
     {
-      title: t('transacList.toBank'),
-      dataIndex: 'toBankCode',
-      key: 'toBankCode',
+      title: t('transacList.yfcBank'),
+      dataIndex: 'yfcBankCode',
+      key: 'yfcBankCode',
       width: 150,
       align: 'left',
-      filters: service.metadatums
-        .getMZKBanks()
-        .map((bank) => ({ text: bank.code, value: bank.code })),
-      onFilter: (toBankCode: boolean | Key, record: TransactionList) =>
-        record.toBankCode === toBankCode,
     },
     {
       title: t('transacList.staffName'),
