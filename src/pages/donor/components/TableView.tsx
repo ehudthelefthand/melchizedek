@@ -32,7 +32,7 @@ function DonorTableView({
         current: pagination.current,
         total: totalItems,
         showSizeChanger: true,
-        pageSizeOptions: [20, 40, 80, 100],
+        pageSizeOptions: [10, 20, 40, 80, 100],
       }}
       onChange={handleTableChange}
     />

@@ -39,7 +39,7 @@ import {
   createEditedTransactionForm,
   createNewTransaction,
   createTransadtionForm,
-} from './utils/transactions/transaction'
+} from './utils/transactions/transactionForm'
 
 const initialTransactionForm: TransactionForm = {
   id: null,

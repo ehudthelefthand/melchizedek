@@ -48,93 +48,84 @@ function UserListPage() {
     onEdit: (id: string) => onEdit(id),
   })
 
-  if (isLoading || isProcess) {
-    return (
-      <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
-        <Skeleton active />
-      </Spin>
-    )
-  }
-
   return (
     <>
-      {isLoading || isProcess ? (
-        <>
+      <Space direction="vertical" size="large" style={{ display: 'flex' }}>
+        <Row justify={'space-between'}>
+          <Col xs={24} sm={24} md={12}>
+            <Search
+              enterButton
+              size="large"
+              placeholder={t('transacButton.search')}
+              allowClear
+              onChange={(e) => handleSearch(e.target.value.toString())}
+              style={{ width: ' 100%' }}
+            />
+          </Col>
+          <Row gutter={[6, 6]}>
+            <Col xs={12} sm={12} md={12}>
+              <Button
+                size="large"
+                style={{
+                  width: isMobile ? '100%' : '',
+                }}
+                onClick={() => onOpen()}
+              >
+                <FileAddOutlined /> Import
+              </Button>
+            </Col>
+            <Col xs={12} sm={12} md={12}>
+              <Link to={'/user/create'}>
+                <Button
+                  size="large"
+                  type="primary"
+                  style={{ width: isMobile ? '100%' : '' }}
+                  className="btn-primary"
+                >
+                  {t('transacButton.addStaff')}
+                </Button>
+              </Link>
+            </Col>
+          </Row>
+        </Row>
+        <Modal
+          /* TODO: translation */
+          title={<h2>กรุณาเลือกไฟล์ Excel ของผู้ใช้</h2>}
+          centered
+          open={modalVisible}
+          footer={false}
+          closeIcon={true}
+          onCancel={() => onCancel()}
+          destroyOnClose={true}
+        >
+          <UploadFileExcel
+            props={props}
+            error={error}
+            handleUpload={handleUpload}
+            file={fileList[0]}
+            setError={setError}
+          />
+        </Modal>
+        {/* //TODO: mobile ยังไม่พร้อม */}
+        {!isMobile && (
+          <UserTableView
+            data={userColumns}
+            userList={userList}
+            isLoading={isLoading}
+            handleTableChange={handleTableChange}
+            pagination={pagination}
+            totalItems={totalItems}
+          />
+        )}
+        {isUploading && <FullScreenLoading spinning={isUploading} />}
+      </Space>
+
+      {isLoading ||
+        (isProcess && (
           <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
             <Skeleton active />
           </Spin>
-        </>
-      ) : (
-        <Space direction="vertical" size="large" style={{ display: 'flex' }}>
-          <Row justify={'space-between'}>
-            <Col xs={24} sm={24} md={12}>
-              <Search
-                enterButton
-                size="large"
-                placeholder={t('transacButton.search')}
-                allowClear
-                onChange={(e) => handleSearch(e.target.value.toString())}
-                style={{ width: ' 100%' }}
-              />
-            </Col>
-            <Row gutter={[6, 6]}>
-              <Col xs={12} sm={12} md={12}>
-                <Button
-                  size="large"
-                  style={{
-                    width: isMobile ? '100%' : '',
-                  }}
-                  onClick={() => onOpen()}
-                >
-                  <FileAddOutlined /> Import
-                </Button>
-              </Col>
-              <Col xs={12} sm={12} md={12}>
-                <Link to={'/user/create'}>
-                  <Button
-                    size="large"
-                    type="primary"
-                    style={{ width: isMobile ? '100%' : '' }}
-                    className="btn-primary"
-                  >
-                    {t('transacButton.addStaff')}
-                  </Button>
-                </Link>
-              </Col>
-            </Row>
-          </Row>
-          <Modal
-            /* TODO: translation */
-            title={<h2>กรุณาเลือกไฟล์ Excel</h2>}
-            centered
-            open={modalVisible}
-            footer={false}
-            closeIcon={true}
-            onCancel={() => onCancel()}
-            destroyOnClose={true}
-          >
-            <UploadFileExcel
-              props={props}
-              error={error}
-              handleUpload={handleUpload}
-              file={fileList[0]}
-              setError={setError}
-            />
-          </Modal>
-          {/* //TODO: mobile ยังไม่พร้อม */}
-          {!isMobile && (
-            <UserTableView
-              data={userColumns}
-              userList={userList}
-              isLoading={isLoading}
-              handleTableChange={handleTableChange}
-              pagination={pagination}
-              totalItems={totalItems}
-            />
-          )}
-          {isUploading && <FullScreenLoading spinning={isUploading} />}
-        </Space>
-      )}
+        ))}
     </>
   )
 }

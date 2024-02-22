@@ -33,7 +33,6 @@ function TransactionListPage() {
   const [itemsPerPage, setItemsPerPage] = useState<number>(
     initialPagination.itemsPerPage
   )
-
   const service = useService()
 
   const onCancel = () => {
@@ -209,7 +208,6 @@ function TransactionListPage() {
             footer={null}
             closeIcon={null}
             destroyOnClose={true}
-            
           >
             <TransactionReportFilterForm onCancel={onCancel} />
           </Modal>

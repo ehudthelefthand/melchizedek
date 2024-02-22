@@ -16,19 +16,21 @@ import { DonorSearchRespones } from '../../../../api/donor/response'
 
 function BasicForm() {
   const service = useService()
+  const metaDonor = service.metadatums.getAllDonors()
   const nickName = service.reactStore.store.user?.nickName
   const role = service.reactStore.store.user?.role
   const isAdmin = role === 'admin'
-  const [donorOptions, setDonorOptions] = useState<DonorSearchRespones[]>([])
+  const [donorOptions, setDonorOptions] = useState<DonorSearchRespones[]>(metaDonor)
 
   const handleDonorSearch = async (newValue: string) => {
     try {
-      const donorAPI = await service.api.donor.getDonorFilter({
+      const donor = await service.api.donor.getDonorFilter({
         fullName: newValue,
       })
-      setDonorOptions(donorAPI ?? {})
+      setDonorOptions(donor ?? {})
     } catch (error) {
       console.error(error)
+      // const donor = await service.metadatums.getAllDonors()
       setDonorOptions([])
     }
   }

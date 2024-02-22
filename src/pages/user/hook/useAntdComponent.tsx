@@ -65,7 +65,7 @@ const useAntdUserTableData = ({ onDelete }: { onEdit: any; onDelete: any }) => {
       title: '',
       key: 'action',
       fixed: 'right',
-      width: 100,
+      width: 20,
       align: 'center',
       render: (userResponse: UserResponse) => (
         <Space size={'large'} key={userResponse.id}>

@@ -31,11 +31,15 @@ const useUserList = () => {
   }
 
   useEffect(() => {
+    setIsloading(true)
     service.api.user
-      .getAll({
-        currentPage: pagination.current,
-        itemsPerPage: pagination.itemsPerPage,
-      })
+      .getAll(
+        {
+          currentPage: pagination.current,
+          itemsPerPage: pagination.itemsPerPage,
+        },
+        search
+      )
       .then((user) => {
         setTotalItems(user.totalItems)
         setUserList(user.data)
@@ -43,12 +47,13 @@ const useUserList = () => {
       .catch((err) => {
         console.error(err)
         setUserList([])
+        throw new Error(err)
       })
       .finally(() => setIsloading(false))
   }, [pagination, search])
 
   const handleSearch = async (fullName: string) => {
-    return debounce(await onSearch(fullName), 2000)
+    return debounce(await onSearch(fullName), 3000)
   }
 
   const onSearch = (fullName: string) => {
