@@ -22,6 +22,14 @@ import {
   TransactionCreateRequest,
   TransactionUpdateRequest,
 } from '../../../../../api/transaction/request/transaction'
+import {
+  PageTransactionResponse,
+  TransactionResponse,
+} from '../../../../../api/transaction/response/transaction'
+import { TransactionFixOfferingList } from '../../../list/model/fixOffering'
+import { TransactionGiftOfferingList } from '../../../list/model/giftOffering'
+import { TransactionProjectOfferingList } from '../../../list/model/projectOffering'
+import { TransactionList } from '../../../list/model/transaction'
 
 export function createTransadtionForm(
   transaction: any,
@@ -88,7 +96,7 @@ export function createTransadtionForm(
   }
 }
 
-export function createEditedTransactionForm({
+export function editedTransactionForm({
   paramsId,
   fixOfferings,
   giftOfferings,
@@ -225,4 +233,75 @@ export function createNewTransaction({
           )
         : [],
   }
+}
+
+export function formatedTransaction(
+  pageTransaction: PageTransactionResponse,
+  service: any
+): TransactionList[] {
+  return pageTransaction.data.map((transaction: TransactionResponse) => {
+    const result: TransactionList = {
+      id: transaction.id,
+      donorName: service.metadatums.getDonor(transaction.donorId).fullName,
+      amount: transaction.amount.toLocaleString('th-TH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+      transferDate: dayjs(transaction.transferDate),
+      toBankCode: service.metadatums.getBank(transaction.toBankId).code,
+      fromBankCode: service.metadatums.getBank(transaction.fromBankId).code,
+      staffName: service.metadatums.getStaff(transaction.staffId).nickName,
+      departmentName: service.metadatums.getDepartment(transaction.departmentId)
+        .name,
+      descriptions: transaction.descriptions,
+      createAt: dayjs(transaction.createAt),
+
+      fixOfferings: transaction.fixOfferings.map((fixOffering) => {
+        const fix: TransactionFixOfferingList = {
+          id: fixOffering.id,
+          staffName: service.metadatums.getStaff(fixOffering.staffId).nickName,
+          departmentName: service.metadatums.getDepartment(
+            fixOffering.departmentId
+          ).name,
+          amount: fixOffering.amount,
+          startMonth: dayjs(fixOffering.startMonth),
+          dueMonth: dayjs(fixOffering.startMonth),
+        }
+
+        return fix
+      }),
+      giftOfferings: transaction.giftOfferings.map((giftOffering) => {
+        const gift: TransactionGiftOfferingList = {
+          id: giftOffering.id,
+          staffName: service.metadatums.getStaff(giftOffering.id).nickName,
+          departmentName: service.metadatums.getDepartment(giftOffering.id)
+            .name,
+          amount: giftOffering.amount,
+          transferDate: dayjs(giftOffering.transferDate),
+        }
+
+        return gift
+      }),
+      projectOfferings: transaction.projectOfferings.map((projectOffering) => {
+        const project: TransactionProjectOfferingList = {
+          id: projectOffering.id,
+          staffName: service.metadatums.getStaff(projectOffering.id).nickName,
+          departmentName: service.metadatums.getDepartment(projectOffering.id)
+            .name,
+          amount: projectOffering.amount,
+          project: service.metadatums.getProject(projectOffering.id).name,
+          date: dayjs(projectOffering.date),
+          descriptions: projectOffering.descriptions,
+        }
+        return project
+      }),
+      totalOfferings: {
+        sumFixOfferings: transaction.totalOfferings.sumFixOfferings,
+        sumGiftOfferings: transaction.totalOfferings.sumGiftOfferings,
+        sumProjectOfferings: transaction.totalOfferings.sumProjectOfferings,
+      },
+      images: transaction.images,
+    }
+    return result
+  })
 }

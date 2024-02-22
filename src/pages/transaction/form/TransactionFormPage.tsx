@@ -36,10 +36,10 @@ import { calculateOffering } from './utils/calculateOffering'
 import { EvidenceDeleteRequest } from '../../../api/transaction/request/image'
 import { LoadingOutlined } from '@ant-design/icons'
 import {
-  createEditedTransactionForm,
+  editedTransactionForm,
   createNewTransaction,
   createTransadtionForm,
-} from './utils/transactions/transactionForm'
+} from './utils/transactions/transaction'
 
 const initialTransactionForm: TransactionForm = {
   id: null,
@@ -125,7 +125,7 @@ const TransactionFormPage = () => {
       }
 
       const transactionEdited: TransactionUpdateRequest =
-        createEditedTransactionForm({
+        editedTransactionForm({
           paramsId,
           fixOfferings,
           giftOfferings,

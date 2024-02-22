@@ -16,11 +16,16 @@ export default {
   getOne: (id: number): Promise<TransactionResponse> => {
     return axios.get(`/transactions/${id}`).then((response) => response.data)
   },
-  getAll: (pageRequest: PageRequest): Promise<PageTransactionResponse> => {
+  getAll: (
+    pageRequest: PageRequest,
+    search?: string | undefined
+  ): Promise<PageTransactionResponse> => {
     const { currentPage, itemsPerPage } = pageRequest
     return axios
       .get(
-        `transactions?currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
+        `transactions?search=${
+          search ?? ''
+        }&currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
       )
       .then((response) => response.data)
   },
@@ -55,9 +60,7 @@ export default {
   ): Promise<PageTransactionReportResponse> => {
     const { currentPage, itemsPerPage } = pageRequest
     return axios
-      .get(
-        `reports?currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`
-      )
+      .get(`reports?currentPage=${currentPage}&itemsPerPage=${itemsPerPage}`)
       .then((response) => response.data)
   },
   getLinkReport: (fileName: string): Promise<string> => {
