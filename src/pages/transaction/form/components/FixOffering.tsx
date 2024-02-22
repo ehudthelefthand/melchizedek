@@ -10,9 +10,7 @@ import {
 } from 'antd'
 import { FormInstance } from 'antd/es/form/Form'
 import { useTranslation } from 'react-i18next'
-
 import { PropsWithChildren, useEffect, useMemo, useState } from 'react'
-
 import { useService } from '../../../../service/service'
 import { TransactionForm } from '../model/transaction'
 import {
@@ -20,7 +18,6 @@ import {
   TransactionFixOfferingForm,
 } from '../model/fixOffering'
 import { calculateOffering } from '../utils/calculateOffering'
-
 const { RangePicker } = DatePicker
 
 function FixOfferingForm(

@@ -1,40 +1,31 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Button, Col, Form, message, Modal, Row, Space, Spin } from 'antd'
-
+import {
+  Button,
+  Col,
+  Form,
+  message,
+  Modal,
+  Row,
+  Skeleton,
+  Space,
+  Spin,
+} from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import './transactionFormPage.css'
 import { useMediaQuery } from 'react-responsive'
 import { useTranslation } from 'react-i18next'
-
 import BasicForm from './components/BasicForm'
 import MzkUploadFile from './components/MzkUploadFile'
-import dayjs from 'dayjs'
 import { TransactionForm } from './model/transaction'
 import { TransactionFixOfferingForm } from './model/fixOffering'
 import { TransactionGiftOfferingForm } from './model/giftOffering'
 import { TransactionProjectOfferingForm } from './model/projectOffering'
-import { TransactionFixOfferingResponse } from '../../../api/transaction/response/fixOffering'
-import { TransactionProjectOfferingResponse } from '../../../api/transaction/response/projectOffering'
-
 import { useService } from '../../../service/service'
 import {
   TransactionCreateRequest,
   TransactionUpdateRequest,
 } from '../../../api/transaction/request/transaction'
-import {
-  TransactionFixOfferingCreateRequest,
-  TransactionFixOfferingUpdateRequest,
-} from '../../../api/transaction/request/fixOffering'
-import { TransactionGiftOfferingResponse } from '../../../api/transaction/response/giftOffering'
-import {
-  TransactionGiftOfferingCreateRequest,
-  TransactionGiftOfferingUpdateRequest,
-} from '../../../api/transaction/request/giftOffering'
-import {
-  TransactionProjectOfferingCreateRequest,
-  TransactionProjectOfferingUpdateRequest,
-} from '../../../api/transaction/request/projectOffering'
 import FixOfferingList from './components/FixOfferingList'
 import FixOfferingForm from './components/FixOffering'
 import GiftOfferingForm from './components/GiftOffering'
@@ -43,6 +34,12 @@ import GiftOfferingList from './components/GiftOfferingList'
 import ProjectOfferingList from './components/ProjectOfferingList'
 import { calculateOffering } from './utils/calculateOffering'
 import { EvidenceDeleteRequest } from '../../../api/transaction/request/image'
+import { LoadingOutlined } from '@ant-design/icons'
+import {
+  createEditedTransactionForm,
+  createNewTransaction,
+  createTransadtionForm,
+} from './utils/transactions/transaction'
 
 const initialTransactionForm: TransactionForm = {
   id: null,
@@ -80,83 +77,23 @@ const TransactionFormPage = () => {
       setIsLoading(true)
       service.api.transaction
         .getOne(parseInt(paramsId))
-        .then((transaction) => {
-          const transactionResponse: TransactionForm = {
-            id: transaction.id,
-            staffId: service.metadatums.getStaff(transaction.staffId).id,
-            donorId: service.metadatums.getDonor(transaction.donorId).id,
-            departmentId: service.metadatums.getDepartment(
-              transaction.departmentId
-            ).id,
-            toBankId: service.metadatums.getBank(transaction.toBankId).id,
-            fromBankId: service.metadatums.getBank(transaction.fromBankId).id,
-            amount: transaction.amount.toString(),
-            transferDate: dayjs(transaction.transferDate),
-            images: [],
-            imagesName: transaction.images,
-            descriptions: transaction.descriptions,
-            fixOfferings: transaction.fixOfferings.map(
-              (fixOffering: TransactionFixOfferingResponse) => {
-                const fix: TransactionFixOfferingForm = {
-                  id: fixOffering.id,
-                  startMonth: dayjs(fixOffering.startMonth),
-                  dueMonth: dayjs(fixOffering.dueMonth),
-                  staffId: service.metadatums.getStaff(fixOffering.staffId).id,
-                  departmentId: service.metadatums.getDepartment(
-                    fixOffering.departmentId
-                  ).id,
-                  amount: fixOffering.amount,
-                }
-                return fix
-              }
-            ),
-            giftOfferings: transaction.giftOfferings.map(
-              (giftOffering: TransactionGiftOfferingResponse) => {
-                const gift: TransactionGiftOfferingForm = {
-                  id: giftOffering.id,
-                  staffId: service.metadatums.getStaff(giftOffering.staffId).id,
-                  departmentId: service.metadatums.getDepartment(
-                    giftOffering.departmentId
-                  ).id,
-                  amount: giftOffering.amount,
-                  transferDate: dayjs(giftOffering.transferDate),
-                }
-                return gift
-              }
-            ),
-            projectOfferings: transaction.projectOfferings.map(
-              (projectOffering: TransactionProjectOfferingResponse) => {
-                const project: TransactionProjectOfferingForm = {
-                  id: projectOffering.id,
-                  staffId: service.metadatums.getStaff(projectOffering.staffId)
-                    .id,
-                  departmentId: service.metadatums.getDepartment(
-                    projectOffering.departmentId
-                  ).id,
-                  amount: projectOffering.amount,
-                  date: dayjs(projectOffering.date),
-                  projectId: service.metadatums.getProject(
-                    projectOffering.projectId
-                  ).id,
-                  descriptions: projectOffering.descriptions,
-                }
-                return project
-              }
-            ),
-          }
-
+        .then(async (transaction) => {
+          const transactionResponse: TransactionForm =
+            await createTransadtionForm(transaction, service)
           form.setFieldsValue(transactionResponse)
-          setIsLoading(false)
         })
         .catch((error: Error) => {
           console.error(error)
           message.error('Update Fail!')
           navigate('/transaction')
         })
+        .finally(() => setIsLoading(false))
     }
   }, [])
 
   const onSubmit = async (transaction: TransactionForm) => {
+    setIsLoading(true)
+
     const images = form.getFieldValue('images')
     const newImages = form.getFieldValue('newImages')
     const deleteImages = form.getFieldValue('imagesDelete')
@@ -187,151 +124,60 @@ const TransactionFormPage = () => {
         transactionId: parseInt(paramsId),
       }
 
-      const transactionEdited: TransactionUpdateRequest = {
-        id: parseInt(paramsId),
-        donorId: transaction.donorId!,
-        staffId: transaction.staffId!,
-        departmentId: transaction.departmentId!,
-        toBankId: transaction.toBankId!,
-        fromBankId: transaction.fromBankId!,
-        amount: parseFloat(transaction.amount),
-        descriptions: transaction.descriptions,
-        transferDate: +transaction.transferDate!,
-        images: transaction.images,
-        fixOfferings:
-          fixOfferings.length > 0
-            ? fixOfferings.map((fixOffering: TransactionFixOfferingForm) => {
-                const fix: TransactionFixOfferingUpdateRequest = {
-                  id: fixOffering.id,
-                  staffId: fixOffering.staffId,
-                  departmentId: fixOffering.departmentId,
-                  startMonth: +fixOffering.startMonth,
-                  dueMonth: +fixOffering.dueMonth,
-                  amount: parseFloat(fixOffering.amount.toString()),
-                  transactionId: parseInt(paramsId),
-                }
-                return fix
+      const transactionEdited: TransactionUpdateRequest =
+        createEditedTransactionForm({
+          paramsId,
+          fixOfferings,
+          giftOfferings,
+          projectOfferings,
+          transaction,
+        })
+
+      if (transactionEdited || transactionEdited != null) {
+        service.api.transaction
+          .update(transactionEdited)
+          .then((response) => {
+            service.api.transaction.upload(formData, response.id).then(() => {
+              service.api.transaction.deleteImages(deleteEvidence).then(() => {
+                message.success('Update successful!')
+                navigate('/transaction')
               })
-            : [],
-        giftOfferings:
-          giftOfferings.length > 0
-            ? giftOfferings.map((giftOffering: TransactionGiftOfferingForm) => {
-                const gift: TransactionGiftOfferingUpdateRequest = {
-                  id: giftOffering.id,
-                  staffId: giftOffering.staffId,
-                  departmentId: giftOffering.departmentId,
-                  transferDate: +giftOffering.transferDate,
-                  amount: parseFloat(giftOffering.amount.toString()),
-                  transactionId: parseInt(paramsId),
-                }
-                return gift
-              })
-            : [],
-        projectOfferings:
-          projectOfferings.length > 0
-            ? projectOfferings.map(
-                (projectOffering: TransactionProjectOfferingForm) => {
-                  const project: TransactionProjectOfferingUpdateRequest = {
-                    id: projectOffering.id,
-                    staffId: projectOffering.staffId,
-                    departmentId: projectOffering.departmentId,
-                    date: +projectOffering.date,
-                    projectId: projectOffering.projectId,
-                    amount: parseFloat(projectOffering.amount.toString()),
-                    descriptions: projectOffering.descriptions,
-                    transactionId: parseInt(paramsId),
-                  }
-                  return project
-                }
-              )
-            : [],
-      }
-      service.api.transaction
-        .update(transactionEdited)
-        .then((response) => {
-          service.api.transaction.upload(formData, response.id).then(() => {
-            service.api.transaction.deleteImages(deleteEvidence).then(() => {
-              message.success('Update successful!')
-              navigate('/transaction')
             })
           })
-        })
-        .catch((error: Error) => {
-          console.error(error)
-          message.error('Update Fail!')
-        })
+          .catch((error: Error) => {
+            console.error(error)
+            message.error('Update Fail!')
+
+            throw new Error(error.message)
+          })
+          .finally(() => setIsLoading(false))
+      }
     } else {
       const formData = new FormData()
       images.forEach((image: File) => {
         formData.append('photo', image)
       })
-      console.log("submit id staff", transaction.staffId)
-      console.log("submit id donor", transaction.donorId)
-      const transactionCreated: TransactionCreateRequest = {
-        donorId: transaction.donorId!,
-        staffId: transaction.staffId!,
-        departmentId: transaction.departmentId!,
-        toBankId: transaction.toBankId!,
-        fromBankId: transaction.fromBankId!,
-        amount: parseFloat(transaction.amount),
-        descriptions: transaction.descriptions,
-        transferDate: +transaction.transferDate!,
-        images: transaction.images,
-        fixOfferings:
-          fixOfferings.length > 0
-            ? fixOfferings.map((fixOffering: TransactionFixOfferingForm) => {
-                const fix: TransactionFixOfferingCreateRequest = {
-                  staffId: fixOffering.staffId,
-                  departmentId: fixOffering.departmentId,
-                  startMonth: +fixOffering.startMonth,
-                  dueMonth: +fixOffering.dueMonth,
-                  amount: parseFloat(fixOffering.amount.toString()),
-                }
-                return fix
-              })
-            : [],
-        giftOfferings:
-          giftOfferings.length > 0
-            ? giftOfferings.map((giftOffering: TransactionGiftOfferingForm) => {
-                const gift: TransactionGiftOfferingCreateRequest = {
-                  staffId: giftOffering.staffId,
-                  departmentId: giftOffering.departmentId,
-                  transferDate: +giftOffering.transferDate,
-                  amount: parseFloat(giftOffering.amount.toString()),
-                }
-                return gift
-              })
-            : [],
-        projectOfferings:
-          projectOfferings.length > 0
-            ? projectOfferings.map(
-                (projectOffering: TransactionProjectOfferingForm) => {
-                  const project: TransactionProjectOfferingCreateRequest = {
-                    staffId: projectOffering.staffId,
-                    departmentId: projectOffering.departmentId,
-                    date: +projectOffering.date,
-                    projectId: projectOffering.projectId,
-                    amount: parseFloat(projectOffering.amount.toString()),
-                    descriptions: projectOffering.descriptions,
-                  }
-                  return project
-                }
-              )
-            : [],
+      const transactionCreated: TransactionCreateRequest = createNewTransaction(
+        { fixOfferings, giftOfferings, projectOfferings, transaction }
+      )
+
+      if (transactionCreated || transactionCreated != null) {
+        console.log(transactionCreated)
+        service.api.transaction
+          .create(transactionCreated)
+          .then((response) => {
+            service.api.transaction
+              .upload(formData, response.id)
+              .then((response) => response)
+            message.success('Create successful!')
+            navigate('/transaction')
+          })
+          .catch((error: Error) => {
+            console.error(error)
+            message.error('Update Fail!')
+          })
+          .finally(() => setIsLoading(false))
       }
-      service.api.transaction
-        .create(transactionCreated)
-        .then((response) => {
-          service.api.transaction
-            .upload(formData, response.id)
-            .then((response) => response)
-          message.success('Create successful!')
-          navigate('/transaction')
-        })
-        .catch((error: Error) => {
-          console.error(error)
-          message.error('Update Fail!')
-        })
     }
   }
 
@@ -344,7 +190,9 @@ const TransactionFormPage = () => {
   return (
     <div className="transaction-add-form">
       {isLoading ? (
-        <Spin />
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
+          <Skeleton active />
+        </Spin>
       ) : (
         <Form
           onFinish={onSubmit}

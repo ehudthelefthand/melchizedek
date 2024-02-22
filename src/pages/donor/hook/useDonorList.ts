@@ -29,6 +29,7 @@ const useDonorList = () => {
   }
 
   useEffect(() => {
+    setIsloading(true)
     service.api.donor
       .getAll(
         {

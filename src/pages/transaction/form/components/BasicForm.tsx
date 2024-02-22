@@ -16,7 +16,6 @@ import { DonorSearchRespones } from '../../../../api/donor/response'
 
 function BasicForm() {
   const service = useService()
-
   const nickName = service.reactStore.store.user?.nickName
   const role = service.reactStore.store.user?.role
   const isAdmin = role === 'admin'
@@ -27,46 +26,59 @@ function BasicForm() {
       const donorAPI = await service.api.donor.getDonorFilter({
         fullName: newValue,
       })
-      setDonorOptions(donorAPI)
+      setDonorOptions(donorAPI ?? {})
     } catch (error) {
       console.error(error)
       setDonorOptions([])
     }
   }
 
-  const donorAPI: SelectProps['options'] = donorOptions.map(
-    (donor: DonorSearchRespones) => ({
-      label: donor.fullName,
-      value: donor.id,
-    })
+  const donorAPI: SelectProps['options'] = donorOptions?.map(
+    (donor: DonorSearchRespones) =>
+      ({
+        label: donor.fullName,
+        value: donor.id,
+      }) ?? []
   )
 
   const staffAPI: SelectProps['options'] = service.metadatums
     .getAllStaffs()
-    .map((staff) => ({
-      label: staff.nickName,
-      value: staff.id,
-    }))
+    ?.map(
+      (staff) =>
+        ({
+          label: staff.nickName,
+          value: staff.id,
+        }) ?? []
+    )
 
   const departmentAPI: SelectProps['options'] = service.metadatums
     .getAllDepartments()
-    .map((department) => ({
-      label: department.name,
-      value: department.id,
-    }))
+    ?.map(
+      (department) =>
+        ({
+          label: department.name,
+          value: department.id,
+        }) ?? []
+    )
 
   const filterBanksAPI = service.metadatums.getMZKBanks()
-  const toBankAPI: SelectProps['options'] = filterBanksAPI.map((bank) => ({
-    label: bank.code,
-    value: bank.id,
-  }))
+  const toBankAPI: SelectProps['options'] = filterBanksAPI?.map(
+    (bank) =>
+      ({
+        label: bank.code,
+        value: bank.id,
+      }) ?? []
+  )
 
   const fromBankAPI: SelectProps['options'] = service.metadatums
     .getAllBanks()
-    .map((bank) => ({
-      label: bank.code,
-      value: bank.id,
-    }))
+    ?.map(
+      (bank) =>
+        ({
+          label: bank.code,
+          value: bank.id,
+        }) ?? []
+    )
 
   return (
     <>

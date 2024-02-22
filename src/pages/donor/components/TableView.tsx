@@ -19,11 +19,9 @@ function DonorTableView({
   pagination: PageResponse
   totalItems: number
 }) {
-  if (isLoading) {
-    return <Skeleton active />
-  }
-
-  return (
+  return isLoading ? (
+    <Skeleton active />
+  ) : (
     <Table
       loading={isLoading}
       columns={data}

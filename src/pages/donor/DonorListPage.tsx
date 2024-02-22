@@ -50,110 +50,108 @@ function DonorListPage() {
 
   return (
     <>
-      {isLoading || isProcess ? (
-        <>
+      <Space direction="vertical" size="large" style={{ display: 'flex' }}>
+        <Row justify={'space-between'}>
+          <Col xs={24} sm={24} md={12}>
+            <Search
+              enterButton
+              size="large"
+              placeholder={t('transacButton.search')}
+              allowClear
+              onChange={(e) => handleSearch(e.target.value.toString())}
+              style={{ width: ' 100%' }}
+            />
+          </Col>
+          <Row gutter={[6, 6]}>
+            <Col xs={12} sm={12} md={12}>
+              <Button
+                size="large"
+                style={{
+                  width: isMobile ? '100%' : '',
+                }}
+                onClick={() => onOpen()}
+              >
+                <FileAddOutlined /> Import
+              </Button>
+            </Col>
+            <Col xs={12} sm={12} md={12}>
+              <Link to={'/donor/create'}>
+                <Button
+                  size="large"
+                  type="primary"
+                  style={{ width: isMobile ? '100%' : '' }}
+                  className="btn-primary"
+                >
+                  {t('transacButton.addDonor')}
+                </Button>
+              </Link>
+            </Col>
+          </Row>
+        </Row>
+        <Modal
+          title={<h2>กรุณาเลือกไฟล์ Excel ของผู้ถวาย</h2>}
+          centered
+          open={modalVisible}
+          footer={false}
+          closeIcon={true}
+          onCancel={() => onCancel()}
+          destroyOnClose={true}
+        >
+          <Row
+            style={{
+              justifyContent: 'center',
+            }}
+          >
+            <Select
+              placeholder={'ภูมิภาค'}
+              style={{
+                width: (window.innerWidth * 45) / 100,
+                marginTop: 6,
+                marginBottom: 6,
+              }}
+              onChange={onSelectDepartment}
+              options={initialRegion}
+            />
+          </Row>
+          <Col
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              marginTop: 16,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <UploadFileExcel
+              props={props}
+              error={error}
+              handleUpload={handleUpload}
+              file={fileList[0]}
+              setError={setError}
+            />
+          </Col>
+        </Modal>
+        {/* //TODO: mobile ยังไม่พร้อม */}
+
+        {!isMobile && (
+          <DonorTableView
+            data={donorColumns}
+            donorList={donorList}
+            isLoading={isLoading}
+            handleTableChange={handleTableChange}
+            totalItems={totalItems}
+            pagination={pagination}
+          />
+        )}
+        {isUploading && <FullScreenLoading spinning={isUploading} />}
+      </Space>
+
+      {isLoading ||
+        (isProcess && (
           <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
             <Skeleton active />
           </Spin>
-        </>
-      ) : (
-        <Space direction="vertical" size="large" style={{ display: 'flex' }}>
-          <Row justify={'space-between'}>
-            <Col xs={24} sm={24} md={12}>
-              <Search
-                enterButton
-                size="large"
-                placeholder={t('transacButton.search')}
-                allowClear
-                onChange={(e) => handleSearch(e.target.value.toString())}
-                style={{ width: ' 100%' }}
-              />
-            </Col>
-            <Row gutter={[6, 6]}>
-              <Col xs={12} sm={12} md={12}>
-                <Button
-                  size="large"
-                  style={{
-                    width: isMobile ? '100%' : '',
-                  }}
-                  onClick={() => onOpen()}
-                >
-                  <FileAddOutlined /> Import
-                </Button>
-              </Col>
-              <Col xs={12} sm={12} md={12}>
-                <Link to={'/donor/create'}>
-                  <Button
-                    size="large"
-                    type="primary"
-                    style={{ width: isMobile ? '100%' : '' }}
-                    className="btn-primary"
-                  >
-                    {t('transacButton.addDonor')}
-                  </Button>
-                </Link>
-              </Col>
-            </Row>
-          </Row>
-          <Modal
-            /* TODO: translation */
-            title={<h2>กรุณาเลือกไฟล์ Excel</h2>}
-            centered
-            open={modalVisible}
-            footer={false}
-            closeIcon={true}
-            onCancel={() => onCancel()}
-            destroyOnClose={true}
-          >
-            <Row
-              style={{
-                justifyContent: 'center',
-              }}
-            >
-              <Select
-                placeholder={'ภูมิภาค'}
-                style={{
-                  width: (window.innerWidth * 45) / 100,
-                  marginTop: 6,
-                  marginBottom: 6,
-                }}
-                onChange={onSelectDepartment}
-                options={initialRegion}
-              />
-            </Row>
-            <Col
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                marginTop: 16,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <UploadFileExcel
-                props={props}
-                error={error}
-                handleUpload={handleUpload}
-                file={fileList[0]}
-                setError={setError}
-              />
-            </Col>
-          </Modal>
-          {/* //TODO: mobile ยังไม่พร้อม */}
-
-          {!isMobile && (
-            <DonorTableView
-              data={donorColumns}
-              donorList={donorList}
-              isLoading={isLoading}
-              handleTableChange={handleTableChange}
-              totalItems={totalItems}
-              pagination={pagination}
-            />
-          )}
-          {isUploading && <FullScreenLoading spinning={isUploading} />}
-        </Space>
-      )}
+        ))}
     </>
   )
 }

@@ -47,7 +47,7 @@ export const useAntdDonorTableData = ({ onDelete }: { onDelete: any }) => {
       title: '',
       key: 'action',
       fixed: 'right',
-      width: 100,
+      width: 20,
       align: 'center',
       render: (donorResponse: DonorResponse) => (
         <Space size={'large'} key={donorResponse.id}>
