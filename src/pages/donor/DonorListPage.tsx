@@ -39,6 +39,7 @@ function DonorListPage() {
     onCancel,
     setError,
     onSelectDepartment,
+    statusValue,
   } = useUploadFile({
     formData: formData,
     callback: (formData) => services.api.donor.importFile(formData),
@@ -106,8 +107,9 @@ function DonorListPage() {
               justifyContent: 'center',
             }}
           >
+            {/* TODO: translate */}
             <Select
-              placeholder={'ภูมิภาค'}
+              placeholder={'เลือกภูมิภาค'}
               style={{
                 width: (window.innerWidth * 45) / 100,
                 marginTop: 6,
@@ -124,6 +126,7 @@ function DonorListPage() {
               handleUpload={handleUpload}
               file={fileList[0]}
               setError={setError}
+              statusValue={statusValue}
             />
           </Col>
         </Modal>

@@ -9,12 +9,14 @@ function UploadFileExcel({
   handleUpload,
   file,
   setError,
+  statusValue,
 }: {
   error?: string
   setError: Function
   props: UploadProps<any>
   handleUpload: MouseEventHandler<HTMLElement>
   file: UploadFile<any>
+  statusValue?: boolean
 }) {
   useEffect(() => {
     if (file) {
@@ -45,7 +47,7 @@ function UploadFileExcel({
       <Button
         type="primary"
         onClick={handleUpload}
-        disabled={!file || error != ''}
+        disabled={!file || error != '' || statusValue}
         style={{ marginTop: 16 }}
       >
         Upload File

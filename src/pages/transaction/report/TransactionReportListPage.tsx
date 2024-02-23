@@ -5,7 +5,8 @@ import { TransactionReportResponse } from '../../../api/transaction/response/rep
 import { STATUS } from '../../../constants/api'
 import { ProcessStatus } from '../components/ServerStatusComponent'
 import useTransactionReport from './useTransactionReport'
-import { Skeleton } from 'antd'
+import { Button, Skeleton } from 'antd'
+import { useTranslation } from 'react-i18next'
 
 function TransactionReportListPage() {
   const transactionReport = useTransactionReport()
@@ -19,7 +20,7 @@ function TransactionReportListPage() {
   } = transactionReport
 
   // TODO: translations แปลภาษา
-  // const [t] = useTranslation('translation')
+  const [t] = useTranslation('translation')
 
   const columns: ColumnType<TransactionReportResponse>[] = [
     {
@@ -30,14 +31,14 @@ function TransactionReportListPage() {
       align: 'center',
     },
     {
-      title: 'FileName',
+      title: `${t('reportList.fileName')}`,
       key: 'fileName',
       dataIndex: 'fileName',
       width: 10,
       align: 'left',
     },
     {
-      title: 'Status',
+      title: `${t('reportList.status')}`,
       key: 'status',
       dataIndex: 'status',
       render: (status: STATUS) => ProcessStatus(status),
@@ -48,7 +49,9 @@ function TransactionReportListPage() {
       title: '',
       key: 'dowload',
       render: (res: TransactionReportResponse) => (
-        <DownloadOutlined onClick={() => getFile(res.fileName)} />
+        <Button type='text' block size='small' disabled={res.status !== STATUS.success}>
+          <DownloadOutlined  onClick={() => getFile(res.fileName)} />
+        </Button>
       ),
       width: 10,
       align: 'left',
@@ -61,24 +64,24 @@ function TransactionReportListPage() {
 
   return (
     <>
-    {reportList.length > 0 ? (
-      <Table
-        loading={isLoading}
-        columns={columns}
-        rowKey={(record) => record.id}
-        dataSource={reportList}
-        pagination={{
-          pageSize: pagination.itemsPerPage,
-          current: pagination.current,
-          total: totalItems,
-          showSizeChanger: true,
-          pageSizeOptions: [20,40,80,100],
-        }}
-        onChange={handleTableChange}
+      {reportList.length > 0 ? (
+        <Table
+          loading={isLoading}
+          columns={columns}
+          rowKey={(record) => record.id}
+          dataSource={reportList}
+          pagination={{
+            pageSize: pagination.itemsPerPage,
+            current: pagination.current,
+            total: totalItems,
+            showSizeChanger: true,
+            pageSizeOptions: [20, 40, 80, 100],
+          }}
+          onChange={handleTableChange}
         />
-    ) : (
-      <p>No data</p>
-    )}
+      ) : (
+        <p>No data</p>
+      )}
     </>
   )
 }

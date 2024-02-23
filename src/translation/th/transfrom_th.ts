@@ -88,4 +88,8 @@ export default {
     type: 'ประเภท',
     staff: 'ผู้ดูแล',
   },
+  reportList: {
+    fileName: 'ชื่อไฟล์',
+    status: 'สถานะ',
+  },
 }

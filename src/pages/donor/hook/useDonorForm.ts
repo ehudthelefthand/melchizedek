@@ -37,6 +37,7 @@ const useDonorForm = () => {
       .create(createDonor)
       .then(() => {
         message.success('Create Donor Success fully!')
+        window.location.reload()
       })
       .catch((error) => {
         console.error(error)

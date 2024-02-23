@@ -91,4 +91,8 @@ export default {
     type: 'Type',
     staff: 'Staff',
   },
+  reportList: {
+    fileName: 'Filename',
+    status: 'Status',
+  },
 }

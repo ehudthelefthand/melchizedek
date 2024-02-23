@@ -8,7 +8,9 @@ export interface UserLoginResponse {
 
 export interface UserResponse {
   id: number
-  fullNameTH: string
+  prefix: string
+  firstName: string
+  lastName: string
   fullNameEN: string
   nickName: string
   username: string

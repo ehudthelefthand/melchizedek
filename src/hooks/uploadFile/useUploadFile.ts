@@ -18,10 +18,12 @@ const useUploadFile = ({
   const [selectedDepartment, setSelectedDepartment] = useState<string>('')
   const [isUploading, setUploading] = useState(false)
   const [error, setError] = useState<string | undefined>()
+  const [statusValue, setStatusValue] = useState<boolean>(true)
 
   const onSelectDepartment = (value: string) => {
     console.log(value)
     setSelectedDepartment(value.toString())
+    setStatusValue(false)
   }
 
   const handleUpload = async () => {
@@ -78,6 +80,8 @@ const useUploadFile = ({
     isUploading,
     setUploading,
     onSelectDepartment,
+    setStatusValue,
+    statusValue,
   }
 }
 export default useUploadFile
