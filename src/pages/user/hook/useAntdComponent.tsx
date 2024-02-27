@@ -152,7 +152,7 @@ export const useAntdUserListData = ({ onDelete }: { onDelete: any }) => {
                   </Space>
                 )
               }
-              
+
             </Col>
             <Col span={12} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <Space>
@@ -163,7 +163,7 @@ export const useAntdUserListData = ({ onDelete }: { onDelete: any }) => {
             <Col span={12} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <Space>
                 <PartitionOutlined />
-                <Text>{service.metadatums.getDepartment(user.departmentId).name}</Text>
+                <Text>{service.metadatums.getDepartment(user.departmentId ?? 0).name ?? <MinusOutlined />}</Text>
               </Space>
             </Col>
           </Row>
