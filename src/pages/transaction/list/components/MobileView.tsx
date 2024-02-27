@@ -1,6 +1,6 @@
 import { Card, Col, Divider, List, Row, Space, Typography, Image, Modal, Spin, Skeleton } from 'antd'
 import { } from 'antd/es/list'
-import { PropsWithChildren, useEffect, useState } from 'react'
+import { PropsWithChildren, useCallback, useEffect, useState } from 'react'
 import { TransactionList } from '../model/transaction'
 import { PageTransactionResponse } from '../../../../api/transaction/response/transaction'
 import { BankOutlined, CalendarOutlined, DeleteOutlined, DollarTwoTone, EditOutlined, FunctionOutlined, GiftOutlined, InboxOutlined, LoadingOutlined, MinusOutlined, PartitionOutlined, ProjectOutlined, ReadOutlined, UserOutlined } from '@ant-design/icons'
@@ -43,6 +43,10 @@ function TransactionMobileView(
       }
     })
   }
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page)
+  }, [currentPage])
 
   const transactionItem = (transaction: TransactionList) => {
     return (
@@ -180,10 +184,6 @@ function TransactionMobileView(
         </Card>
       </List.Item>
     )
-  }
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
   }
 
   return (
