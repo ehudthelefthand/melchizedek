@@ -117,13 +117,15 @@ export const useAntdDonorListData = ({ onDelete }: { onDelete: any }) => {
           <Row>
             <Divider>ผู้ดูแล</Divider>
             <Col span={24} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              {donor.staff === '' && (<Text><MinusOutlined /></Text>)}
-              {donor.staff !== '' && (
-                <Space>
-                  <UserOutlined />
-                  <Text>{donor.staff}</Text>
-                </Space>
-              )}
+              {donor.staff === ''
+                ? (<Text><MinusOutlined /></Text>)
+                : (
+                  <Space>
+                    <UserOutlined />
+                    <Text>{donor.staff}</Text>
+                  </Space>
+                )
+              }
             </Col>
           </Row>
         </Card>
