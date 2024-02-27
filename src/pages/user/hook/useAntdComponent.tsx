@@ -129,26 +129,30 @@ export const useAntdUserListData = ({ onDelete }: { onDelete: any }) => {
         >
           <Row gutter={[0, 10]}>
             <Col span={12} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              {user.fullNameTH === undefined && (
-                <Text><MinusOutlined /></Text>
-              )}
-              {user.fullNameTH !== undefined && (
-                <Space>
-                  <SolutionOutlined />
-                  <Text>{user.fullNameTH}</Text>
-                </Space>
-              )}
+
+              {user.fullNameTH === undefined
+                ? (<Text><MinusOutlined /></Text>)
+                : (
+                  <Space>
+                    <SolutionOutlined />
+                    <Text>{user.fullNameTH}</Text>
+                  </Space>
+                )
+              }
+
             </Col>
             <Col span={12} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              {user.fullNameEN === '' && (
-                <Text><MinusOutlined /></Text>
-              )}
-              {user.fullNameEN !== '' && (
-                <Space>
-                  <SolutionOutlined />
-                  <Text>{user.fullNameEN}</Text>
-                </Space>
-              )}
+
+              {user.fullNameEN === ''
+                ? (<Text><MinusOutlined /></Text>)
+                : (
+                  <Space>
+                    <SolutionOutlined />
+                    <Text>{user.fullNameEN}</Text>
+                  </Space>
+                )
+              }
+              
             </Col>
             <Col span={12} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <Space>
