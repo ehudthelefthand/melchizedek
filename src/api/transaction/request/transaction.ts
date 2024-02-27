@@ -27,6 +27,10 @@ export interface TransactionUpdateRequest {
   projectOfferings: TransactionProjectOfferingUpdateRequest[]
 }
 
+export interface TransactionsDeleteRequest {
+  id: number[]
+}
+
 export type TransactionCreateRequest = Omit<
   TransactionUpdateRequest,
   'id' | 'fixOfferings' | 'giftOfferings' | 'projectOfferings'

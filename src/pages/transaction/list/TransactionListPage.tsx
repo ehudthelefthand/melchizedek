@@ -13,6 +13,7 @@ import TransactionReportFilterForm from '../report/TransactionReportFilterForm'
 import { initialPagination } from '../../../constants/api'
 import { formatedTransaction } from '../form/utils/transactions/transaction'
 import { debounce } from '../../../service/debounce'
+import MobileView from './components/MobileView'
 
 const { Search } = Input
 
@@ -144,7 +145,7 @@ function TransactionListPage() {
         </Modal>
         {/* //TODO: mobile ยังไม่พร้อม */}
         {isMobile ? (
-          <></>
+          <MobileView transactions={transactions} />
         ) : (
           <TransactionTableView
             transactions={transactions}

@@ -8,12 +8,12 @@ import {
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import { PropsWithChildren } from 'react'
-import { TransactionLists } from '../../model/transaction'
+import { TransactionList } from '../model/transaction'
 
 const { Text } = Typography
 
 function MobileView(
-  props: PropsWithChildren<{ transactions: TransactionLists[] }>
+  props: PropsWithChildren<{ transactions: TransactionList[] }>
 ) {
   const { transactions } = props
   const [t] = useTranslation('translation')
@@ -50,7 +50,7 @@ function MobileView(
                   <Text type="secondary">
                     {t('transacListMobile.department')}
                   </Text>
-                  <Text>{transaction.department}</Text>
+                  <Text>{transaction.departmentName}</Text>
                 </Space>
               </Col>
               <Col xs={24}>
@@ -71,17 +71,15 @@ function MobileView(
               <Col xs={12}>
                 <Space>
                   <BankTwoTone />
-                  <Text type="secondary">
-                    {t('transacListMobile.bank')}
-                  </Text>
-                  <Text>{transaction.bank}</Text>
+                  <Text type="secondary">{t('transacListMobile.bank')}</Text>
+                  <Text>{transaction.bankCode}</Text>
                 </Space>
               </Col>
               <Col xs={12}>
                 <Space>
                   <InteractionTwoTone />
                   <Text type="secondary">{t('transacListMobile.yfcBank')}</Text>
-                  <Text>{transaction.yfcBank}</Text>
+                  <Text>{transaction.yfcBankCode}</Text>
                 </Space>
               </Col>
             </Row>

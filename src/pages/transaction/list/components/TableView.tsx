@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   Flex,
   Image,
   Modal,
@@ -55,6 +56,7 @@ function TransactionTableView(
     setItemsPerPage,
   } = props
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedItems, setSelectedItems] = useState<number[]>([])
 
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
@@ -62,7 +64,7 @@ function TransactionTableView(
       pageSize: itemsPerPage,
       total: pagesTransaction?.totalItems,
       showSizeChanger: true,
-      pageSizeOptions: [10,20, 40, 60, 100],
+      pageSizeOptions: [10, 20, 40, 60, 100],
     },
   })
 
@@ -86,14 +88,14 @@ function TransactionTableView(
     navigate(`/transaction/edit/${transaction.id}`)
   }
 
-  const onDelete = (transaction: TransactionList) => {
+  const onDelete = (id: number[]) => {
     Modal.confirm({
       title: `${t('transacMessage.confirmDelete')}`,
       centered: true,
       width: 400,
       onOk() {
         service.api.transaction
-          .delete(transaction.id)
+          .delete({ id })
           .then(() => {
             message.success(`${t('transacMessage.deleteSuccess')}`)
             window.location.reload()
@@ -105,7 +107,28 @@ function TransactionTableView(
     })
   }
 
+  const onSelected = (transactionId: number) => {
+    const isSelected = selectedItems.includes(transactionId)
+    if (isSelected) {
+      setSelectedItems(selectedItems.filter((id) => id !== transactionId))
+    } else {
+      setSelectedItems([...selectedItems, transactionId])
+    }
+  }
+
   const columns: ColumnsType<TransactionList> = [
+    {
+      title: selectedItems.length > 0 && (
+        <DeleteOutlined onClick={() => onDelete(selectedItems)} />
+      ),
+      width: 40,
+      key: 'id',
+      fixed: 'left',
+      align: 'center',
+      render: (transaction: TransactionList) => (
+        <Checkbox onChange={() => onSelected(transaction.id)} />
+      ),
+    },
     {
       title: '#',
       width: 60,
@@ -256,7 +279,7 @@ function TransactionTableView(
             style={{ cursor: 'pointer', color: '#2196F3', fontSize: 20 }}
           />
           <DeleteOutlined
-            onClick={() => onDelete(transaction)}
+            onClick={() => onDelete([transaction.id])}
             style={{ cursor: 'pointer', color: '#a9a9a9', fontSize: 20 }}
           />
         </Space>
