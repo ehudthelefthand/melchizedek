@@ -2,13 +2,11 @@ import {
   Checkbox,
   Flex,
   Image,
-  Modal,
   Skeleton,
   Space,
   Spin,
   Table,
   Typography,
-  message,
 } from 'antd'
 import {
   EditOutlined,
@@ -16,7 +14,7 @@ import {
   LoadingOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+
 import { Key, PropsWithChildren, useEffect, useState } from 'react'
 import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table'
 import dayjs from 'dayjs'
@@ -40,10 +38,12 @@ function TransactionTableView(
     setCurrentPage: React.Dispatch<React.SetStateAction<any>>
     itemsPerPage: number
     setItemsPerPage: React.Dispatch<React.SetStateAction<any>>
+    onEdit: Function
+    onDelete: Function
   }>
 ) {
   const [t] = useTranslation('translation')
-  const navigate = useNavigate()
+
   const service = useService()
   const { Text } = Typography
 
@@ -54,6 +54,8 @@ function TransactionTableView(
     itemsPerPage,
     setCurrentPage,
     setItemsPerPage,
+    onEdit,
+    onDelete,
   } = props
   const [isLoading, setIsLoading] = useState(true)
   const [selectedItems, setSelectedItems] = useState<number[]>([])
@@ -83,29 +85,6 @@ function TransactionTableView(
   useEffect(() => {
     setIsLoading(false)
   }, [tableParams])
-
-  const onEdit = (transaction: TransactionList) => {
-    navigate(`/transaction/edit/${transaction.id}`)
-  }
-
-  const onDelete = (id: number[]) => {
-    Modal.confirm({
-      title: `${t('transacMessage.confirmDelete')}`,
-      centered: true,
-      width: 400,
-      onOk() {
-        service.api.transaction
-          .delete({ id })
-          .then(() => {
-            message.success(`${t('transacMessage.deleteSuccess')}`)
-            window.location.reload()
-          })
-          .catch(() => {
-            message.error(`${t('transacMessage.deleteFail')}`)
-          })
-      },
-    })
-  }
 
   const onSelected = (transactionId: number) => {
     const isSelected = selectedItems.includes(transactionId)

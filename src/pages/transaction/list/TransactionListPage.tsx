@@ -1,9 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMediaQuery } from 'react-responsive'
 
-import { Input, Space, Button, Row, Col, Skeleton, Spin, Modal } from 'antd'
+import {
+  Input,
+  Space,
+  Button,
+  Row,
+  Col,
+  Skeleton,
+  Spin,
+  Modal,
+  message,
+} from 'antd'
 import { PageTransactionResponse } from '../../../api/transaction/response/transaction'
 import { TransactionList } from './model/transaction'
 import TransactionTableView from './components/TableView'
@@ -32,6 +42,7 @@ function TransactionListPage() {
     initialPagination.itemsPerPage
   )
   const service = useService()
+  const navigate = useNavigate()
 
   const handleSearch = async (fullName: string) => {
     return debounce(await onSearch(fullName), 3000)
@@ -43,6 +54,29 @@ function TransactionListPage() {
 
   const onCancel = () => {
     setModalVisible(false)
+  }
+
+  const onEdit = (transaction: TransactionList) => {
+    navigate(`/transaction/edit/${transaction.id}`)
+  }
+
+  const onDelete = (id: number[]) => {
+    Modal.confirm({
+      title: `${t('transacMessage.confirmDelete')}`,
+      centered: true,
+      width: 400,
+      onOk() {
+        service.api.transaction
+          .delete({ id })
+          .then(() => {
+            message.success(`${t('transacMessage.deleteSuccess')}`)
+            window.location.reload()
+          })
+          .catch(() => {
+            message.error(`${t('transacMessage.deleteFail')}`)
+          })
+      },
+    })
   }
 
   useEffect(() => {
@@ -143,9 +177,13 @@ function TransactionListPage() {
         >
           <TransactionReportFilterForm onCancel={onCancel} />
         </Modal>
-        {/* //TODO: mobile ยังไม่พร้อม */}
+
         {isMobile ? (
-          <MobileView transactions={transactions} />
+          <MobileView
+            transactions={transactions}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
         ) : (
           <TransactionTableView
             transactions={transactions}
@@ -154,6 +192,8 @@ function TransactionListPage() {
             setCurrentPage={setCurrentPage}
             itemsPerPage={itemsPerPage}
             setItemsPerPage={setItemsPerPage}
+            onEdit={onEdit}
+            onDelete={onDelete}
           />
         )}
       </Space>

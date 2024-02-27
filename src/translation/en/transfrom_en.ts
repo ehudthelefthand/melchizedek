@@ -78,6 +78,7 @@ export default {
     department: 'Department',
     slip: 'Evidence',
     event: 'For event',
+    descriptions: 'Details'
   },
   transacMessage: {
     confirmDelete: 'Confirm delete!',
