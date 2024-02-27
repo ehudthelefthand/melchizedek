@@ -1,11 +1,10 @@
-import { Card, Col, Divider, List, Row, Space, Typography, Image, Modal, message, Spin, Skeleton } from 'antd'
+import { Card, Col, Divider, List, Row, Space, Typography, Image, Modal, Spin, Skeleton } from 'antd'
 import { } from 'antd/es/list'
 import { PropsWithChildren, useEffect, useState } from 'react'
 import { TransactionList } from '../model/transaction'
 import { PageTransactionResponse } from '../../../../api/transaction/response/transaction'
 import { BankOutlined, CalendarOutlined, DeleteOutlined, DollarTwoTone, EditOutlined, FunctionOutlined, GiftOutlined, InboxOutlined, LoadingOutlined, MinusOutlined, PartitionOutlined, ProjectOutlined, ReadOutlined, UserOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
-import { useService } from '../../../../service/service'
 import { useTranslation } from 'react-i18next'
 
 const baseURL = import.meta.env.VITE_REACT_PUBLIC_CORE_API
@@ -18,12 +17,12 @@ function TransactionMobileView(
     setCurrentPage: React.Dispatch<React.SetStateAction<any>>
     itemsPerPage: number
     setItemsPerPage: React.Dispatch<React.SetStateAction<any>>
+    onDelete: (id: number) => void
   }>
 ) {
-  const { transactions, pagesTransaction, currentPage, setCurrentPage, itemsPerPage } = props
+  const { transactions, pagesTransaction, currentPage, setCurrentPage, itemsPerPage, onDelete } = props
   const [t] = useTranslation('translation')
   const { Text } = Typography
-  const service = useService()
   const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState(true)
@@ -34,22 +33,14 @@ function TransactionMobileView(
 
   function onEdit(transaction: TransactionList) { navigate(`/transaction/edit/${transaction.id}`) }
 
-  const onDelete = (transaction: TransactionList) => {
+  const deleteModal = (transaction: TransactionList) => {
     Modal.confirm({
       title: `${t('transacMessage.confirmDelete')}`,
       centered: true,
       width: 400,
-      onOk() {
-        service.api.transaction
-          .delete(transaction.id)
-          .then(() => {
-            message.success(`${t('transacMessage.deleteSuccess')}`)
-            window.location.reload()
-          })
-          .catch(() => {
-            message.error(`${t('transacMessage.deleteFail')}`)
-          })
-      },
+      onOk: () => {
+        onDelete(transaction.id)
+      }
     })
   }
 
@@ -71,7 +62,7 @@ function TransactionMobileView(
               style={{ cursor: 'pointer', color: '#2196F3', fontSize: 20 }}
             />,
             <DeleteOutlined
-              onClick={() => onDelete(transaction)}
+              onClick={() => deleteModal(transaction)}
               style={{ cursor: 'pointer', color: '#a9a9a9', fontSize: 20 }}
             />
           ]}

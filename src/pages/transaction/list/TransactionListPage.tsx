@@ -14,6 +14,7 @@ import { initialPagination } from '../../../constants/api'
 import { formatedTransaction } from '../form/utils/transactions/transaction'
 import { debounce } from '../../../service/debounce'
 import TransactionMobileView from './components/MobileView'
+import useTransaction from '../../../hooks/transaction/useTransaction'
 
 const { Search } = Input
 
@@ -32,6 +33,8 @@ function TransactionListPage() {
     initialPagination.itemsPerPage
   )
   const service = useService()
+
+  const { onDelete } = useTransaction()
 
   const handleSearch = async (fullName: string) => {
     return debounce(await onSearch(fullName), 3000)
@@ -150,6 +153,7 @@ function TransactionListPage() {
             setCurrentPage={setCurrentPage}
             itemsPerPage={itemsPerPage}
             setItemsPerPage={setItemsPerPage}
+            onDelete={onDelete}
           />
           : <TransactionTableView
             transactions={transactions}
@@ -158,6 +162,7 @@ function TransactionListPage() {
             setCurrentPage={setCurrentPage}
             itemsPerPage={itemsPerPage}
             setItemsPerPage={setItemsPerPage}
+            onDelete={onDelete}
           />
         }
 
