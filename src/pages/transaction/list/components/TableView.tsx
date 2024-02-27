@@ -62,7 +62,7 @@ function TransactionTableView(
       pageSize: itemsPerPage,
       total: pagesTransaction?.totalItems,
       showSizeChanger: true,
-      pageSizeOptions: [10,20, 40, 60, 100],
+      pageSizeOptions: [10, 20, 40, 60, 100],
     },
   })
 
@@ -82,9 +82,7 @@ function TransactionTableView(
     setIsLoading(false)
   }, [tableParams])
 
-  const onEdit = (transaction: TransactionList) => {
-    navigate(`/transaction/edit/${transaction.id}`)
-  }
+  function onEdit(transaction: TransactionList) { navigate(`/transaction/edit/${transaction.id}`) }
 
   const onDelete = (transaction: TransactionList) => {
     Modal.confirm({

@@ -32,9 +32,7 @@ function TransactionMobileView(
     setIsLoading(false)
   }, [currentPage])
 
-  const onEdit = (transaction: TransactionList) => {
-    navigate(`/transaction/edit/${transaction.id}`)
-  }
+  function onEdit(transaction: TransactionList) { navigate(`/transaction/edit/${transaction.id}`) }
 
   const onDelete = (transaction: TransactionList) => {
     Modal.confirm({
