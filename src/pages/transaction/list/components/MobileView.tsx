@@ -143,15 +143,17 @@ function TransactionMobileView(
           </Row>
           <Row>
             <Col span={24} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              {transaction.descriptions === '' && (
-                <Text><MinusOutlined /></Text>
-              )}
-              {transaction.descriptions !== '' && (
-                <Space>
-                  <ReadOutlined />
-                  <Text>{transaction.descriptions}</Text>
-                </Space>
-              )}
+
+              {transaction.descriptions === ''
+                ? (<Text><MinusOutlined /></Text>)
+                : (
+                  <Space>
+                    <ReadOutlined />
+                    <Text>{transaction.descriptions}</Text>
+                  </Space>
+                )
+              }
+              
             </Col>
           </Row>
           <Row>
