@@ -11,7 +11,7 @@ export interface UserResponse {
   fullNameTH: string
   fullNameEN: string
   nickName: string
-  username: string
+  userName: string
   password: string
   departmentId: number
   role: string

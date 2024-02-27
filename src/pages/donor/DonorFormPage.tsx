@@ -23,7 +23,7 @@ function DonorFormPage() {
                 </span>
               </h2>
             </Col>
-            <Col span={4}>
+            <Col span={7}>
               <Form.Item
                 key={'prefix'}
                 name={'prefix'}
@@ -33,7 +33,7 @@ function DonorFormPage() {
                 <Input placeholder={t('donorForm.prefix')} size="large" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={17}>
               <Form.Item
                 name={'fullName'}
                 key={'fullName'}
@@ -47,7 +47,7 @@ function DonorFormPage() {
                 />
               </Form.Item>
             </Col>
-            <Col span={4}>
+            <Col span={12}>
               <Form.Item
                 key={'type'}
                 name={'type'}
@@ -62,7 +62,7 @@ function DonorFormPage() {
                 />
               </Form.Item>
             </Col>
-            <Col span={4}>
+            <Col span={12}>
               <Form.Item
                 key={'staff'}
                 name={'staff'}

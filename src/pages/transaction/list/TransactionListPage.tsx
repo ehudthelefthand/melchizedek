@@ -13,6 +13,7 @@ import TransactionReportFilterForm from '../report/TransactionReportFilterForm'
 import { initialPagination } from '../../../constants/api'
 import { formatedTransaction } from '../form/utils/transactions/transaction'
 import { debounce } from '../../../service/debounce'
+import TransactionMobileView from './components/MobileView'
 
 const { Search } = Input
 
@@ -75,16 +76,14 @@ function TransactionListPage() {
   return (
     <>
       <Space direction="vertical" size="large" style={{ display: 'flex' }}>
-        <Row gutter={[5, 5]}>
+        <Row gutter={[9, 9]}>
           <Col xs={24} sm={24} md={12}>
-            <Col>
-              <Search
-                size="large"
-                placeholder={t('transacButton.search')}
-                enterButton
-                onChange={(e) => handleSearch(e.target.value.toString())}
-              />
-            </Col>
+            <Search
+              size="large"
+              placeholder={t('transacButton.search')}
+              enterButton
+              onChange={(e) => handleSearch(e.target.value.toString())}
+            />
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Row justify={'space-between'} gutter={5}>
@@ -142,19 +141,24 @@ function TransactionListPage() {
         >
           <TransactionReportFilterForm onCancel={onCancel} />
         </Modal>
-        {/* //TODO: mobile ยังไม่พร้อม */}
-        {isMobile ? (
-          <></>
-        ) : (
-          <TransactionTableView
-            transactions={transactions}
-            pagesTransaction={pagination}
-            currentPage={currentPage!}
-            setCurrentPage={setCurrentPage}
-            itemsPerPage={itemsPerPage}
-            setItemsPerPage={setItemsPerPage}
-          />
-        )}
+        {isMobile && <TransactionMobileView
+          transactions={transactions}
+          pagesTransaction={pagination}
+          currentPage={currentPage!}
+          setCurrentPage={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+          setItemsPerPage={setItemsPerPage}
+        />}
+
+        {!isMobile && <TransactionTableView
+          transactions={transactions}
+          pagesTransaction={pagination}
+          currentPage={currentPage!}
+          setCurrentPage={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+          setItemsPerPage={setItemsPerPage}
+        />}
+
       </Space>
       {isLoading && (
         <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>

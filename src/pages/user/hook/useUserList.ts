@@ -30,6 +30,12 @@ const useUserList = () => {
     })
   }
 
+  const handleListChange = (
+    page: number
+  ) => {
+    setPagination((prevPagination) => ({...prevPagination, current: page ?? initialPagination.currentPage}))
+  }
+
   useEffect(() => {
     setIsloading(true)
     service.api.user
@@ -92,6 +98,7 @@ const useUserList = () => {
     isLoading,
     handleTableChange,
     handleSearch,
+    handleListChange,
   }
 }
 
