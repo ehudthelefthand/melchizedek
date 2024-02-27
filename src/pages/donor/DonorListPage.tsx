@@ -1,5 +1,5 @@
 import { FileAddOutlined, LoadingOutlined } from '@ant-design/icons'
-import { Button, Col, Modal, Row, Select, Skeleton, Space, Spin } from 'antd'
+import { Button, Col, Modal, Row, Select, Skeleton, Space, Spin, Typography } from 'antd'
 import { Link } from 'react-router-dom'
 import useDonorList from './hook/useDonorList'
 import { useTranslation } from 'react-i18next'
@@ -9,12 +9,14 @@ import FullScreenLoading from '../../components/FullScreenLoading'
 import useUploadFile from '../../hooks/uploadFile/useUploadFile'
 import { useService } from '../../service/service'
 import { initialRegion } from '../../constants/api'
-import useAntdDonorTableData from './hook/useAntdComponent'
+import { useAntdDonorListData, useAntdDonorTableData } from './hook/useAntdComponent'
 import Search from 'antd/es/input/Search'
+import DonorMobileView from './components/DonorMobileView'
 
 function DonorListPage() {
   const formData = new FormData()
   const services = useService()
+  const { Text } = Typography
 
   const [t] = useTranslation('translation')
   const {
@@ -27,7 +29,9 @@ function DonorListPage() {
     pagination,
     totalItems,
     handleSearch,
+    handleListChange
   } = useDonorList()
+
   const {
     props,
     error,
@@ -44,6 +48,10 @@ function DonorListPage() {
     callback: (formData) => services.api.donor.importFile(formData),
   })
 
+  const { donorItems } = useAntdDonorListData({
+    onDelete: (id: string) => onDelete(id),
+  })
+
   const { donorColumns } = useAntdDonorTableData({
     onDelete: (id: string) => onDelete(id),
   })
@@ -51,7 +59,7 @@ function DonorListPage() {
   return (
     <>
       <Space direction="vertical" size="large" style={{ display: 'flex' }}>
-        <Row justify={'space-between'}>
+        <Row gutter={[5, 5]}>
           <Col xs={24} sm={24} md={12}>
             <Search
               enterButton
@@ -59,38 +67,42 @@ function DonorListPage() {
               placeholder={t('transacButton.search')}
               allowClear
               onChange={(e) => handleSearch(e.target.value.toString())}
-              style={{ width: ' 100%' }}
             />
           </Col>
-          <Row gutter={[14, 14]}>
-            <Col xs={12} sm={12} md={12}>
-              <Button
-                size="large"
-                style={{
-                  width: isMobile ? '100%' : '',
-                }}
-                onClick={() => onOpen()}
-              >
-                <FileAddOutlined /> Import
-              </Button>
-            </Col>
-            <Col xs={12} sm={12} md={12}>
-              <Link to={'/donor/create'}>
+          <Col xs={24} sm={24} md={12}>
+            <Row justify={'space-between'} gutter={5}>
+              <Col xs={12}>
                 <Button
                   size="large"
-                  type="primary"
-                  style={{
-                    width: isMobile ? '100%' : '',
-                    paddingRight: 8,
-                    paddingLeft: 8,
-                  }}
-                  className="btn-primary"
+                  style={{ width: isMobile ? '100%' : undefined }}
+                  onClick={() => onOpen()}
                 >
-                  {t('transacButton.addDonor')}
+                  <Space>
+                    <FileAddOutlined />
+                    <Text>Import</Text>
+                  </Space>
                 </Button>
-              </Link>
-            </Col>
-          </Row>
+              </Col>
+              <Col
+                xs={12}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'end',
+                }}>
+                <Link to={'/donor/create'} style={{ width: isMobile ? '100%' : undefined }}>
+                  <Button
+                    size="large"
+                    type="primary"
+                    style={{ width: isMobile ? '100%' : undefined }}
+                    className="btn-primary"
+                  >
+                    <Text style={{ color: 'white' }}>{t('transacButton.addDonor')}</Text>
+                  </Button>
+                </Link>
+              </Col>
+            </Row>
+          </Col>
         </Row>
         <Modal
           title={<h2>กรุณาเลือกไฟล์ Excel ของผู้ถวาย</h2>}
@@ -127,7 +139,16 @@ function DonorListPage() {
             />
           </Col>
         </Modal>
-        {/* //TODO: mobile ยังไม่พร้อม */}
+        {isMobile && (
+          <DonorMobileView
+            donorItems={donorItems}
+            donorList={donorList}
+            isLoading={isLoading}
+            totalItems={totalItems}
+            pagination={pagination}
+            handlePageChange={handleListChange}
+          />
+        )}
 
         {!isMobile && (
           <DonorTableView
@@ -139,6 +160,7 @@ function DonorListPage() {
             pagination={pagination}
           />
         )}
+
         {isUploading && <FullScreenLoading spinning={isUploading} />}
       </Space>
 

@@ -1,4 +1,4 @@
-import { Button, Col, Modal, Row, Skeleton, Space, Spin } from 'antd'
+import { Button, Col, Modal, Row, Skeleton, Space, Spin, Typography } from 'antd'
 import { FileAddOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -6,14 +6,16 @@ import UserTableView from './components/TableView'
 import useUserList from './hook/useUserList'
 import UploadFileExcel from '../../components/UploadFileXcel'
 import FullScreenLoading from '../../components/FullScreenLoading'
-import useAntdUserTableData from './hook/useAntdComponent'
+import { useAntdUserListData, useAntdUserTableData } from './hook/useAntdComponent'
 import useUploadFile from '../../hooks/uploadFile/useUploadFile'
 import { useService } from '../../service/service'
 import Search from 'antd/es/input/Search'
+import UserMobileView from './components/UserMobileView'
 
 function UserListPage() {
   const [t] = useTranslation('translation')
   const formData = new FormData()
+  const { Text } = Typography
 
   const services = useService()
   const {
@@ -27,7 +29,9 @@ function UserListPage() {
     pagination,
     totalItems,
     handleSearch,
+    handleListChange,
   } = useUserList()
+
   const {
     props,
     error,
@@ -43,6 +47,10 @@ function UserListPage() {
     callback: () => services.api.user.importFile(formData),
   })
 
+  const { userItems } = useAntdUserListData({
+    onDelete: (id: string) => onDelete(id),
+  })
+
   const { userColumns } = useAntdUserTableData({
     onDelete: (id: string) => onDelete(id),
     onEdit: (id: string) => onEdit(id),
@@ -51,7 +59,7 @@ function UserListPage() {
   return (
     <>
       <Space direction="vertical" size="large" style={{ display: 'flex' }}>
-        <Row justify={'space-between'}>
+        <Row gutter={[5, 5]}>
           <Col xs={24} sm={24} md={12}>
             <Search
               enterButton
@@ -59,34 +67,42 @@ function UserListPage() {
               placeholder={t('transacButton.search')}
               allowClear
               onChange={(e) => handleSearch(e.target.value.toString())}
-              style={{ width: ' 100%' }}
             />
           </Col>
-          <Row gutter={[16, 16]}>
-            <Col xs={12} sm={12} md={12}>
-              <Button
-                size="large"
-                style={{
-                  width: isMobile ? '100%' : '',
-                }}
-                onClick={() => onOpen()}
-              >
-                <FileAddOutlined /> Import
-              </Button>
-            </Col>
-            <Col xs={12} sm={12} md={12}>
-              <Link to={'/user/create'}>
+          <Col xs={24} sm={24} md={12}>
+            <Row justify={'space-between'} gutter={5}>
+              <Col xs={12}>
                 <Button
                   size="large"
-                  type="primary"
-                  style={{ width: isMobile ? '100%' : '' }}
-                  className="btn-primary"
+                  style={{ width: isMobile ? '100%' : undefined }}
+                  onClick={() => onOpen()}
                 >
-                  {t('transacButton.addStaff')}
+                  <Space>
+                    <FileAddOutlined />
+                    <Text>Import</Text>
+                  </Space>
                 </Button>
-              </Link>
-            </Col>
-          </Row>
+              </Col>
+              <Col
+                xs={12}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'end',
+                }}>
+                <Link to={'/user/create'} style={{ width: isMobile ? '100%' : undefined }}>
+                  <Button
+                    size="large"
+                    type="primary"
+                    style={{ width: isMobile ? '100%' : undefined }}
+                    className="btn-primary"
+                  >
+                    <Text style={{ color: 'white' }}>{t('transacButton.addStaff')}</Text>
+                  </Button>
+                </Link>
+              </Col>
+            </Row>
+          </Col>
         </Row>
         <Modal
           /* TODO: translation */
@@ -106,7 +122,17 @@ function UserListPage() {
             setError={setError}
           />
         </Modal>
-        {/* //TODO: mobile ยังไม่พร้อม */}
+        {isMobile && (
+          <UserMobileView
+            userItems={userItems}
+            userList={userList}
+            isLoading={isLoading}
+            pagination={pagination}
+            totalItems={totalItems}
+            handlePageChange={handleListChange}
+          />
+        )}
+
         {!isMobile && (
           <UserTableView
             data={userColumns}

@@ -28,6 +28,12 @@ const useDonorList = () => {
     })
   }
 
+  const handleListChange = (
+    page: number
+  ) => {
+    setPagination((prevPagination) => ({...prevPagination, current: page ?? initialPagination.currentPage}))
+  }
+
   useEffect(() => {
     setIsloading(true)
     service.api.donor
@@ -86,6 +92,7 @@ const useDonorList = () => {
     onDelete,
     isProcess,
     handleSearch,
+    handleListChange,
   }
 }
 

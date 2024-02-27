@@ -7,7 +7,6 @@ import {
   Spin,
   Table,
   Typography,
-  message,
 } from 'antd'
 import {
   EditOutlined,
@@ -39,6 +38,7 @@ function TransactionTableView(
     setCurrentPage: React.Dispatch<React.SetStateAction<any>>
     itemsPerPage: number
     setItemsPerPage: React.Dispatch<React.SetStateAction<any>>
+    onDelete: (id: number) => void
   }>
 ) {
   const [t] = useTranslation('translation')
@@ -53,6 +53,7 @@ function TransactionTableView(
     itemsPerPage,
     setCurrentPage,
     setItemsPerPage,
+    onDelete
   } = props
   const [isLoading, setIsLoading] = useState(true)
 
@@ -62,7 +63,7 @@ function TransactionTableView(
       pageSize: itemsPerPage,
       total: pagesTransaction?.totalItems,
       showSizeChanger: true,
-      pageSizeOptions: [10,20, 40, 60, 100],
+      pageSizeOptions: [10, 20, 40, 60, 100],
     },
   })
 
@@ -82,26 +83,16 @@ function TransactionTableView(
     setIsLoading(false)
   }, [tableParams])
 
-  const onEdit = (transaction: TransactionList) => {
-    navigate(`/transaction/edit/${transaction.id}`)
-  }
+  function onEdit(transaction: TransactionList) { navigate(`/transaction/edit/${transaction.id}`) }
 
-  const onDelete = (transaction: TransactionList) => {
+  const deleteModal = (transaction: TransactionList) => {
     Modal.confirm({
       title: `${t('transacMessage.confirmDelete')}`,
       centered: true,
       width: 400,
-      onOk() {
-        service.api.transaction
-          .delete(transaction.id)
-          .then(() => {
-            message.success(`${t('transacMessage.deleteSuccess')}`)
-            window.location.reload()
-          })
-          .catch(() => {
-            message.error(`${t('transacMessage.deleteFail')}`)
-          })
-      },
+      onOk: () => {
+        onDelete(transaction.id)
+      }
     })
   }
 
@@ -256,7 +247,7 @@ function TransactionTableView(
             style={{ cursor: 'pointer', color: '#2196F3', fontSize: 20 }}
           />
           <DeleteOutlined
-            onClick={() => onDelete(transaction)}
+            onClick={() => deleteModal(transaction)}
             style={{ cursor: 'pointer', color: '#a9a9a9', fontSize: 20 }}
           />
         </Space>
