@@ -74,7 +74,7 @@ function DonorListPage() {
               <Col xs={12}>
                 <Button
                   size="large"
-                  style={{ width: isMobile ? '100%' : '' }}
+                  style={{ width: isMobile ? '100%' : undefined }}
                   onClick={() => onOpen()}
                 >
                   <Space>
@@ -90,11 +90,11 @@ function DonorListPage() {
                   flexDirection: 'row',
                   justifyContent: 'end',
                 }}>
-                <Link to={'/donor/create'} style={{ width: isMobile ? '100%' : '' }}>
+                <Link to={'/donor/create'} style={{ width: isMobile ? '100%' : undefined }}>
                   <Button
                     size="large"
                     type="primary"
-                    style={{ width: isMobile ? '100%' : '' }}
+                    style={{ width: isMobile ? '100%' : undefined }}
                     className="btn-primary"
                   >
                     <Text style={{ color: 'white' }}>{t('transacButton.addDonor')}</Text>
