@@ -1,6 +1,7 @@
 import { List, Skeleton } from "antd"
 import { PageResponse } from "../../../constants/api"
 import { DonorListResponse } from "../../../api/donor/response"
+import { ReactElement } from "react"
 
 function DonorMobileView(
    {
@@ -11,7 +12,7 @@ function DonorMobileView(
       totalItems,
       handlePageChange,
    }: {
-      donorItems: any
+      donorItems: ((item: DonorListResponse, index: number) => ReactElement)
       donorList: DonorListResponse[] | []
       isLoading: boolean
       pagination: PageResponse
