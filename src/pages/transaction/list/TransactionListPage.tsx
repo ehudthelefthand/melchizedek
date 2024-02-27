@@ -141,23 +141,25 @@ function TransactionListPage() {
         >
           <TransactionReportFilterForm onCancel={onCancel} />
         </Modal>
-        {isMobile && <TransactionMobileView
-          transactions={transactions}
-          pagesTransaction={pagination}
-          currentPage={currentPage!}
-          setCurrentPage={setCurrentPage}
-          itemsPerPage={itemsPerPage}
-          setItemsPerPage={setItemsPerPage}
-        />}
-
-        {!isMobile && <TransactionTableView
-          transactions={transactions}
-          pagesTransaction={pagination}
-          currentPage={currentPage!}
-          setCurrentPage={setCurrentPage}
-          itemsPerPage={itemsPerPage}
-          setItemsPerPage={setItemsPerPage}
-        />}
+        
+        {isMobile
+          ? <TransactionMobileView
+            transactions={transactions}
+            pagesTransaction={pagination}
+            currentPage={currentPage!}
+            setCurrentPage={setCurrentPage}
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
+          : <TransactionTableView
+            transactions={transactions}
+            pagesTransaction={pagination}
+            currentPage={currentPage!}
+            setCurrentPage={setCurrentPage}
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
+        }
 
       </Space>
       {isLoading && (
