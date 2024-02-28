@@ -29,6 +29,20 @@ const useUserForm = () => {
       value: 'staff',
     },
   ]
+  const prefix: SelectProps['options'] = [
+    {
+      label: 'นาย',
+      value: 'นาย',
+    },
+    {
+      label: 'นาง',
+      value: 'นาง',
+    },
+    {
+      label: 'น.ส.',
+      value: 'น.ส.',
+    },
+  ]
 
   const isUsernameExists = async (value: string) => {
     return await service.api.user.validate({ username: value })
@@ -58,7 +72,9 @@ const useUserForm = () => {
     const createUser: UserCreateRequest = {
       username: value.username,
       password: value.password,
-      fullNameTH: value.fullNameTH,
+      prefix: value.prefix,
+      firstName: value.firstName,
+      lastName: value.lastName,
       fullNameEN: value.fullNameEN,
       nickName: value.nickName,
       department: value.department,
@@ -83,6 +99,7 @@ const useUserForm = () => {
     onSubmit,
     departmentAPI,
     role,
+    prefix,
     setMessage: setUserMessage,
     setErrorMessage,
     handleValidateUsername,

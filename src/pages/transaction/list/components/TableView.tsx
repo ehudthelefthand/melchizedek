@@ -1,13 +1,12 @@
 import {
+  Checkbox,
   Flex,
   Image,
-  Modal,
   Skeleton,
   Space,
   Spin,
   Table,
   Typography,
-  message,
 } from 'antd'
 import {
   EditOutlined,
@@ -15,97 +14,61 @@ import {
   LoadingOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
-import { Key, PropsWithChildren, useEffect, useState } from 'react'
-import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table'
+import { Key, PropsWithChildren } from 'react'
+import { ColumnsType, TableProps } from 'antd/es/table'
 import dayjs from 'dayjs'
-import { PageTransactionResponse } from '../../../../api/transaction/response/transaction'
 import { TotalOfferingsList, TransactionList } from '../model/transaction'
 import { useService } from '../../../../service/service'
+import { PageResponse } from '../../../../constants/api'
 
 const baseURL = import.meta.env.VITE_REACT_PUBLIC_CORE_API
 
-interface TableParams {
-  pagination?: TablePaginationConfig
-  sortField?: string
-  sortOrder?: string
-}
-
 function TransactionTableView(
   props: PropsWithChildren<{
-    transactions: TransactionList[]
-    pagesTransaction: PageTransactionResponse | undefined
-    currentPage: number
-    setCurrentPage: React.Dispatch<React.SetStateAction<any>>
-    itemsPerPage: number
-    setItemsPerPage: React.Dispatch<React.SetStateAction<any>>
+    isLoading: boolean
+    transactionsList: TransactionList[]
+    onEdit: Function
+    onDelete: Function
+    selectedItems: number[]
+    onSelected: Function
+    pagination: PageResponse
+    totalItems: number
+    handleTableChange: TableProps<TransactionList>['onChange']
   }>
 ) {
   const [t] = useTranslation('translation')
-  const navigate = useNavigate()
+
   const service = useService()
   const { Text } = Typography
 
   const {
-    transactions,
-    pagesTransaction,
-    currentPage,
-    itemsPerPage,
-    setCurrentPage,
-    setItemsPerPage,
-  } = props
-  const [isLoading, setIsLoading] = useState(true)
-
-  const [tableParams, setTableParams] = useState<TableParams>({
-    pagination: {
-      current: currentPage,
-      pageSize: itemsPerPage,
-      total: pagesTransaction?.totalItems,
-      showSizeChanger: true,
-      pageSizeOptions: [10,20, 40, 60, 100],
-    },
-  })
-
-  const handleTableChange: TableProps<TransactionList>['onChange'] = (
+    transactionsList,
+    onEdit,
+    onDelete,
+    selectedItems,
+    onSelected,
+    isLoading,
     pagination,
-    sorter
-  ) => {
-    setCurrentPage(pagination.current)
-    setItemsPerPage(pagination.pageSize)
-    setTableParams({
-      pagination,
-      ...sorter,
-    })
-  }
-
-  useEffect(() => {
-    setIsLoading(false)
-  }, [tableParams])
-
-  const onEdit = (transaction: TransactionList) => {
-    navigate(`/transaction/edit/${transaction.id}`)
-  }
-
-  const onDelete = (transaction: TransactionList) => {
-    Modal.confirm({
-      title: `${t('transacMessage.confirmDelete')}`,
-      centered: true,
-      width: 400,
-      onOk() {
-        service.api.transaction
-          .delete(transaction.id)
-          .then(() => {
-            message.success(`${t('transacMessage.deleteSuccess')}`)
-            window.location.reload()
-          })
-          .catch(() => {
-            message.error(`${t('transacMessage.deleteFail')}`)
-          })
-      },
-    })
-  }
+    totalItems,
+    handleTableChange,
+  } = props
 
   const columns: ColumnsType<TransactionList> = [
+    {
+      title: selectedItems.length > 0 && (
+        <DeleteOutlined
+          style={{ color: 'red' }}
+          onClick={() => onDelete(selectedItems)}
+        />
+      ),
+      width: 70,
+      key: 'id',
+      fixed: 'left',
+      align: 'center',
+      render: (transaction: TransactionList) => (
+        <Checkbox onChange={() => onSelected(transaction.id)} />
+      ),
+    },
     {
       title: '#',
       width: 60,
@@ -215,7 +178,7 @@ function TransactionTableView(
       title: t('transacList.event'),
       dataIndex: 'totalOfferings',
       key: 'totalOfferings',
-      width: 100,
+      width: 110,
       align: 'left',
       render: (value: TotalOfferingsList) => (
         <Flex vertical>
@@ -256,7 +219,7 @@ function TransactionTableView(
             style={{ cursor: 'pointer', color: '#2196F3', fontSize: 20 }}
           />
           <DeleteOutlined
-            onClick={() => onDelete(transaction)}
+            onClick={() => onDelete([transaction.id])}
             style={{ cursor: 'pointer', color: '#a9a9a9', fontSize: 20 }}
           />
         </Space>
@@ -274,10 +237,16 @@ function TransactionTableView(
         <Table
           columns={columns}
           rowKey={(record) => record.id}
-          dataSource={transactions}
+          dataSource={transactionsList}
           scroll={{ x: 0 }}
           sticky={{ offsetHeader: 0 }}
-          pagination={tableParams.pagination}
+          pagination={{
+            pageSize: pagination.itemsPerPage,
+            current: pagination.current,
+            total: totalItems,
+            showSizeChanger: true,
+            pageSizeOptions: [10, 20, 40, 80, 100],
+          }}
           onChange={handleTableChange}
         />
       )}

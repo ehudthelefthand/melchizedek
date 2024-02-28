@@ -7,6 +7,7 @@ import {
 import {
   TransactionCreateRequest,
   TransactionUpdateRequest,
+  TransactionsDeleteRequest,
 } from './request/transaction'
 import { EvidenceDeleteRequest } from './request/image'
 import { PageTransactionReportResponse } from './response/report'
@@ -41,8 +42,10 @@ export default {
       .put(`transactions/${transaction.id}`, transaction)
       .then((response) => response.data)
   },
-  delete: (id: number): Promise<TransactionUpdateRequest> => {
-    return axios.delete(`/transactions/${id}`).then((response) => response.data)
+  delete: (id: TransactionsDeleteRequest): Promise<TransactionUpdateRequest> => {
+    return axios
+      .delete(`/transactions`, { data: id })
+      .then((response) => response.data)
   },
   upload: (form: FormData, id: number) => {
     return axios.post(`/uploads/${id}`, form).then((response) => response.data)

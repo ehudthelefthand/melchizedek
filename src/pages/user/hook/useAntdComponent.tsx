@@ -18,10 +18,24 @@ const useAntdUserTableData = ({ onDelete }: { onEdit: any; onDelete: any }) => {
       align: 'center',
     },
     {
-      title: 'ชื่อภาษาไทย',
-      key: 'fullNameTH',
-      dataIndex: 'fullNameTH',
-      width: 150,
+      title: 'คำนำหน้า',
+      key: 'prefix',
+      dataIndex: 'prefix',
+      width: 10,
+      align: 'center',
+    },
+    {
+      title: 'ชื่อ',
+      key: 'firstName',
+      dataIndex: 'firstName',
+      width: 100,
+      align: 'center',
+    },
+    {
+      title: 'นามสกุล',
+      key: 'lastName',
+      dataIndex: 'lastName',
+      width: 100,
       align: 'left',
     },
     {

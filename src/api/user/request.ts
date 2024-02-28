@@ -14,7 +14,9 @@ export interface UserValidate {
 export interface UserCreateRequest {
   username: string
   password: string
-  fullNameTH: string
+  prefix: string
+  firstName: string
+  lastName: string
   fullNameEN: string
   nickName: string
   department: string

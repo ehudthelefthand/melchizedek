@@ -124,14 +124,15 @@ const TransactionFormPage = () => {
         transactionId: parseInt(paramsId),
       }
 
-      const transactionEdited: TransactionUpdateRequest =
-        editedTransactionForm({
+      const transactionEdited: TransactionUpdateRequest = editedTransactionForm(
+        {
           paramsId,
           fixOfferings,
           giftOfferings,
           projectOfferings,
           transaction,
-        })
+        }
+      )
 
       if (transactionEdited || transactionEdited != null) {
         service.api.transaction
@@ -162,7 +163,6 @@ const TransactionFormPage = () => {
       )
 
       if (transactionCreated || transactionCreated != null) {
-        console.log(transactionCreated)
         service.api.transaction
           .create(transactionCreated)
           .then((response) => {

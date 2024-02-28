@@ -75,6 +75,7 @@ export default {
     department: 'แผนก',
     slip: 'สลิป',
     event: 'ถวายให้',
+    descriptions: 'รายละเอียด',
   },
   transacMessage: {
     confirmDelete: 'ยืนยันการลบข้อมูล!',
@@ -87,5 +88,9 @@ export default {
     fullName: 'ชื่อ-นามสกุล',
     type: 'ประเภท',
     staff: 'ผู้ดูแล',
+  },
+  reportList: {
+    fileName: 'ชื่อไฟล์',
+    status: 'สถานะ',
   },
 }

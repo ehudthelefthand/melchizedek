@@ -78,6 +78,7 @@ export default {
     department: 'Department',
     slip: 'Evidence',
     event: 'For event',
+    descriptions: 'Details'
   },
   transacMessage: {
     confirmDelete: 'Confirm delete!',
@@ -90,5 +91,9 @@ export default {
     fullName: 'Fullname',
     type: 'Type',
     staff: 'Staff',
+  },
+  reportList: {
+    fileName: 'Filename',
+    status: 'Status',
   },
 }

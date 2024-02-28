@@ -70,7 +70,10 @@ const useUserList = () => {
       const result = await service.api.user.delete(id)
 
       if (result) {
-        message.success(`Delete the user ${id} successfully!`)
+        message.warning(`Delete the user ${id} successfully!`)
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
       }
     } catch (error) {
       message.error(`Fail to delete the user ${id}!`)
