@@ -13,8 +13,8 @@ import {
   Spin,
   Modal,
   message,
+  TableProps,
 } from 'antd'
-import { PageTransactionResponse } from '../../../api/transaction/response/transaction'
 import { TransactionList } from './model/transaction'
 import TransactionTableView from './components/TableView'
 import { useService } from '../../../service/service'
@@ -31,16 +31,25 @@ function TransactionListPage() {
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
   const [t] = useTranslation('translation')
   const [transactions, setTransactions] = useState<TransactionList[]>([])
-  const [pagination, setPagination] = useState<PageTransactionResponse>()
+  const [pagination, setPagination] = useState({
+    current: initialPagination.currentPage,
+    itemsPerPage: initialPagination.itemsPerPage,
+  })
+  const [totalItems, setTotalItems] = useState(initialPagination.totalItems)
   const [isLoading, setIsLoading] = useState(true)
   const [modalVisible, setModalVisible] = useState(false)
   const [search, setSearch] = useState<string>('')
-  const [currentPage, setCurrentPage] = useState<number>(
-    initialPagination.currentPage
-  )
-  const [itemsPerPage, setItemsPerPage] = useState<number>(
-    initialPagination.itemsPerPage
-  )
+  const [selectedItems, setSelectedItems] = useState<number[]>([])
+
+  const handleTableChange: TableProps<TransactionList>['onChange'] = (
+    pagination
+  ) => {
+    setPagination({
+      current: pagination.current ?? initialPagination.currentPage,
+      itemsPerPage: pagination.pageSize ?? initialPagination.itemsPerPage,
+    })
+  }
+
   const service = useService()
   const navigate = useNavigate()
 
@@ -58,6 +67,15 @@ function TransactionListPage() {
 
   const onEdit = (transaction: TransactionList) => {
     navigate(`/transaction/edit/${transaction.id}`)
+  }
+
+  const onSelected = (transactionId: number) => {
+    const isSelected = selectedItems.includes(transactionId)
+    if (isSelected) {
+      setSelectedItems(selectedItems.filter((id) => id !== transactionId))
+    } else {
+      setSelectedItems([...selectedItems, transactionId])
+    }
   }
 
   const onDelete = (id: number[]) => {
@@ -83,8 +101,8 @@ function TransactionListPage() {
     service.api.transaction
       .getAll(
         {
-          currentPage: currentPage,
-          itemsPerPage: itemsPerPage,
+          currentPage: pagination.current,
+          itemsPerPage: pagination.itemsPerPage,
         },
         search
       )
@@ -95,7 +113,7 @@ function TransactionListPage() {
         )
         if (transactionFormattedData || transactionFormattedData !== null) {
           setTransactions(transactionFormattedData)
-          setPagination(pageTransaction)
+          setTotalItems(pageTransaction.totalItems)
           return
         }
       })
@@ -105,7 +123,7 @@ function TransactionListPage() {
         throw new Error(error)
       })
       .finally(() => setIsLoading(false))
-  }, [currentPage, itemsPerPage, search])
+  }, [pagination, search])
 
   return (
     <>
@@ -186,14 +204,15 @@ function TransactionListPage() {
           />
         ) : (
           <TransactionTableView
-            transactions={transactions}
-            pagesTransaction={pagination}
-            currentPage={currentPage!}
-            setCurrentPage={setCurrentPage}
-            itemsPerPage={itemsPerPage}
-            setItemsPerPage={setItemsPerPage}
+            transactionsList={transactions}
             onEdit={onEdit}
             onDelete={onDelete}
+            isLoading={false}
+            selectedItems={selectedItems}
+            handleTableChange={handleTableChange}
+            onSelected={onSelected}
+            pagination={pagination}
+            totalItems={totalItems}
           />
         )}
       </Space>

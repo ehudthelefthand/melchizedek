@@ -5,8 +5,8 @@ import metadatum from './metadatum/metadatum'
 import user from './user/user'
 import donor from './donor/donor'
 
-// const baseURL = import.meta.env.VITE_REACT_PUBLIC_CORE_API
-const baseURL = 'http://192.168.111.247:8080'
+const baseURL = import.meta.env.VITE_REACT_PUBLIC_CORE_API
+// const baseURL = 'http://192.168.1.116:8080'
 
 export const axios: AxiosInstance = apiAxios.create({
   baseURL,

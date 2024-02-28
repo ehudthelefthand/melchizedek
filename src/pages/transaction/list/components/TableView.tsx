@@ -14,32 +14,26 @@ import {
   LoadingOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-
-import { Key, PropsWithChildren, useEffect, useState } from 'react'
-import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table'
+import { Key, PropsWithChildren } from 'react'
+import { ColumnsType, TableProps } from 'antd/es/table'
 import dayjs from 'dayjs'
-import { PageTransactionResponse } from '../../../../api/transaction/response/transaction'
 import { TotalOfferingsList, TransactionList } from '../model/transaction'
 import { useService } from '../../../../service/service'
+import { PageResponse } from '../../../../constants/api'
 
 const baseURL = import.meta.env.VITE_REACT_PUBLIC_CORE_API
 
-interface TableParams {
-  pagination?: TablePaginationConfig
-  sortField?: string
-  sortOrder?: string
-}
-
 function TransactionTableView(
   props: PropsWithChildren<{
-    transactions: TransactionList[]
-    pagesTransaction: PageTransactionResponse | undefined
-    currentPage: number
-    setCurrentPage: React.Dispatch<React.SetStateAction<any>>
-    itemsPerPage: number
-    setItemsPerPage: React.Dispatch<React.SetStateAction<any>>
+    isLoading: boolean
+    transactionsList: TransactionList[]
     onEdit: Function
     onDelete: Function
+    selectedItems: number[]
+    onSelected: Function
+    pagination: PageResponse
+    totalItems: number
+    handleTableChange: TableProps<TransactionList>['onChange']
   }>
 ) {
   const [t] = useTranslation('translation')
@@ -48,59 +42,26 @@ function TransactionTableView(
   const { Text } = Typography
 
   const {
-    transactions,
-    pagesTransaction,
-    currentPage,
-    itemsPerPage,
-    setCurrentPage,
-    setItemsPerPage,
+    transactionsList,
     onEdit,
     onDelete,
-  } = props
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedItems, setSelectedItems] = useState<number[]>([])
-
-  const [tableParams, setTableParams] = useState<TableParams>({
-    pagination: {
-      current: currentPage,
-      pageSize: itemsPerPage,
-      total: pagesTransaction?.totalItems,
-      showSizeChanger: true,
-      pageSizeOptions: [10, 20, 40, 60, 100],
-    },
-  })
-
-  const handleTableChange: TableProps<TransactionList>['onChange'] = (
+    selectedItems,
+    onSelected,
+    isLoading,
     pagination,
-    sorter
-  ) => {
-    setCurrentPage(pagination.current)
-    setItemsPerPage(pagination.pageSize)
-    setTableParams({
-      pagination,
-      ...sorter,
-    })
-  }
-
-  useEffect(() => {
-    setIsLoading(false)
-  }, [tableParams])
-
-  const onSelected = (transactionId: number) => {
-    const isSelected = selectedItems.includes(transactionId)
-    if (isSelected) {
-      setSelectedItems(selectedItems.filter((id) => id !== transactionId))
-    } else {
-      setSelectedItems([...selectedItems, transactionId])
-    }
-  }
+    totalItems,
+    handleTableChange,
+  } = props
 
   const columns: ColumnsType<TransactionList> = [
     {
       title: selectedItems.length > 0 && (
-        <DeleteOutlined onClick={() => onDelete(selectedItems)} />
+        <DeleteOutlined
+          style={{ color: 'red' }}
+          onClick={() => onDelete(selectedItems)}
+        />
       ),
-      width: 40,
+      width: 70,
       key: 'id',
       fixed: 'left',
       align: 'center',
@@ -217,7 +178,7 @@ function TransactionTableView(
       title: t('transacList.event'),
       dataIndex: 'totalOfferings',
       key: 'totalOfferings',
-      width: 100,
+      width: 110,
       align: 'left',
       render: (value: TotalOfferingsList) => (
         <Flex vertical>
@@ -276,10 +237,16 @@ function TransactionTableView(
         <Table
           columns={columns}
           rowKey={(record) => record.id}
-          dataSource={transactions}
+          dataSource={transactionsList}
           scroll={{ x: 0 }}
           sticky={{ offsetHeader: 0 }}
-          pagination={tableParams.pagination}
+          pagination={{
+            pageSize: pagination.itemsPerPage,
+            current: pagination.current,
+            total: totalItems,
+            showSizeChanger: true,
+            pageSizeOptions: [2, 10, 20, 40, 80, 100],
+          }}
           onChange={handleTableChange}
         />
       )}

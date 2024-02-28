@@ -1,4 +1,4 @@
-import { Card, Col, Row, Typography, Space, Divider, Flex } from 'antd'
+import { Card, Col, Row, Typography, Space, Flex } from 'antd'
 import {
   BankTwoTone,
   ClockCircleTwoTone,
@@ -13,7 +13,6 @@ import {
   MessageTwoTone,
   ProjectTwoTone,
   PushpinTwoTone,
-  ReconciliationTwoTone,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
