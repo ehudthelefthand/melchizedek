@@ -30,7 +30,7 @@ export interface DonorResponse {
 export interface StaffResponse {
   id: number
   nickName: string
-  fullNameTH: string
+  firstName: string
 }
 
 export interface ProjectResponse {

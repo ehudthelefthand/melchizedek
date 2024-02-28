@@ -2,9 +2,9 @@ import { Card, Col, Row, Typography, Space, Flex } from 'antd'
 import {
   BankTwoTone,
   ClockCircleTwoTone,
-  DeleteOutlined,
+  // DeleteOutlined,
   DollarTwoTone,
-  EditOutlined,
+  // EditOutlined,
   EllipsisOutlined,
   GiftTwoTone,
   GoldTwoTone,
@@ -28,7 +28,7 @@ function MobileView(
     onDelete: Function
   }>
 ) {
-  const { transactions, onEdit, onDelete } = props
+  const { transactions } = props
   const [t] = useTranslation('translation')
   return (
     <Row gutter={[16, 16]}>

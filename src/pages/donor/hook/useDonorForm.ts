@@ -12,8 +12,8 @@ const useDonorForm = () => {
   const staffAPI: SelectProps['options'] = service.metadatums
     .getAllStaffs()
     .map((staff) => ({
-      label: staff.fullNameTH,
-      value: staff.fullNameTH,
+      label: staff.firstName,
+      value: staff.firstName,
     }))
 
   const type: SelectProps['options'] = [
@@ -23,15 +23,12 @@ const useDonorForm = () => {
   ]
 
   const onSubmit = (value: DonorCreateRequest) => {
-    console.log('value by form: ', value)
     const createDonor: DonorCreateRequest = {
       fullName: value.fullName,
       prefix: value.prefix,
       type: value.type,
       staff: value.staff,
     }
-
-    console.log('value by createDonor: ', createDonor)
 
     service.api.donor
       .create(createDonor)

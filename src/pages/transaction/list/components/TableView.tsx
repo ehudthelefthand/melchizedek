@@ -245,7 +245,7 @@ function TransactionTableView(
             current: pagination.current,
             total: totalItems,
             showSizeChanger: true,
-            pageSizeOptions: [2, 10, 20, 40, 80, 100],
+            pageSizeOptions: [10, 20, 40, 80, 100],
           }}
           onChange={handleTableChange}
         />

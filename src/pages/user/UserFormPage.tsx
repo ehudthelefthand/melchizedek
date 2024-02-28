@@ -13,6 +13,7 @@ function UserFormPage() {
     onSubmit,
     departmentAPI,
     role,
+    prefix,
     setMessage,
     handleValidateUsername,
   } = useUserForm()
@@ -75,17 +76,37 @@ function UserFormPage() {
                 <Input.Password size="large" placeholder="รหัสผ่าน" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={4}>
               <Form.Item
-                name={'fullNameTH'}
-                key={'fullNameTH'}
-                rules={[{ required: true, message: 'Please fill FullName' }]}
+                key={'prefix'}
+                name={'prefix'}
+                rules={[{ required: true, message: 'Please select a Prefix' }]}
+                hasFeedback
+              >
+                <Select placeholder="คำนำหน้า" options={prefix} size="large" />
+              </Form.Item>
+            </Col>
+            <Col span={10}>
+              <Form.Item
+                name={'firstName'}
+                key={'firstName'}
+                rules={[{ required: true, message: 'Please fill Firstname' }]}
                 hasFeedback
               >
                 <Input size="large" placeholder="ชื่อภาษาไทย" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={10}>
+              <Form.Item
+                name={'lastName'}
+                key={'lastName'}
+                rules={[{ required: true, message: 'Please fill Lastname' }]}
+                hasFeedback
+              >
+                <Input size="large" placeholder="นามสกุลภาษาไทย" />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
               <Form.Item
                 name={'fullNameEN'}
                 key={'fullNameEN'}

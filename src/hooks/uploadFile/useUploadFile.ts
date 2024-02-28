@@ -21,7 +21,6 @@ const useUploadFile = ({
   const [statusValue, setStatusValue] = useState<boolean>(true)
 
   const onSelectDepartment = (value: string) => {
-    console.log(value)
     setSelectedDepartment(value.toString())
     setStatusValue(false)
   }
@@ -34,9 +33,6 @@ const useUploadFile = ({
     fileList.forEach((file: any) => {
       formData.append('file', file as FileType)
     })
-
-    console.log('new formData file', formData.get('file'))
-    console.log('new formData department', formData.get('department'))
 
     return (
       callback &&

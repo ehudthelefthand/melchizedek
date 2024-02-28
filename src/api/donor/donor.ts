@@ -18,7 +18,6 @@ export default {
       .then((response) => response.data)
   },
   importFile: (form: FormData) => {
-    console.log('form formData', form.get('department'))
     return axios.post(`donor/import`, form).then((response) => response.data)
   },
   create: (donorCreate: DonorCreateRequest) => {
@@ -37,6 +36,8 @@ export default {
       .then((response) => response.data)
   },
   getDonorFilter: (filterName: FilterName): Promise<DonorSearchRespones[]> => {
-    return axios.post(`/donor/filter`, filterName).then((response) => response.data)
-  }
+    return axios
+      .post(`/donor/filter`, filterName)
+      .then((response) => response.data)
+  },
 }

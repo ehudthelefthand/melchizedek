@@ -23,7 +23,7 @@ import TransactionReportFilterForm from '../report/TransactionReportFilterForm'
 import { initialPagination } from '../../../constants/api'
 import { formatedTransaction } from '../form/utils/transactions/transaction'
 import { debounce } from '../../../service/debounce'
-import MobileView from './components/MobileView'
+// import MobileView from './components/MobileView'
 
 const { Search } = Input
 
@@ -195,14 +195,8 @@ function TransactionListPage() {
         >
           <TransactionReportFilterForm onCancel={onCancel} />
         </Modal>
-
-        {isMobile ? (
-          <MobileView
-            transactions={transactions}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ) : (
+        {/*TODO: Mobile ยังไม่พร้อม */}
+        {!isMobile && (
           <TransactionTableView
             transactionsList={transactions}
             onEdit={onEdit}

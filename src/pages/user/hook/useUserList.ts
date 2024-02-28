@@ -41,7 +41,6 @@ const useUserList = () => {
         search
       )
       .then((user) => {
-        console.log('user', user)
         setTotalItems(user.totalItems)
         setUserList(user.data)
       })
